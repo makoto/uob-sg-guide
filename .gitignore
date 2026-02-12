@@ -6,3 +6,13 @@ data/
 
 # Raw Overpass API download
 data/osm/queenstown-buildings.json
+
+# Generated 3D Tiles (built by GitHub Actions from generate_3dtiles.py)
+docs/3dtiles/buildings.b3dm
+docs/3dtiles/tileset.json
+
+# PDF papers (keep markdown summaries, skip large PDFs)
+literature/papers/*.pdf
+
+# Playwright MCP
+.playwright-mcp/
