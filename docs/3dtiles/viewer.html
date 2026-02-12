@@ -15,6 +15,16 @@
     .legend { margin-top: 8px; font-size: 11px; line-height: 1.6; }
     .legend-item { display: flex; align-items: center; gap: 6px; }
     .legend-swatch { width: 14px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    #layer-panel { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 0; border-radius: 5px; font-family: sans-serif; font-size: 12px; z-index: 1; min-width: 220px; max-height: calc(100vh - 30px); overflow-y: auto; }
+    #layer-panel-header { padding: 8px 12px; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.15); }
+    #layer-panel-header:hover { background: rgba(255,255,255,0.1); border-radius: 5px 5px 0 0; }
+    #layer-panel-body { padding: 6px 0; }
+    .layer-group-title { color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 12px 2px; margin-top: 2px; }
+    .layer-row { display: flex; align-items: center; gap: 6px; padding: 3px 12px; cursor: pointer; }
+    .layer-row:hover { background: rgba(255,255,255,0.08); }
+    .layer-row input[type="checkbox"] { margin: 0; cursor: pointer; }
+    .layer-color { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .layer-label { flex: 1; }
   </style>
 </head>
 <body>
@@ -31,6 +41,12 @@
       <div class="legend-item"><span class="legend-swatch" style="background:cyan"></span> 15 &ndash; 30 m</div>
       <div class="legend-item"><span class="legend-swatch" style="background:white"></span> &le; 15 m</div>
     </div>
+  </div>
+  <div id="layer-panel">
+    <div id="layer-panel-header" onclick="toggleLayerPanel()">
+      <span>Layers</span><span id="layer-panel-arrow">&#9660;</span>
+    </div>
+    <div id="layer-panel-body"></div>
   </div>
   <div id="picked"></div>
   <script>
@@ -153,7 +169,7 @@
           ? coords.flat() : coords;
         rings.forEach(ring => {
           const positions = ring.map(p => Cesium.Cartesian3.fromDegrees(p[0], p[1]));
-          viewer.entities.add({
+          const entity = viewer.entities.add({
             polyline: {
               positions: positions,
               clampToGround: true,
@@ -164,6 +180,7 @@
               }),
             }
           });
+          builtinEntities.boundary.push(entity);
         });
         console.log('Boundary drawn:', rings.length, 'rings');
       })
@@ -180,7 +197,7 @@
             ? coords.flat() : coords;
           rings.forEach(ring => {
             const positions = ring.map(p => Cesium.Cartesian3.fromDegrees(p[0], p[1]));
-            viewer.entities.add({
+            const entity = viewer.entities.add({
               polyline: {
                 positions: positions,
                 clampToGround: true,
@@ -188,6 +205,7 @@
                 material: Cesium.Color.CYAN.withAlpha(0.6),
               }
             });
+            builtinEntities.subzones.push(entity);
           });
           // Label at centroid
           const allLng = coords.flat(2).filter((_, i) => i % 2 === 0 || (Array.isArray(coords[0][0][0]) ? false : true));
@@ -195,7 +213,7 @@
           const ring0 = rings[0];
           const cLng = ring0.reduce((s, p) => s + p[0], 0) / ring0.length;
           const cLat = ring0.reduce((s, p) => s + p[1], 0) / ring0.length;
-          viewer.entities.add({
+          const labelEntity = viewer.entities.add({
             position: Cesium.Cartesian3.fromDegrees(cLng, cLat),
             label: {
               text: name,
@@ -210,6 +228,7 @@
               scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 5000, 0.4),
             }
           });
+          builtinEntities.subzones.push(labelEntity);
         });
         console.log('Subzones drawn:', geojson.features.length);
       })
@@ -244,6 +263,140 @@
         pickedDiv.style.display = 'none';
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+    // ---------------------------------------------------------------
+    // Layer panel
+    // ---------------------------------------------------------------
+    let layerPanelOpen = true;
+    function toggleLayerPanel() {
+      layerPanelOpen = !layerPanelOpen;
+      document.getElementById('layer-panel-body').style.display = layerPanelOpen ? '' : 'none';
+      document.getElementById('layer-panel-arrow').innerHTML = layerPanelOpen ? '&#9660;' : '&#9654;';
+    }
+
+    // Layer definitions: { id, label, file, color, type, group, onByDefault }
+    const LAYERS = [
+      // Boundaries (loaded separately above, managed via entity show/hide)
+      { id: 'boundary', label: 'Queenstown boundary', color: '#ff00ff', group: 'Boundaries', onByDefault: true, builtin: true },
+      { id: 'subzones', label: 'Subzones', color: '#00ffff', group: 'Boundaries', onByDefault: true, builtin: true },
+      // Food & Daily Needs
+      { id: 'hawker', label: 'Hawker centres', file: '../geo/queenstown-hawker-centres.geojson', color: '#ff6b35', group: 'Food & Daily Needs', type: 'point' },
+      { id: 'supermarket', label: 'Supermarkets', file: '../geo/queenstown-supermarkets.geojson', color: '#4ecdc4', group: 'Food & Daily Needs', type: 'point' },
+      // Transit
+      { id: 'mrt', label: 'MRT exits', file: '../geo/queenstown-mrt-exits.geojson', color: '#2c5f8a', group: 'Transit', type: 'point' },
+      // Green & Recreation
+      { id: 'parks', label: 'Parks', file: '../geo/queenstown-parks.geojson', color: '#45b649', group: 'Green & Recreation', type: 'point' },
+      { id: 'parkfac', label: 'Park facilities', file: '../geo/queenstown-park-facilities.geojson', color: '#7bc67e', group: 'Green & Recreation', type: 'point' },
+      { id: 'parkconn', label: 'Park connectors', file: '../geo/queenstown-park-connectors.geojson', color: '#44ff44', group: 'Green & Recreation', type: 'line' },
+      // Active Mobility
+      { id: 'cycling', label: 'Cycling paths', file: '../geo/queenstown-cycling-paths.geojson', color: '#00ff88', group: 'Active Mobility', type: 'line' },
+      // Community
+      { id: 'cc', label: 'Community clubs', file: '../geo/queenstown-community-clubs.geojson', color: '#9b59b6', group: 'Community', type: 'point' },
+      { id: 'gym', label: 'Gyms', file: '../geo/queenstown-gyms.geojson', color: '#e74c3c', group: 'Community', type: 'point' },
+      { id: 'preschool', label: 'Pre-schools', file: '../geo/queenstown-preschools.geojson', color: '#f39c12', group: 'Community', type: 'point' },
+      { id: 'chas', label: 'CHAS clinics', file: '../geo/queenstown-chas-clinics.geojson', color: '#e84393', group: 'Community', type: 'point' },
+    ];
+
+    // Track loaded data sources and built-in entity collections
+    const layerState = {};  // id -> { dataSource, loaded, visible }
+
+    // Tag boundary/subzone entities so we can toggle them
+    // We'll retroactively tag them after they load. Store entity references.
+    const builtinEntities = { boundary: [], subzones: [] };
+
+    function buildLayerPanel() {
+      const body = document.getElementById('layer-panel-body');
+      let currentGroup = null;
+      LAYERS.forEach(layer => {
+        if (layer.group !== currentGroup) {
+          currentGroup = layer.group;
+          const title = document.createElement('div');
+          title.className = 'layer-group-title';
+          title.textContent = currentGroup;
+          body.appendChild(title);
+        }
+        const row = document.createElement('label');
+        row.className = 'layer-row';
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !!layer.onByDefault;
+        cb.addEventListener('change', () => onLayerToggle(layer.id, cb.checked));
+
+        const swatch = document.createElement('span');
+        swatch.className = 'layer-color';
+        swatch.style.background = layer.color;
+        if (layer.type === 'line') {
+          swatch.style.borderRadius = '2px';
+          swatch.style.width = '14px';
+          swatch.style.height = '4px';
+        }
+
+        const label = document.createElement('span');
+        label.className = 'layer-label';
+        label.textContent = layer.label;
+
+        row.appendChild(cb);
+        row.appendChild(swatch);
+        row.appendChild(label);
+        body.appendChild(row);
+
+        layerState[layer.id] = { dataSource: null, loaded: false, visible: cb.checked };
+      });
+    }
+
+    async function onLayerToggle(id, visible) {
+      layerState[id].visible = visible;
+      const layer = LAYERS.find(l => l.id === id);
+
+      // Built-in layers (boundary / subzones) — toggle entity visibility
+      if (layer.builtin) {
+        builtinEntities[id].forEach(e => { e.show = visible; });
+        return;
+      }
+
+      // Lazy-load on first toggle-on
+      if (visible && !layerState[id].loaded) {
+        layerState[id].loaded = true;
+        try {
+          const ds = await Cesium.GeoJsonDataSource.load(layer.file, {
+            clampToGround: true,
+            stroke: Cesium.Color.fromCssColorString(layer.color),
+            strokeWidth: layer.type === 'line' ? 3 : 1,
+            markerColor: Cesium.Color.fromCssColorString(layer.color),
+            markerSize: 18,
+          });
+          // For point layers, override billboard with simple colored circles
+          if (layer.type === 'point') {
+            ds.entities.values.forEach(entity => {
+              if (entity.billboard) {
+                entity.billboard = undefined;
+                entity.point = new Cesium.PointGraphics({
+                  pixelSize: 7,
+                  color: Cesium.Color.fromCssColorString(layer.color),
+                  outlineColor: Cesium.Color.BLACK,
+                  outlineWidth: 1,
+                  heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                  disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                });
+              }
+            });
+          }
+          viewer.dataSources.add(ds);
+          layerState[id].dataSource = ds;
+        } catch (err) {
+          console.warn(`Failed to load layer ${layer.label}:`, err);
+          layerState[id].loaded = false;
+        }
+        return;
+      }
+
+      if (layerState[id].dataSource) {
+        layerState[id].dataSource.show = visible;
+      }
+    }
+
+    buildLayerPanel();
 
     // Basemap toggle
     function toggleBasemap() {
