@@ -198,159 +198,156 @@ for layer_name, path in LINE_LAYERS.items():
 # ---------------------------------------------------------------------------
 print("Joining population data...")
 
-# Build name mapping: census row name → subzone name
-# Census uses title case e.g. "Commonwealth", subzone uses upper "COMMONWEALTH"
-census_rows = {}
-with open(POPULATION_CSV, encoding="utf-8") as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        census_rows[row["Number"].strip()] = row
-
-# Map subzone names to census names
-CENSUS_NAME_MAP = {
-    "COMMONWEALTH": "Commonwealth",
-    "DOVER": "Dover",
-    "GHIM MOH": "Ghim Moh",
-    "HOLLAND DRIVE": "Holland Drive",
-    "KENT RIDGE": None,  # not in census separately
-    "MARGARET DRIVE": "Margaret Drive",
-    "MEI CHIN": "Mei Chin",
-    "NATIONAL UNIVERSITY OF S'PORE": "National University Of S'pore",
-    "ONE NORTH": "One North",
-    "PASIR PANJANG 1": "Pasir Panjang 1",
-    "PASIR PANJANG 2": "Pasir Panjang 2",
-    "PORT": "Port",
-    "QUEENSWAY": "Queensway",
-    "SINGAPORE POLYTECHNIC": "Singapore Polytechnic",
-    "TANGLIN HALT": "Tanglin Halt",
-}
-
 for sz in subzones:
     sz["population_total"] = 0
     sz["population_male"] = 0
     sz["population_female"] = 0
     sz["population_elderly_65plus"] = 0
 
-    census_name = CENSUS_NAME_MAP.get(sz["name"])
-    if census_name and census_name in census_rows:
-        row = census_rows[census_name]
+if os.path.exists(POPULATION_CSV):
+    # Build name mapping: census row name → subzone name
+    # Census uses title case e.g. "Commonwealth", subzone uses upper "COMMONWEALTH"
+    census_rows = {}
+    with open(POPULATION_CSV, encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            census_rows[row["Number"].strip()] = row
 
-        def safe_int(val):
-            val = val.strip().replace(",", "")
-            if val in ("-", "", "na"):
-                return 0
-            return int(val)
+    # Map subzone names to census names
+    CENSUS_NAME_MAP = {
+        "COMMONWEALTH": "Commonwealth",
+        "DOVER": "Dover",
+        "GHIM MOH": "Ghim Moh",
+        "HOLLAND DRIVE": "Holland Drive",
+        "KENT RIDGE": None,  # not in census separately
+        "MARGARET DRIVE": "Margaret Drive",
+        "MEI CHIN": "Mei Chin",
+        "NATIONAL UNIVERSITY OF S'PORE": "National University Of S'pore",
+        "ONE NORTH": "One North",
+        "PASIR PANJANG 1": "Pasir Panjang 1",
+        "PASIR PANJANG 2": "Pasir Panjang 2",
+        "PORT": "Port",
+        "QUEENSWAY": "Queensway",
+        "SINGAPORE POLYTECHNIC": "Singapore Polytechnic",
+        "TANGLIN HALT": "Tanglin Halt",
+    }
 
-        sz["population_total"] = safe_int(row["Total_Total"])
-        sz["population_male"] = safe_int(row["Males_Total"])
-        sz["population_female"] = safe_int(row["Females_Total"])
+    def safe_int(val):
+        val = val.strip().replace(",", "")
+        if val in ("-", "", "na"):
+            return 0
+        return int(val)
 
-        # Sum 65+ age brackets
-        elderly = 0
-        for col_prefix in ["Total"]:
+    for sz in subzones:
+        census_name = CENSUS_NAME_MAP.get(sz["name"])
+        if census_name and census_name in census_rows:
+            row = census_rows[census_name]
+            sz["population_total"] = safe_int(row["Total_Total"])
+            sz["population_male"] = safe_int(row["Males_Total"])
+            sz["population_female"] = safe_int(row["Females_Total"])
+
+            # Sum 65+ age brackets
+            elderly = 0
             for age_col in ["65_69", "70_74", "75_79", "80_84", "85_89", "90andOver"]:
-                key = f"{col_prefix}_{age_col}"
+                key = f"Total_{age_col}"
                 if key in row:
                     elderly += safe_int(row[key])
-        sz["population_elderly_65plus"] = elderly
-        print(f"  {sz['name']}: pop={sz['population_total']}, elderly={sz['population_elderly_65plus']}")
-    else:
-        if census_name is not None:
+            sz["population_elderly_65plus"] = elderly
+            print(f"  {sz['name']}: pop={sz['population_total']}, elderly={sz['population_elderly_65plus']}")
+        elif census_name is not None:
             print(f"  WARNING: census data not found for {sz['name']} (tried: {census_name})")
+else:
+    print(f"  WARNING: {POPULATION_CSV} not found, skipping population data")
 
 # ---------------------------------------------------------------------------
 # 5. Resale flat prices — join via buildings geometry
 # ---------------------------------------------------------------------------
 print("Joining resale flat prices...")
 
-# Street name abbreviation map (resale CSV → building GeoJSON)
-STREET_ABBREVS = {
-    "AVE": "AVENUE", "CL": "CLOSE", "CRES": "CRESCENT", "CT": "COURT",
-    "DR": "DRIVE", "HTS": "HEIGHTS", "LN": "LANE", "PL": "PLACE",
-    "RD": "ROAD", "ST": "STREET", "TER": "TERRACE",
-    "C'WEALTH": "COMMONWEALTH", "QUEEN'S": "QUEEN'S",
-}
-
-
-def normalise_street(name):
-    """Expand common HDB resale CSV abbreviations to match OSM names."""
-    parts = name.strip().upper().split()
-    expanded = []
-    for p in parts:
-        expanded.append(STREET_ABBREVS.get(p, p))
-    return " ".join(expanded)
-
-
-# Load resale transactions for Queenstown, 2023-2025
-resale_by_block_street = {}
-with open(RESALE_CSV, encoding="utf-8") as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        if row["town"] != "QUEENSTOWN":
-            continue
-        month = row["month"]
-        year = int(month.split("-")[0])
-        if year < 2023:
-            continue
-        key = (row["block"].strip(), normalise_street(row["street_name"]))
-        price = float(row["resale_price"])
-        resale_by_block_street.setdefault(key, []).append(price)
-
-print(f"  {sum(len(v) for v in resale_by_block_street.values())} Queenstown resale transactions (2023-2025)")
-
-# Load buildings to map block+street → subzone
-print("  Mapping resale prices to subzones via building geometry...")
-buildings_gj = load_geojson(BUILDINGS_PATH)
-
-# Build block+street → subzone index from buildings
-block_to_subzone = {}
-for feat in buildings_gj["features"]:
-    props = feat["properties"]
-    block = (props.get("addr_housenumber") or "").strip()
-    street = (props.get("addr_street") or "").strip().upper()
-    if not block or not street:
-        continue
-    key = (block, street)
-    if key in block_to_subzone:
-        continue
-    pt = shape(feat["geometry"]).centroid
-    for sz in subzones:
-        if sz["geom"].contains(pt):
-            block_to_subzone[key] = sz["name"]
-            break
-
-# Aggregate prices per subzone
-resale_prices_by_subzone = {}
-matched_txns = 0
-for (block, street), prices in resale_by_block_street.items():
-    sz_name = block_to_subzone.get((block, street))
-    if sz_name:
-        resale_prices_by_subzone.setdefault(sz_name, []).extend(prices)
-        matched_txns += len(prices)
-
-print(f"  {matched_txns} transactions matched to subzones")
-
-# Compute district-wide median as fallback
-all_qt_prices = []
-for prices in resale_by_block_street.values():
-    all_qt_prices.extend(prices)
-district_median = statistics.median(all_qt_prices) if all_qt_prices else 0
-
 for sz in subzones:
-    prices = resale_prices_by_subzone.get(sz["name"], [])
-    if prices:
-        sz["resale_median_price"] = round(statistics.median(prices))
-        sz["resale_transaction_count"] = len(prices)
-    else:
-        sz["resale_median_price"] = None
-        sz["resale_transaction_count"] = 0
+    sz["resale_median_price"] = None
+    sz["resale_transaction_count"] = 0
 
-print(f"  District-wide median: ${district_median:,.0f}")
+if os.path.exists(RESALE_CSV):
+    # Street name abbreviation map (resale CSV → building GeoJSON)
+    STREET_ABBREVS = {
+        "AVE": "AVENUE", "CL": "CLOSE", "CRES": "CRESCENT", "CT": "COURT",
+        "DR": "DRIVE", "HTS": "HEIGHTS", "LN": "LANE", "PL": "PLACE",
+        "RD": "ROAD", "ST": "STREET", "TER": "TERRACE",
+        "C'WEALTH": "COMMONWEALTH", "QUEEN'S": "QUEEN'S",
+    }
+
+    def normalise_street(name):
+        """Expand common HDB resale CSV abbreviations to match OSM names."""
+        parts = name.strip().upper().split()
+        return " ".join(STREET_ABBREVS.get(p, p) for p in parts)
+
+    # Load resale transactions for Queenstown, 2023-2025
+    resale_by_block_street = {}
+    with open(RESALE_CSV, encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["town"] != "QUEENSTOWN":
+                continue
+            year = int(row["month"].split("-")[0])
+            if year < 2023:
+                continue
+            key = (row["block"].strip(), normalise_street(row["street_name"]))
+            resale_by_block_street.setdefault(key, []).append(float(row["resale_price"]))
+
+    print(f"  {sum(len(v) for v in resale_by_block_street.values())} Queenstown resale transactions (2023-2025)")
+
+    # Load buildings to map block+street → subzone
+    print("  Mapping resale prices to subzones via building geometry...")
+    buildings_gj = load_geojson(BUILDINGS_PATH)
+
+    block_to_subzone = {}
+    for feat in buildings_gj["features"]:
+        props = feat["properties"]
+        block = (props.get("addr_housenumber") or "").strip()
+        street = (props.get("addr_street") or "").strip().upper()
+        if not block or not street:
+            continue
+        key = (block, street)
+        if key in block_to_subzone:
+            continue
+        pt = shape(feat["geometry"]).centroid
+        for sz in subzones:
+            if sz["geom"].contains(pt):
+                block_to_subzone[key] = sz["name"]
+                break
+
+    # Aggregate prices per subzone
+    resale_prices_by_subzone = {}
+    matched_txns = 0
+    for (block, street), prices in resale_by_block_street.items():
+        sz_name = block_to_subzone.get((block, street))
+        if sz_name:
+            resale_prices_by_subzone.setdefault(sz_name, []).extend(prices)
+            matched_txns += len(prices)
+
+    print(f"  {matched_txns} transactions matched to subzones")
+
+    all_qt_prices = [p for prices in resale_by_block_street.values() for p in prices]
+    district_median = statistics.median(all_qt_prices) if all_qt_prices else 0
+
+    for sz in subzones:
+        prices = resale_prices_by_subzone.get(sz["name"], [])
+        if prices:
+            sz["resale_median_price"] = round(statistics.median(prices))
+            sz["resale_transaction_count"] = len(prices)
+
+    print(f"  District-wide median: ${district_median:,.0f}")
+else:
+    print(f"  WARNING: {RESALE_CSV} not found, skipping resale data")
 
 # ---------------------------------------------------------------------------
 # 6. Building stats
 # ---------------------------------------------------------------------------
 print("Computing building stats per subzone...")
+
+# Load buildings (tracked in git, always available)
+buildings_gj = load_geojson(BUILDINGS_PATH)
 
 for sz in subzones:
     sz["building_count"] = 0
