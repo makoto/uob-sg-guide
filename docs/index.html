@@ -37,9 +37,9 @@
       <p><strong>Click any building</strong> to see: name, type, height, storeys, data source, and HDB year completed.</p>
       <p><strong>HDB blocks layer:</strong> 308 HDB dots coloured by construction era &mdash; red (pre-1980), orange (1980&ndash;1999), green (2000+). Click shows year completed, dwelling units, and use flags.</p>
       <p><strong>Height control zones:</strong> Semi-transparent URA polygons showing storey limits from the Master Plan.</p>
-      <p><strong>Street network layer:</strong> 3,788 road edges from OSMnx drive network, coloured by betweenness centrality to highlight key corridors.</p>
-      <p><strong>Remote sensing layers:</strong> 4 pixel-level raster overlays (NDVI, LST, NDBI, canopy cover) rendered via CesiumJS <code>SingleTileImageryProvider</code>, plus a clickable 100&thinsp;m grid (2,402 cells) coloured by NDVI with per-cell NDVI, NDBI, LST, and canopy % on click. The original subzone-level remote sensing GeoJSON (15 polygons) remains for choropleth use.</p>
-      <p><strong>Mapillary images layer:</strong> 5,000 sampled street-level image locations from Mapillary/ZenSVI.</p>
+      <p><strong>Street network layer:</strong> 3,788 road edges from OSMnx drive network, coloured by betweenness centrality to highlight key corridors, with dynamic legend.</p>
+      <p><strong>Remote sensing layers:</strong> 4 pixel-level raster overlays (NDVI, LST, NDBI, canopy cover) rendered via CesiumJS <code>SingleTileImageryProvider</code>, plus a clickable 100&thinsp;m grid (2,402 cells) coloured by NDVI with dynamic legend and per-cell NDVI, NDBI, LST, and canopy % on click. The original subzone-level remote sensing GeoJSON (15 polygons) remains for choropleth use.</p>
+      <p><strong>Mapillary images layer:</strong> 5,000 sampled street-level image locations from Mapillary/ZenSVI. Click to view images on Mapillary.</p>
       <p style="margin-top:8px"><strong>Choropleth heatmap:</strong> Select from 25 metrics in the Layers panel dropdown to colour subzones &mdash; including population density, elderly share, amenity density, MRT stations, cycling paths, park connectors, resale flat price, avg building height, HDB blocks, total buildings, max building height, resale transactions, avg HDB year built, dwelling units, dwelling density, plus 6 remote sensing indicators: Vegetation (NDVI), Built-up (NDBI), Land Surface Temp, Tree canopy cover, GHSL building height, and Surface elevation, plus 4 walkability metrics: Intersection density, Transit access, Destination access, and Walkability (BEH-NWI). Uses a 5-step YlOrRd colour ramp with dynamic legend.</p>
     </div>
   </div>
@@ -69,7 +69,7 @@
     <li>Raster overlays: <a href="geo/global/rasters/queenstown-ndvi.png">NDVI</a>, <a href="geo/global/rasters/queenstown-lst.png">LST</a>, <a href="geo/global/rasters/queenstown-ndbi.png">NDBI</a>, <a href="geo/global/rasters/queenstown-canopy.png">Canopy</a> (1024px GEE satellite imagery)</li>
     <li><a href="geo/global/queenstown-mapillary-gvi.geojson">Mapillary Images</a> (5,000 sampled street-level image locations)</li>
     <li><a href="geo/global/queenstown-walkability.json">Walkability Scores</a> (15 subzones with BEH-NWI walkability index)</li>
-    <li><a href="geo/global/queenstown-walkability-grid.geojson">Walkability Grid</a> (2,178 clickable 100m cells with per-cell walkability, transit access, destination access, intersection density)</li>
+    <li><a href="geo/global/queenstown-walkability-grid.geojson">Walkability Grid</a> (2,178 clickable 100m cells with per-cell walkability, transit access, destination access, intersection density, population density)</li>
     <li><a href="https://drive.google.com/file/d/1CEFWx4flMDvdmLRSiMyWuDD1IK75X9jQ/view?usp=sharing">3dtiles(zipped)</a></li>
   </ul>
 </body>

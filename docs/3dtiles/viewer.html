@@ -334,8 +334,9 @@
           if (hw) html += `Type: ${hw}<br>`;
         } else if (gv('image_id')) {
           // Mapillary image
+          const imgId = gv('image_id');
           html = `<b>Mapillary image</b><br>`;
-          html += `ID: ${gv('image_id')}<br>`;
+          html += `<a href="https://www.mapillary.com/app/?pKey=${imgId}" target="_blank" style="color:#4fc3f7">View on Mapillary ↗</a><br>`;
           const isPano = gv('is_pano');
           if (isPano) html += 'Panoramic<br>';
         } else {
