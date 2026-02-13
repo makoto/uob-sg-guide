@@ -1,9 +1,13 @@
 """
-Generate 3D Tiles (B3DM) from Queenstown buildings GeoJSON.
+Generate 3D Tiles (B3DM) from buildings GeoJSON for a district.
 
 Produces:
-  docs/3dtiles/buildings.b3dm  — Batched 3D Model with extruded buildings
-  docs/3dtiles/tileset.json    — 3D Tiles manifest
+  docs/3dtiles/{district}/buildings.b3dm  — Batched 3D Model with extruded buildings
+  docs/3dtiles/{district}/tileset.json    — 3D Tiles manifest
+
+Usage:
+    python3 generate_3dtiles.py                    # default: queenstown
+    python3 generate_3dtiles.py --district bishan
 
 Coordinate pipeline:
   WGS84 (lon,lat,height) → ECEF (via pyproj, accurate)
@@ -12,6 +16,7 @@ Coordinate pipeline:
   No glTF node transform — vertices are raw ECEF offsets.
 """
 
+import argparse
 import json
 import math
 import numpy as np
@@ -22,9 +27,17 @@ from py3dtiles.tileset.content import B3dm
 from py3dtiles.tileset.content.batch_table import BatchTable
 from py3dtiles.tileset.content.b3dm_feature_table import B3dmFeatureTable
 
+# ── Args ───────────────────────────────────────────────────────────────────
+parser = argparse.ArgumentParser(description="Generate 3D Tiles from buildings GeoJSON")
+parser.add_argument("--district", default="queenstown",
+                    help="District name (default: queenstown)")
+args = parser.parse_args()
+
+DISTRICT = args.district.lower().replace(" ", "-")
+
 # ── Config ──────────────────────────────────────────────────────────────────
-GEOJSON_PATH = Path("docs/geo/global/queenstown-buildings.geojson")
-OUT_DIR = Path("docs/3dtiles")
+GEOJSON_PATH = Path(f"docs/geo/global/{DISTRICT}-buildings.geojson")
+OUT_DIR = Path(f"docs/3dtiles/{DISTRICT}")
 
 # WGS84 → ECEF transformer
 wgs84_to_ecef = Transformer.from_crs("EPSG:4326", "EPSG:4978", always_xy=True)
@@ -65,7 +78,11 @@ def triangulate_polygon(exterior, holes=None):
 # ── Main ────────────────────────────────────────────────────────────────────
 
 def main():
-    print("Reading GeoJSON...")
+    if not GEOJSON_PATH.exists():
+        print(f"WARNING: {GEOJSON_PATH} not found, skipping 3D tiles for {DISTRICT}")
+        return
+
+    print(f"Reading GeoJSON for {DISTRICT}...")
     with open(GEOJSON_PATH) as f:
         geojson = json.load(f)
 
@@ -345,7 +362,7 @@ def main():
     tileset = {
         "asset": {
             "version": "1.0",
-            "generator": "queenstown-liveability-study",
+            "generator": f"{DISTRICT}-liveability-study",
             "gltfUpAxis": "Z",
         },
         "geometricError": 500,

@@ -1,0 +1,43 @@
+{
+  "asset": {
+    "version": "1.0",
+    "generator": "outram-liveability-study",
+    "gltfUpAxis": "Z"
+  },
+  "geometricError": 500,
+  "root": {
+    "boundingVolume": {
+      "region": [
+        1.8122627754159695,
+        0.02224618830273473,
+        1.8125126192983922,
+        0.02249109115804532,
+        0,
+        200
+      ]
+    },
+    "geometricError": 100,
+    "refine": "ADD",
+    "content": {
+      "uri": "buildings.b3dm"
+    },
+    "transform": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1525821.5656004865,
+      6191308.134138622,
+      141662.75365616605,
+      1
+    ]
+  }
+}

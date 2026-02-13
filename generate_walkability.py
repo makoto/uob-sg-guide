@@ -8,9 +8,12 @@ Components (Rundle et al. 2019):
   3. Transit access — network distance to nearest MRT exit (inverted)
   4. Destination accessibility — weighted avg network distance to 9 POI categories
 
-Run with:  /opt/anaconda3/envs/zensvi/bin/python3 generate_walkability.py
+Usage:
+    /opt/anaconda3/envs/zensvi/bin/python3 generate_walkability.py
+    /opt/anaconda3/envs/zensvi/bin/python3 generate_walkability.py --district bishan
 """
 
+import argparse
 import json
 import math
 import os
@@ -21,6 +24,16 @@ import osmnx as ox
 from shapely.geometry import shape, Point
 
 # ---------------------------------------------------------------------------
+# Args
+# ---------------------------------------------------------------------------
+parser = argparse.ArgumentParser(description="Generate walkability scores for a district")
+parser.add_argument("--district", default="queenstown",
+                    help="District name (default: queenstown)")
+args = parser.parse_args()
+
+DISTRICT = args.district.lower().replace(" ", "-")
+
+# ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -28,28 +41,24 @@ GEO = os.path.join(BASE, "docs", "geo")
 GLOBAL = os.path.join(GEO, "global")
 GOV_SG = os.path.join(GEO, "gov-sg")
 
-SUBZONES_PATH = os.path.join(GEO, "queenstown-subzones.geojson")
-BOUNDARY_PATH = os.path.join(GEO, "queenstown-boundary.geojson")
-SUMMARY_CSV = os.path.join(GEO, "queenstown-subzone-summary.csv")
-OUT_PATH = os.path.join(GLOBAL, "queenstown-walkability.json")
-GRID_PATH = os.path.join(GLOBAL, "queenstown-walkability-grid.geojson")
-WALK_NET_PATH = os.path.join(GLOBAL, "queenstown-walk-network.geojson")
-
-# Queenstown bbox
-BBOX = [103.7502, 1.2550, 103.8166, 1.3188]
-WEST, SOUTH, EAST, NORTH = BBOX
+SUBZONES_PATH = os.path.join(GEO, f"{DISTRICT}-subzones.geojson")
+BOUNDARY_PATH = os.path.join(GEO, f"{DISTRICT}-boundary.geojson")
+SUMMARY_CSV = os.path.join(GEO, f"{DISTRICT}-subzone-summary.csv")
+OUT_PATH = os.path.join(GLOBAL, f"{DISTRICT}-walkability.json")
+GRID_PATH = os.path.join(GLOBAL, f"{DISTRICT}-walkability-grid.geojson")
+WALK_NET_PATH = os.path.join(GLOBAL, f"{DISTRICT}-walk-network.geojson")
 
 # POI layers with weights for destination accessibility
 POI_LAYERS = {
-    "hawker_centres":   {"file": "queenstown-hawker-centres.geojson",   "weight": 3},
-    "supermarkets":     {"file": "queenstown-supermarkets.geojson",     "weight": 3},
-    "mrt_exits":        {"file": "queenstown-mrt-exits.geojson",        "weight": 2},
-    "parks":            {"file": "queenstown-parks.geojson",            "weight": 2},
-    "community_clubs":  {"file": "queenstown-community-clubs.geojson",  "weight": 2},
-    "chas_clinics":     {"file": "queenstown-chas-clinics.geojson",     "weight": 2},
-    "preschools":       {"file": "queenstown-preschools.geojson",       "weight": 1},
-    "gyms":             {"file": "queenstown-gyms.geojson",             "weight": 1},
-    "park_facilities":  {"file": "queenstown-park-facilities.geojson",  "weight": 1},
+    "hawker_centres":   {"file": f"{DISTRICT}-hawker-centres.geojson",   "weight": 3},
+    "supermarkets":     {"file": f"{DISTRICT}-supermarkets.geojson",     "weight": 3},
+    "mrt_exits":        {"file": f"{DISTRICT}-mrt-exits.geojson",        "weight": 2},
+    "parks":            {"file": f"{DISTRICT}-parks.geojson",            "weight": 2},
+    "community_clubs":  {"file": f"{DISTRICT}-community-clubs.geojson",  "weight": 2},
+    "chas_clinics":     {"file": f"{DISTRICT}-chas-clinics.geojson",     "weight": 2},
+    "preschools":       {"file": f"{DISTRICT}-preschools.geojson",       "weight": 1},
+    "gyms":             {"file": f"{DISTRICT}-gyms.geojson",             "weight": 1},
+    "park_facilities":  {"file": f"{DISTRICT}-park-facilities.geojson",  "weight": 1},
 }
 
 
@@ -76,8 +85,31 @@ def polygon_area_km2(geom):
     return abs(area) / 2.0 / 1e6
 
 
+def derive_bbox(boundary_path):
+    """Derive bounding box [west, south, east, north] from boundary GeoJSON."""
+    gj = load_geojson(boundary_path)
+    all_coords = []
+    for feat in gj["features"]:
+        geom = feat["geometry"]
+        if geom["type"] == "Polygon":
+            for ring in geom["coordinates"]:
+                all_coords.extend(ring)
+        elif geom["type"] == "MultiPolygon":
+            for poly in geom["coordinates"]:
+                for ring in poly:
+                    all_coords.extend(ring)
+    lons = [c[0] for c in all_coords]
+    lats = [c[1] for c in all_coords]
+    return [min(lons), min(lats), max(lons), max(lats)]
+
+
 def main():
-    print("=== Walkability Scoring (BEH-NWI) ===\n")
+    print(f"=== Walkability Scoring ({DISTRICT}) ===\n")
+
+    # Derive bbox from boundary
+    BBOX = derive_bbox(BOUNDARY_PATH)
+    WEST, SOUTH, EAST, NORTH = BBOX
+    print(f"  BBOX: [{WEST:.4f}, {SOUTH:.4f}, {EAST:.4f}, {NORTH:.4f}]")
 
     # 1. Download walk network
     print("Downloading walk network via OSMnx...")
@@ -312,9 +344,10 @@ def main():
             "pop_density": sz.get("population_density", 0),
         })
 
-    # Grid parameters: 100m cells
+    # Grid parameters: 100m cells — use center latitude of bbox
+    center_lat = (SOUTH + NORTH) / 2
     M_LAT = 111_320
-    M_LNG = 111_320 * math.cos(math.radians(1.3))
+    M_LNG = 111_320 * math.cos(math.radians(center_lat))
     CELL_M = 100
     dlat = CELL_M / M_LAT
     dlng = CELL_M / M_LNG
@@ -447,7 +480,7 @@ def main():
         print(f"  Walk network export failed: {e}")
 
     # Print summary
-    print("\n=== Walkability Scores ===")
+    print(f"\n=== Walkability Scores ({DISTRICT}) ===")
     print(f"{'Subzone':<35} {'IntDens':>8} {'Transit':>8} {'DestAcc':>8} {'WalkIdx':>8}")
     print("-" * 75)
     for sz in sorted(subzones, key=lambda s: s.get("walkability_index") or -999, reverse=True):

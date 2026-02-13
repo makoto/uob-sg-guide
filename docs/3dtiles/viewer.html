@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Queenstown 3D Buildings</title>
+  <title>Singapore District 3D Viewer</title>
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.124/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.124/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <style>
@@ -27,6 +27,8 @@
     .layer-label { flex: 1; }
     .choropleth-select { width: 100%; padding: 4px 6px; background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.25); border-radius: 3px; font-family: sans-serif; font-size: 12px; margin: 4px 12px; box-sizing: border-box; width: calc(100% - 24px); cursor: pointer; }
     .choropleth-select option { background: #222; color: white; }
+    .district-select { width: calc(100% - 24px); padding: 5px 6px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.35); border-radius: 3px; font-family: sans-serif; font-size: 12px; font-weight: bold; margin: 6px 12px 2px; box-sizing: border-box; cursor: pointer; }
+    .district-select option { background: #222; color: white; }
     .provenance-bar { display: flex; gap: 6px; padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .provenance-btn { flex: 1; padding: 4px 8px; border: 1px solid rgba(255,255,255,0.25); border-radius: 3px; background: rgba(255,255,255,0.12); color: white; font-size: 11px; cursor: pointer; text-align: center; user-select: none; }
     .provenance-btn.active { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
@@ -45,8 +47,8 @@
 <body>
   <div id="cesiumContainer"></div>
   <div id="info">
-    <h3>Queenstown 3D Buildings</h3>
-    <div>8,671 buildings | 26 layers | 25 metrics | Click for details</div>
+    <h3 id="info-title">Queenstown 3D Buildings</h3>
+    <div id="info-subtitle">8,671 buildings | 26 layers | 25 metrics | Click for details</div>
     <button id="basemap-toggle" onclick="toggleBasemap()">&#9788; Light</button>
     <div class="legend">
       <div style="color:#999; margin-bottom:2px;">Building height</div>
@@ -89,9 +91,47 @@
       timeline: false,
     });
 
+    // ---------------------------------------------------------------
+    // District configuration
+    // ---------------------------------------------------------------
+    const DISTRICTS = {
+      queenstown: {
+        label: 'Queenstown',
+        camera: [103.7885, 1.2870, 2000],
+        rasterBounds: [103.7502, 1.2550, 103.8166, 1.3188],
+      },
+      bishan: {
+        label: 'Bishan',
+        camera: [103.8395, 1.3550, 2000],
+        rasterBounds: [103.8185, 1.3420, 103.8604, 1.3680],
+      },
+      outram: {
+        label: 'Outram',
+        camera: [103.8423, 1.2817, 1500],
+        rasterBounds: [103.8348, 1.2742, 103.8497, 1.2892],
+      },
+      tampines: {
+        label: 'Tampines',
+        camera: [103.9549, 1.3450, 2000],
+        rasterBounds: [103.9250, 1.3141, 103.9848, 1.3758],
+      },
+      newton: {
+        label: 'Newton',
+        camera: [103.8377, 1.3085, 1500],
+        rasterBounds: [103.8267, 1.2996, 103.8487, 1.3174],
+      },
+    };
+
+    let currentDistrict = 'queenstown';
+
+    function layerFile(templatePath) {
+      return templatePath.replace('queenstown', currentDistrict);
+    }
+
     // State
     let tilesetRef = null;
     let tilesetCartographic = null;
+
     // Apply height offset along surface normal
     function setHeightOffset(offset) {
       if (!tilesetRef || !tilesetCartographic) return;
@@ -108,19 +148,15 @@
     }
 
     async function loadTileset() {
+      const tilesetUrl = `${currentDistrict}/tileset.json`;
       try {
-        const tileset = await Cesium.Cesium3DTileset.fromUrl('tileset.json');
+        const tileset = await Cesium.Cesium3DTileset.fromUrl(tilesetUrl);
         viewer.scene.primitives.add(tileset);
         tilesetRef = tileset;
 
         // Get tileset center for height offset calculations
         tilesetCartographic = Cesium.Cartographic.fromCartesian(
           tileset.boundingSphere.center
-        );
-        console.log('Tileset center (degrees):',
-          Cesium.Math.toDegrees(tilesetCartographic.longitude).toFixed(4),
-          Cesium.Math.toDegrees(tilesetCartographic.latitude).toFixed(4),
-          'ellipsoid height:', tilesetCartographic.height.toFixed(1)
         );
 
         // Sample terrain height and auto-clamp buildings to ground
@@ -130,30 +166,13 @@
           const positions = [Cesium.Cartographic.clone(tilesetCartographic)];
           const samples = await Cesium.sampleTerrainMostDetailed(terrainProvider, positions);
           const terrainHeight = samples[0].height || 0;
-          console.log('Terrain height at center:', terrainHeight);
-          console.log('Tileset ellipsoid height:', tilesetCartographic.height.toFixed(1));
-          // Building bases are at ellipsoid height 0; terrain is at terrainHeight above ellipsoid
-          // Offset = +terrainHeight to lift buildings up to terrain level
-          autoOffset = terrainHeight;
-          autoOffset = Math.round(autoOffset);
-          document.getElementById('info').innerHTML +=
-            '<br><small>Terrain: ' + terrainHeight.toFixed(1) + 'm | Auto-offset: ' + autoOffset + 'm</small>';
+          autoOffset = Math.round(terrainHeight);
         } catch(e) {
           console.warn('Could not sample terrain:', e);
         }
 
         // Apply auto-offset to clamp buildings to terrain
         setHeightOffset(autoOffset);
-
-        // Fly to Queenstown
-        viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(103.7885, 1.2870, 2000),
-          orientation: {
-            heading: Cesium.Math.toRadians(0),
-            pitch: Cesium.Math.toRadians(-45),
-            roll: 0,
-          }
-        });
 
         // Style by height
         tileset.style = new Cesium.Cesium3DTileStyle({
@@ -168,48 +187,32 @@
           }
         });
       } catch (error) {
-        console.error('Error loading tileset:', error);
-        document.getElementById('info').innerHTML +=
-          '<br><span style="color:red">Error: ' + error.message + '</span>';
+        console.warn('Error loading tileset for ' + currentDistrict + ':', error.message);
       }
     }
-    loadTileset();
 
-    // Load Queenstown boundary and draw as ground-clamped polyline
-    fetch('queenstown-boundary.geojson')
-      .then(r => r.json())
-      .then(geojson => {
-        const coords = geojson.features[0].geometry.coordinates;
-        // Handle Polygon or MultiPolygon
-        const rings = geojson.features[0].geometry.type === 'MultiPolygon'
-          ? coords.flat() : coords;
-        rings.forEach(ring => {
-          const positions = ring.map(p => Cesium.Cartesian3.fromDegrees(p[0], p[1]));
-          const entity = viewer.entities.add({
-            polyline: {
-              positions: positions,
-              clampToGround: true,
-              width: 4,
-              material: new Cesium.PolylineGlowMaterialProperty({
-                glowPower: 0.2,
-                color: Cesium.Color.MAGENTA,
-              }),
-            }
-          });
-          builtinEntities.boundary.push(entity);
-        });
-        console.log('Boundary drawn:', rings.length, 'rings');
-      })
-      .catch(err => console.error('Boundary error:', err));
+    function flyToDistrict() {
+      const cam = DISTRICTS[currentDistrict].camera;
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(cam[0], cam[1], cam[2]),
+        orientation: {
+          heading: Cesium.Math.toRadians(0),
+          pitch: Cesium.Math.toRadians(-45),
+          roll: 0,
+        }
+      });
+    }
 
-    // Load subzone boundaries
-    fetch('../geo/queenstown-subzones.geojson')
-      .then(r => r.json())
-      .then(geojson => {
-        geojson.features.forEach(feature => {
-          const name = feature.properties.SUBZONE_N;
-          const coords = feature.geometry.coordinates;
-          const rings = feature.geometry.type === 'MultiPolygon'
+    // Tag boundary/subzone entities so we can toggle them
+    let builtinEntities = { boundary: [], subzones: [] };
+
+    function loadBoundary() {
+      const boundaryUrl = `../geo/${currentDistrict}-boundary.geojson`;
+      fetch(boundaryUrl)
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(geojson => {
+          const coords = geojson.features[0].geometry.coordinates;
+          const rings = geojson.features[0].geometry.type === 'MultiPolygon'
             ? coords.flat() : coords;
           rings.forEach(ring => {
             const positions = ring.map(p => Cesium.Cartesian3.fromDegrees(p[0], p[1]));
@@ -217,38 +220,129 @@
               polyline: {
                 positions: positions,
                 clampToGround: true,
-                width: 2,
-                material: Cesium.Color.CYAN.withAlpha(0.6),
+                width: 4,
+                material: new Cesium.PolylineGlowMaterialProperty({
+                  glowPower: 0.2,
+                  color: Cesium.Color.MAGENTA,
+                }),
               }
             });
-            builtinEntities.subzones.push(entity);
+            builtinEntities.boundary.push(entity);
           });
-          // Label at centroid
-          const allLng = coords.flat(2).filter((_, i) => i % 2 === 0 || (Array.isArray(coords[0][0][0]) ? false : true));
-          // Simple centroid from first ring
-          const ring0 = rings[0];
-          const cLng = ring0.reduce((s, p) => s + p[0], 0) / ring0.length;
-          const cLat = ring0.reduce((s, p) => s + p[1], 0) / ring0.length;
-          const labelEntity = viewer.entities.add({
-            position: Cesium.Cartesian3.fromDegrees(cLng, cLat),
-            label: {
-              text: name,
-              font: '11px sans-serif',
-              fillColor: Cesium.Color.WHITE,
-              outlineColor: Cesium.Color.BLACK,
-              outlineWidth: 2,
-              style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-              verticalOrigin: Cesium.VerticalOrigin.CENTER,
-              heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-              disableDepthTestDistance: Number.POSITIVE_INFINITY,
-              scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 5000, 0.4),
-            }
+        })
+        .catch(err => console.warn('Boundary load error:', err));
+    }
+
+    function loadSubzones() {
+      const subzonesUrl = `../geo/${currentDistrict}-subzones.geojson`;
+      fetch(subzonesUrl)
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(geojson => {
+          geojson.features.forEach(feature => {
+            const name = feature.properties.SUBZONE_N;
+            const coords = feature.geometry.coordinates;
+            const rings = feature.geometry.type === 'MultiPolygon'
+              ? coords.flat() : coords;
+            rings.forEach(ring => {
+              const positions = ring.map(p => Cesium.Cartesian3.fromDegrees(p[0], p[1]));
+              const entity = viewer.entities.add({
+                polyline: {
+                  positions: positions,
+                  clampToGround: true,
+                  width: 2,
+                  material: Cesium.Color.CYAN.withAlpha(0.6),
+                }
+              });
+              builtinEntities.subzones.push(entity);
+            });
+            // Label at centroid
+            const ring0 = rings[0];
+            const cLng = ring0.reduce((s, p) => s + p[0], 0) / ring0.length;
+            const cLat = ring0.reduce((s, p) => s + p[1], 0) / ring0.length;
+            const labelEntity = viewer.entities.add({
+              position: Cesium.Cartesian3.fromDegrees(cLng, cLat),
+              label: {
+                text: name,
+                font: '11px sans-serif',
+                fillColor: Cesium.Color.WHITE,
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                verticalOrigin: Cesium.VerticalOrigin.CENTER,
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 5000, 0.4),
+              }
+            });
+            builtinEntities.subzones.push(labelEntity);
           });
-          builtinEntities.subzones.push(labelEntity);
-        });
-        console.log('Subzones drawn:', geojson.features.length);
-      })
-      .catch(err => console.error('Subzones error:', err));
+        })
+        .catch(err => console.warn('Subzones load error:', err));
+    }
+
+    // ---------------------------------------------------------------
+    // Switch district
+    // ---------------------------------------------------------------
+    async function switchDistrict(districtKey) {
+      if (districtKey === currentDistrict) return;
+
+      // 1. Remove all loaded data sources
+      viewer.dataSources.removeAll();
+
+      // 2. Remove all entities (boundary, subzones, choropleth)
+      viewer.entities.removeAll();
+
+      // 3. Remove 3D tileset
+      if (tilesetRef) {
+        viewer.scene.primitives.remove(tilesetRef);
+        tilesetRef = null;
+        tilesetCartographic = null;
+      }
+
+      // 4. Remove raster imagery layers (keep basemap at index 0)
+      while (viewer.imageryLayers.length > 1) {
+        viewer.imageryLayers.remove(viewer.imageryLayers.get(1));
+      }
+
+      // 5. Reset state
+      for (const id in layerState) {
+        layerState[id] = { dataSource: null, loaded: false, visible: false, imageryLayer: null };
+      }
+      builtinEntities = { boundary: [], subzones: [] };
+      choroplethGeoJSON = null;
+      choroplethEntities = [];
+
+      // 6. Set new district
+      currentDistrict = districtKey;
+      const dist = DISTRICTS[currentDistrict];
+
+      // 7. Update info panel
+      document.getElementById('info-title').textContent = dist.label + ' 3D Buildings';
+      document.getElementById('info-subtitle').textContent = 'Loading... | 26 layers | 25 metrics | Click for details';
+
+      // 8. Reload boundary + subzones
+      loadBoundary();
+      loadSubzones();
+
+      // 9. Reload tileset
+      await loadTileset();
+
+      // 10. Fly camera
+      flyToDistrict();
+
+      // 11. Rebuild layer panel checkboxes
+      rebuildLayerPanel();
+
+      // Mark boundary/subzones as on by default
+      layerState['boundary'] = { dataSource: null, loaded: true, visible: true };
+      layerState['subzones'] = { dataSource: null, loaded: true, visible: true };
+    }
+
+    function rebuildLayerPanel() {
+      const body = document.getElementById('layer-panel-body');
+      body.innerHTML = '';
+      buildLayerPanel();
+    }
 
     // Click handler to show building info
     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
@@ -361,9 +455,10 @@
     }
 
     // Layer definitions: { id, label, file, color, type, group, onByDefault, source }
+    // file paths use 'queenstown' as template; layerFile() swaps at load time
     const LAYERS = [
       // Boundaries (loaded separately above, managed via entity show/hide)
-      { id: 'boundary', label: 'Queenstown boundary', color: '#ff00ff', group: 'Boundaries', onByDefault: true, builtin: true },
+      { id: 'boundary', label: 'District boundary', color: '#ff00ff', group: 'Boundaries', onByDefault: true, builtin: true },
       { id: 'subzones', label: 'Subzones', color: '#00ffff', group: 'Boundaries', onByDefault: true, builtin: true },
       // Food & Daily Needs
       { id: 'hawker', label: 'Hawker centres', file: '../geo/gov-sg/queenstown-hawker-centres.geojson', color: '#ff6b35', group: 'Food & Daily Needs', type: 'point', source: 'gov-sg' },
@@ -399,16 +494,12 @@
       { id: 'rs_canopy', label: 'Tree canopy cover', rasterFile: '../geo/global/rasters/queenstown-canopy.png', color: '#2e7d32', group: 'Remote Sensing', type: 'raster', source: 'global' },
       // Remote Sensing — clickable 100m grid (global)
       { id: 'rs_grid', label: '100m grid (clickable)', file: '../geo/global/queenstown-rs-grid.geojson', color: '#8bc34a', group: 'Remote Sensing', type: 'polygon', source: 'global' },
-      // Street-Level (global)
-      { id: 'mapillary', label: 'Mapillary images', file: '../geo/global/queenstown-mapillary-gvi.geojson', color: '#03a9f4', group: 'Street-Level', type: 'point', source: 'global' },
+      // Street-Level (global) — hidden for now
+      // { id: 'mapillary', label: 'Mapillary images', file: '../geo/global/queenstown-mapillary-gvi.geojson', color: '#03a9f4', group: 'Street-Level', type: 'point', source: 'global' },
     ];
 
     // Track loaded data sources and built-in entity collections
     const layerState = {};  // id -> { dataSource, loaded, visible }
-
-    // Tag boundary/subzone entities so we can toggle them
-    // We'll retroactively tag them after they load. Store entity references.
-    const builtinEntities = { boundary: [], subzones: [] };
 
     // Provenance filter state
     const provenanceState = { 'gov-sg': true, 'global': true };
@@ -435,6 +526,25 @@
 
     function buildLayerPanel() {
       const body = document.getElementById('layer-panel-body');
+
+      // District selector
+      const distTitle = document.createElement('div');
+      distTitle.className = 'layer-group-title';
+      distTitle.textContent = 'District';
+      body.appendChild(distTitle);
+
+      const distSelect = document.createElement('select');
+      distSelect.className = 'district-select';
+      distSelect.id = 'district-select';
+      for (const [key, dist] of Object.entries(DISTRICTS)) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = dist.label;
+        if (key === currentDistrict) opt.selected = true;
+        distSelect.appendChild(opt);
+      }
+      distSelect.addEventListener('change', () => switchDistrict(distSelect.value));
+      body.appendChild(distSelect);
 
       // Provenance filter bar
       const provBar = document.createElement('div');
@@ -467,6 +577,7 @@
 
       const choroSelect = document.createElement('select');
       choroSelect.className = 'choropleth-select';
+      choroSelect.id = 'choropleth-select';
       CHOROPLETH_METRICS.forEach(m => {
         const opt = document.createElement('option');
         opt.value = m.value;
@@ -552,15 +663,22 @@
       // Raster image overlays
       if (layer.type === 'raster') {
         if (visible && !layerState[id].loaded) {
-          layerState[id].loaded = true;
-          const rasterLayer = viewer.imageryLayers.addImageryProvider(
-            new Cesium.SingleTileImageryProvider({
-              url: layer.rasterFile,
-              rectangle: Cesium.Rectangle.fromDegrees(103.7502, 1.2550, 103.8166, 1.3188),
-            })
-          );
-          rasterLayer.alpha = 0.65;
-          layerState[id].imageryLayer = rasterLayer;
+          const rasterUrl = layerFile(layer.rasterFile);
+          const bounds = DISTRICTS[currentDistrict].rasterBounds;
+          try {
+            layerState[id].loaded = true;
+            const rasterLayer = viewer.imageryLayers.addImageryProvider(
+              new Cesium.SingleTileImageryProvider({
+                url: rasterUrl,
+                rectangle: Cesium.Rectangle.fromDegrees(bounds[0], bounds[1], bounds[2], bounds[3]),
+              })
+            );
+            rasterLayer.alpha = 0.65;
+            layerState[id].imageryLayer = rasterLayer;
+          } catch (err) {
+            console.warn(`Raster layer ${layer.label} not available:`, err);
+            layerState[id].loaded = false;
+          }
         } else if (layerState[id].imageryLayer) {
           layerState[id].imageryLayer.show = visible;
         }
@@ -571,14 +689,21 @@
       // Lazy-load on first toggle-on
       if (visible && !layerState[id].loaded) {
         layerState[id].loaded = true;
+        const fileUrl = layerFile(layer.file);
         try {
-          const ds = await Cesium.GeoJsonDataSource.load(layer.file, {
+          const ds = await Cesium.GeoJsonDataSource.load(fileUrl, {
             clampToGround: true,
             stroke: Cesium.Color.fromCssColorString(layer.color),
             strokeWidth: layer.type === 'line' ? 3 : 1,
             markerColor: Cesium.Color.fromCssColorString(layer.color),
             markerSize: 18,
           });
+
+          // Check if layer loaded with 0 features
+          if (ds.entities.values.length === 0) {
+            console.warn(`Layer ${layer.label}: no features in ${currentDistrict}`);
+          }
+
           // HDB blocks — colour by year completed
           if (id === 'hdb') {
             ds.entities.values.forEach(entity => {
@@ -590,7 +715,6 @@
               let c = Cesium.Color.fromCssColorString('#e74c3c'); // pre-1980
               if (year && year >= 2000) c = Cesium.Color.fromCssColorString('#2ecc71');
               else if (year && year >= 1980) c = Cesium.Color.fromCssColorString('#f39c12');
-              const centroid = entity.position ? entity.position.getValue(Cesium.JulianDate.now()) : null;
               entity.point = new Cesium.PointGraphics({
                 pixelSize: 9,
                 color: c,
@@ -607,7 +731,6 @@
               if (entity.polyline) {
                 const props = entity.properties;
                 const bc = props && props.betweenness ? props.betweenness.getValue() : 0;
-                // Color ramp: low=cyan, mid=yellow, high=red
                 let c = Cesium.Color.fromCssColorString('#00bcd4');
                 if (bc > 0.01) c = Cesium.Color.fromCssColorString('#ff5722');
                 else if (bc > 0.005) c = Cesium.Color.fromCssColorString('#ff9800');
@@ -637,7 +760,7 @@
               }
             });
           }
-          // Walkability grid layers — 6-step colour ramp (like RS grid)
+          // Walkability grid layers — 6-step colour ramp
           else if (layer.colorField) {
             const field = layer.colorField;
             const values = ds.entities.values
@@ -646,12 +769,11 @@
             const minVal = Math.min(...values);
             const maxVal = Math.max(...values);
             const range = maxVal - minVal || 1;
-            // 6-step ramp from light to dark in each layer's hue
             const ramps = {
-              '#4caf50': ['#e8f5e9','#a5d6a7','#66bb6a','#388e3c','#2e7d32','#1b5e20'], // green (walkability)
-              '#2196f3': ['#e3f2fd','#90caf9','#42a5f5','#1e88e5','#1565c0','#0d47a1'], // blue (intersection)
-              '#9c27b0': ['#f3e5f5','#ce93d8','#ab47bc','#8e24aa','#6a1b9a','#4a148c'], // purple (transit)
-              '#ff9800': ['#fff3e0','#ffcc80','#ffa726','#f57c00','#e65100','#bf360c'], // orange (destination)
+              '#4caf50': ['#e8f5e9','#a5d6a7','#66bb6a','#388e3c','#2e7d32','#1b5e20'],
+              '#2196f3': ['#e3f2fd','#90caf9','#42a5f5','#1e88e5','#1565c0','#0d47a1'],
+              '#9c27b0': ['#f3e5f5','#ce93d8','#ab47bc','#8e24aa','#6a1b9a','#4a148c'],
+              '#ff9800': ['#fff3e0','#ffcc80','#ffa726','#f57c00','#e65100','#bf360c'],
             };
             const ramp = ramps[layer.color] || ['#f7f7f7','#d9d9d9','#bdbdbd','#969696','#636363','#252525'];
             const alpha = 0.55;
@@ -661,7 +783,7 @@
                 const val = props && props[field] ? props[field].getValue() : null;
                 let c;
                 if (val !== null) {
-                  const t = (val - minVal) / range;  // 0..1
+                  const t = (val - minVal) / range;
                   const step = Math.min(Math.floor(t * 6), 5);
                   c = Cesium.Color.fromCssColorString(ramp[step]).withAlpha(alpha);
                 } else {
@@ -683,7 +805,6 @@
                 entity.polygon.outlineColor = baseColor;
                 entity.polygon.heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
               }
-              // Add label with height control text
               const props = entity.properties;
               if (props && props.HT_CTL_TXT) {
                 const htText = props.HT_CTL_TXT.getValue();
@@ -722,7 +843,7 @@
           viewer.dataSources.add(ds);
           layerState[id].dataSource = ds;
         } catch (err) {
-          console.warn(`Failed to load layer ${layer.label}:`, err);
+          console.warn(`Layer ${layer.label} not available for ${currentDistrict}:`, err.message);
           layerState[id].loaded = false;
         }
         updateLayerLegend();
@@ -812,7 +933,6 @@
       } else {
         rings.push(coords[0]);
       }
-      // Use first ring (largest polygon for MultiPolygon)
       const positions = rings[0].map(p => Cesium.Cartesian3.fromDegrees(p[0], p[1]));
       return new Cesium.PolygonHierarchy(positions);
     }
@@ -825,10 +945,17 @@
         return;
       }
 
-      // Lazy-load GeoJSON
+      // Lazy-load GeoJSON (per district)
       if (!choroplethGeoJSON) {
-        const resp = await fetch('../geo/queenstown-subzone-summary.geojson');
-        choroplethGeoJSON = await resp.json();
+        try {
+          const resp = await fetch(`../geo/${currentDistrict}-subzone-summary.geojson`);
+          if (!resp.ok) throw new Error(resp.status);
+          choroplethGeoJSON = await resp.json();
+        } catch (err) {
+          console.warn('Choropleth data not available for ' + currentDistrict);
+          legend.style.display = 'none';
+          return;
+        }
       }
 
       const features = choroplethGeoJSON.features;
@@ -854,6 +981,11 @@
       // Compute min/max
       const values = features.map(f => getMetricValue(f.properties, metricKey));
       const valid = values.filter(v => v !== null && v !== undefined);
+      if (valid.length === 0) {
+        choroplethEntities.forEach(e => { e.polygon.material = GRAY_COLOR; e.show = true; });
+        legend.style.display = 'none';
+        return;
+      }
       const min = Math.min(...valid);
       const max = Math.max(...valid);
 
@@ -992,6 +1124,13 @@
       container.style.display = html ? 'block' : 'none';
     }
 
+    // ---------------------------------------------------------------
+    // Initial load
+    // ---------------------------------------------------------------
+    loadBoundary();
+    loadSubzones();
+    loadTileset();
+    flyToDistrict();
     buildLayerPanel();
 
     // Basemap toggle

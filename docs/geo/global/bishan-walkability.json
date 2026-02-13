@@ -1,0 +1,23 @@
+[
+  {
+    "subzone_name": "BISHAN EAST",
+    "intersection_density": 394.7,
+    "transit_access_score": 1.38,
+    "destination_accessibility": 1.483,
+    "walkability_index": -0.0946
+  },
+  {
+    "subzone_name": "UPPER THOMSON",
+    "intersection_density": 397.9,
+    "transit_access_score": 2.039,
+    "destination_accessibility": 1.6368,
+    "walkability_index": 1.5241
+  },
+  {
+    "subzone_name": "MARYMOUNT",
+    "intersection_density": 337.3,
+    "transit_access_score": 1.0724,
+    "destination_accessibility": 1.5698,
+    "walkability_index": -1.4295
+  }
+]

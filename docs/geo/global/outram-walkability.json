@@ -1,0 +1,30 @@
+[
+  {
+    "subzone_name": "CHINATOWN",
+    "intersection_density": 690.1,
+    "transit_access_score": 4.8301,
+    "destination_accessibility": 3.5894,
+    "walkability_index": 2.7431
+  },
+  {
+    "subzone_name": "CHINA SQUARE",
+    "intersection_density": 687.1,
+    "transit_access_score": 6.5983,
+    "destination_accessibility": 3.6966,
+    "walkability_index": 2.6116
+  },
+  {
+    "subzone_name": "PEARL'S HILL",
+    "intersection_density": 364.3,
+    "transit_access_score": 2.2325,
+    "destination_accessibility": 2.2642,
+    "walkability_index": -3.5757
+  },
+  {
+    "subzone_name": "PEOPLE'S PARK",
+    "intersection_density": 402.3,
+    "transit_access_score": 6.0417,
+    "destination_accessibility": 2.8716,
+    "walkability_index": -1.7791
+  }
+]

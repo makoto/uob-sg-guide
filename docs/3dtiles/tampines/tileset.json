@@ -1,0 +1,43 @@
+{
+  "asset": {
+    "version": "1.0",
+    "generator": "tampines-liveability-study",
+    "gltfUpAxis": "Z"
+  },
+  "geometricError": 500,
+  "root": {
+    "boundingVolume": {
+      "region": [
+        1.8138412930793748,
+        0.02296728330050095,
+        1.8148558355202669,
+        0.023995064063769108,
+        0,
+        200
+      ]
+    },
+    "geometricError": 100,
+    "refine": "ADD",
+    "content": {
+      "uri": "buildings.b3dm"
+    },
+    "transform": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1537230.6999491653,
+      6188312.281814624,
+      148969.2361089168,
+      1
+    ]
+  }
+}

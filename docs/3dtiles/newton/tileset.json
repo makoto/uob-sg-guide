@@ -1,0 +1,43 @@
+{
+  "asset": {
+    "version": "1.0",
+    "generator": "newton-liveability-study",
+    "gltfUpAxis": "Z"
+  },
+  "geometricError": 500,
+  "root": {
+    "boundingVolume": {
+      "region": [
+        1.8121250113421217,
+        0.022675900581880497,
+        1.8125112160536736,
+        0.022986110167142214,
+        0,
+        200
+      ]
+    },
+    "geometricError": 100,
+    "refine": "ADD",
+    "content": {
+      "uri": "buildings.b3dm"
+    },
+    "transform": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1524955.2441698634,
+      6191452.5933308005,
+      144625.52082405347,
+      1
+    ]
+  }
+}

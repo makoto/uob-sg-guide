@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 """
-Generate per-subzone summary for Queenstown.
+Generate per-subzone summary for a district.
 
-Spatially joins multiple datasets (points, lines, CSV) to the 15 Queenstown
-subzone polygons and produces:
-  - docs/geo/queenstown-subzone-summary.geojson
-  - docs/geo/queenstown-subzone-summary.csv
+Spatially joins multiple datasets (points, lines, CSV) to subzone polygons
+and produces:
+  - docs/geo/{district}-subzone-summary.geojson
+  - docs/geo/{district}-subzone-summary.csv
+
+Usage:
+    python3 generate_subzone_summary.py                    # default: queenstown
+    python3 generate_subzone_summary.py --district bishan
 """
 
+import argparse
 import csv
 import json
 import math
@@ -18,17 +23,27 @@ from shapely.geometry import shape, Point, LineString, MultiLineString
 from shapely.ops import unary_union
 
 # ---------------------------------------------------------------------------
+# Parse args
+# ---------------------------------------------------------------------------
+parser = argparse.ArgumentParser(description="Generate per-subzone summary for a district")
+parser.add_argument("--district", default="queenstown",
+                    help="District name (default: queenstown)")
+args = parser.parse_args()
+
+DISTRICT = args.district.lower().replace(" ", "-")
+
+# ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 BASE = os.path.dirname(os.path.abspath(__file__))
 GEO = os.path.join(BASE, "docs", "geo")
 DATA = os.path.join(BASE, "data", "data-gov-sg")
 
-SUBZONES_PATH = os.path.join(GEO, "queenstown-subzones.geojson")
-BUILDINGS_PATH = os.path.join(GEO, "global", "queenstown-buildings.geojson")
-REMOTE_SENSING_PATH = os.path.join(GEO, "global", "queenstown-remote-sensing.geojson")
-MAPILLARY_GVI_PATH = os.path.join(GEO, "global", "queenstown-mapillary-gvi.geojson")
-WALKABILITY_PATH = os.path.join(GEO, "global", "queenstown-walkability.json")
+SUBZONES_PATH = os.path.join(GEO, f"{DISTRICT}-subzones.geojson")
+BUILDINGS_PATH = os.path.join(GEO, "global", f"{DISTRICT}-buildings.geojson")
+REMOTE_SENSING_PATH = os.path.join(GEO, "global", f"{DISTRICT}-remote-sensing.geojson")
+MAPILLARY_GVI_PATH = os.path.join(GEO, "global", f"{DISTRICT}-mapillary-gvi.geojson")
+WALKABILITY_PATH = os.path.join(GEO, "global", f"{DISTRICT}-walkability.json")
 
 POINT_LAYERS = {
     "hawker_centres": os.path.join(DATA, "hawker-centres.geojson"),
@@ -47,8 +62,26 @@ LINE_LAYERS = {
 POPULATION_CSV = os.path.join(DATA, "population-census-2020.csv")
 RESALE_CSV = os.path.join(DATA, "resale-flat-prices.csv")
 
-OUT_GEOJSON = os.path.join(GEO, "queenstown-subzone-summary.geojson")
-OUT_CSV = os.path.join(GEO, "queenstown-subzone-summary.csv")
+OUT_GEOJSON = os.path.join(GEO, f"{DISTRICT}-subzone-summary.geojson")
+OUT_CSV = os.path.join(GEO, f"{DISTRICT}-subzone-summary.csv")
+
+# Resale town name mapping: district name → HDB resale CSV town name
+# Most districts match directly; exceptions listed here
+RESALE_TOWN_MAP = {
+    "queenstown": "QUEENSTOWN",
+    "bishan": "BISHAN",
+    "outram": "CENTRAL AREA",
+    "tampines": "TAMPINES",
+    "newton": None,  # No HDB resale data for Newton
+}
+
+# Census name exceptions — subzone names that don't match simple title-casing
+CENSUS_NAME_EXCEPTIONS = {
+    "NATIONAL UNIVERSITY OF S'PORE": "National University Of S'pore",
+    "PEARL'S HILL": "Pearl's Hill",
+    "PEOPLE'S PARK": "People's Park",
+    "MONK'S HILL": "Monk's Hill",
+}
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -95,10 +128,17 @@ def line_length_m(line_geom):
     return total
 
 
+def subzone_to_census_name(subzone_name):
+    """Convert UPPER CASE subzone name to census-style title case."""
+    if subzone_name in CENSUS_NAME_EXCEPTIONS:
+        return CENSUS_NAME_EXCEPTIONS[subzone_name]
+    return subzone_name.title()
+
+
 # ---------------------------------------------------------------------------
 # 1. Load subzones
 # ---------------------------------------------------------------------------
-print("Loading subzones...")
+print(f"Loading {DISTRICT} subzones...")
 subzones_gj = load_geojson(SUBZONES_PATH)
 subzones = []
 for feat in subzones_gj["features"]:
@@ -112,6 +152,9 @@ for feat in subzones_gj["features"]:
         "original_feature": feat,
     })
 print(f"  {len(subzones)} subzones loaded")
+
+# Build combined boundary for point filtering
+boundary_geom = unary_union([sz["geom"] for sz in subzones])
 
 # ---------------------------------------------------------------------------
 # 2. Point-in-polygon counts
@@ -143,7 +186,7 @@ for layer_name, path in POINT_LAYERS.items():
                         sz["mrt_stations"].add(station)
                 count += 1
                 break
-    print(f"  {layer_name}: {count} points in Queenstown")
+    print(f"  {layer_name}: {count} points in {DISTRICT}")
 
 # Convert station sets to counts
 for sz in subzones:
@@ -194,7 +237,7 @@ for layer_name, path in LINE_LAYERS.items():
                             length_m += line_length_m(sub)
             sz[key] += length_m / 1000.0
             total += length_m / 1000.0
-    print(f"  {layer_name}: {total:.2f} km total in Queenstown")
+    print(f"  {layer_name}: {total:.2f} km total in {DISTRICT}")
 
 # ---------------------------------------------------------------------------
 # 4. Population (Census 2020)
@@ -216,25 +259,6 @@ if os.path.exists(POPULATION_CSV):
         for row in reader:
             census_rows[row["Number"].strip()] = row
 
-    # Map subzone names to census names
-    CENSUS_NAME_MAP = {
-        "COMMONWEALTH": "Commonwealth",
-        "DOVER": "Dover",
-        "GHIM MOH": "Ghim Moh",
-        "HOLLAND DRIVE": "Holland Drive",
-        "KENT RIDGE": None,  # not in census separately
-        "MARGARET DRIVE": "Margaret Drive",
-        "MEI CHIN": "Mei Chin",
-        "NATIONAL UNIVERSITY OF S'PORE": "National University Of S'pore",
-        "ONE NORTH": "One North",
-        "PASIR PANJANG 1": "Pasir Panjang 1",
-        "PASIR PANJANG 2": "Pasir Panjang 2",
-        "PORT": "Port",
-        "QUEENSWAY": "Queensway",
-        "SINGAPORE POLYTECHNIC": "Singapore Polytechnic",
-        "TANGLIN HALT": "Tanglin Halt",
-    }
-
     def safe_int(val):
         val = val.strip().replace(",", "")
         if val in ("-", "", "na"):
@@ -242,7 +266,7 @@ if os.path.exists(POPULATION_CSV):
         return int(val)
 
     for sz in subzones:
-        census_name = CENSUS_NAME_MAP.get(sz["name"])
+        census_name = subzone_to_census_name(sz["name"])
         if census_name and census_name in census_rows:
             row = census_rows[census_name]
             sz["population_total"] = safe_int(row["Total_Total"])
@@ -257,7 +281,7 @@ if os.path.exists(POPULATION_CSV):
                     elderly += safe_int(row[key])
             sz["population_elderly_65plus"] = elderly
             print(f"  {sz['name']}: pop={sz['population_total']}, elderly={sz['population_elderly_65plus']}")
-        elif census_name is not None:
+        else:
             print(f"  WARNING: census data not found for {sz['name']} (tried: {census_name})")
 else:
     print(f"  WARNING: {POPULATION_CSV} not found, skipping population data")
@@ -271,7 +295,9 @@ for sz in subzones:
     sz["resale_median_price"] = None
     sz["resale_transaction_count"] = 0
 
-if os.path.exists(RESALE_CSV):
+resale_town = RESALE_TOWN_MAP.get(DISTRICT, DISTRICT.upper())
+
+if resale_town and os.path.exists(RESALE_CSV) and os.path.exists(BUILDINGS_PATH):
     # Street name abbreviation map (resale CSV → building GeoJSON)
     STREET_ABBREVS = {
         "AVE": "AVENUE", "CL": "CLOSE", "CRES": "CRESCENT", "CT": "COURT",
@@ -285,12 +311,12 @@ if os.path.exists(RESALE_CSV):
         parts = name.strip().upper().split()
         return " ".join(STREET_ABBREVS.get(p, p) for p in parts)
 
-    # Load resale transactions for Queenstown, 2023-2025
+    # Load resale transactions for district, 2023-2025
     resale_by_block_street = {}
     with open(RESALE_CSV, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if row["town"] != "QUEENSTOWN":
+            if row["town"] != resale_town:
                 continue
             year = int(row["month"].split("-")[0])
             if year < 2023:
@@ -298,7 +324,7 @@ if os.path.exists(RESALE_CSV):
             key = (row["block"].strip(), normalise_street(row["street_name"]))
             resale_by_block_street.setdefault(key, []).append(float(row["resale_price"]))
 
-    print(f"  {sum(len(v) for v in resale_by_block_street.values())} Queenstown resale transactions (2023-2025)")
+    print(f"  {sum(len(v) for v in resale_by_block_street.values())} {DISTRICT} resale transactions (2023-2025)")
 
     # Load buildings to map block+street → subzone
     print("  Mapping resale prices to subzones via building geometry...")
@@ -331,8 +357,8 @@ if os.path.exists(RESALE_CSV):
 
     print(f"  {matched_txns} transactions matched to subzones")
 
-    all_qt_prices = [p for prices in resale_by_block_street.values() for p in prices]
-    district_median = statistics.median(all_qt_prices) if all_qt_prices else 0
+    all_prices = [p for prices in resale_by_block_street.values() for p in prices]
+    district_median = statistics.median(all_prices) if all_prices else 0
 
     for sz in subzones:
         prices = resale_prices_by_subzone.get(sz["name"], [])
@@ -341,6 +367,10 @@ if os.path.exists(RESALE_CSV):
             sz["resale_transaction_count"] = len(prices)
 
     print(f"  District-wide median: ${district_median:,.0f}")
+elif not resale_town:
+    print(f"  No HDB resale town mapping for {DISTRICT}, skipping resale data")
+elif not os.path.exists(BUILDINGS_PATH):
+    print(f"  WARNING: {BUILDINGS_PATH} not found, skipping resale data")
 else:
     print(f"  WARNING: {RESALE_CSV} not found, skipping resale data")
 
@@ -349,26 +379,29 @@ else:
 # ---------------------------------------------------------------------------
 print("Computing building stats per subzone...")
 
-# Load buildings (tracked in git, always available)
-buildings_gj = load_geojson(BUILDINGS_PATH)
-
 for sz in subzones:
     sz["building_count"] = 0
     sz["hdb_count"] = 0
     sz["building_heights"] = []
 
-for feat in buildings_gj["features"]:
-    props = feat["properties"]
-    centroid = shape(feat["geometry"]).centroid
-    for sz in subzones:
-        if sz["geom"].contains(centroid):
-            sz["building_count"] += 1
-            if props.get("hdb_match"):
-                sz["hdb_count"] += 1
-            h = props.get("height_m")
-            if h is not None and h > 0:
-                sz["building_heights"].append(h)
-            break
+if os.path.exists(BUILDINGS_PATH):
+    # Load buildings (tracked in git, always available)
+    buildings_gj = load_geojson(BUILDINGS_PATH)
+
+    for feat in buildings_gj["features"]:
+        props = feat["properties"]
+        centroid = shape(feat["geometry"]).centroid
+        for sz in subzones:
+            if sz["geom"].contains(centroid):
+                sz["building_count"] += 1
+                if props.get("hdb_match"):
+                    sz["hdb_count"] += 1
+                h = props.get("height_m")
+                if h is not None and h > 0:
+                    sz["building_heights"].append(h)
+                break
+else:
+    print(f"  WARNING: {BUILDINGS_PATH} not found, skipping building stats")
 
 for sz in subzones:
     heights = sz["building_heights"]
@@ -381,26 +414,27 @@ for sz in subzones:
     sz["hdb_years"] = []
     sz["total_dwelling_units"] = 0
 
-for feat in buildings_gj["features"]:
-    props = feat["properties"]
-    if not props.get("hdb_match"):
-        continue
-    centroid = shape(feat["geometry"]).centroid
-    for sz in subzones:
-        if sz["geom"].contains(centroid):
-            year = props.get("hdb_year_completed")
-            if year is not None:
-                try:
-                    sz["hdb_years"].append(int(year))
-                except (ValueError, TypeError):
-                    pass
-            units = props.get("hdb_total_dwelling_units")
-            if units is not None:
-                try:
-                    sz["total_dwelling_units"] += int(units)
-                except (ValueError, TypeError):
-                    pass
-            break
+if os.path.exists(BUILDINGS_PATH):
+    for feat in buildings_gj["features"]:
+        props = feat["properties"]
+        if not props.get("hdb_match"):
+            continue
+        centroid = shape(feat["geometry"]).centroid
+        for sz in subzones:
+            if sz["geom"].contains(centroid):
+                year = props.get("hdb_year_completed")
+                if year is not None:
+                    try:
+                        sz["hdb_years"].append(int(year))
+                    except (ValueError, TypeError):
+                        pass
+                units = props.get("hdb_total_dwelling_units")
+                if units is not None:
+                    try:
+                        sz["total_dwelling_units"] += int(units)
+                    except (ValueError, TypeError):
+                        pass
+                break
 
 for sz in subzones:
     years = sz["hdb_years"]
@@ -622,7 +656,7 @@ print(f"  -> {OUT_CSV}")
 # ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
-print("\n=== Summary ===")
+print(f"\n=== Summary ({DISTRICT}) ===")
 total_pop = sum(sz["population_total"] for sz in subzones)
 total_buildings = sum(sz["building_count"] for sz in subzones)
 total_hdb = sum(sz["hdb_count"] for sz in subzones)
