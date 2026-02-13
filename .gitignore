@@ -20,6 +20,12 @@ tmp_mapillary/
 # Playwright MCP
 .playwright-mcp/
 
+# Python bytecode
+__pycache__/
+
+# API response cache
+cache/
+
 # Claude Code local settings (personal permissions, not shared)
 .claude/settings.local.json
 .env
