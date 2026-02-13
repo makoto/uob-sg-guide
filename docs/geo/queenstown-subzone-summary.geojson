@@ -40,7 +40,11 @@
         "dem_mean": 22.85,
         "canopy_cover_pct": 13.63,
         "canopy_loss_pct": 6.07,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 374.4,
+        "transit_access_score": 1.223,
+        "destination_accessibility": 2.2955,
+        "walkability_index": 2.4731
       },
       "geometry": {
         "type": "Polygon",
@@ -569,7 +573,11 @@
         "dem_mean": 30.85,
         "canopy_cover_pct": 3.88,
         "canopy_loss_pct": 0.08,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 713.3,
+        "transit_access_score": 2.275,
+        "destination_accessibility": 2.6716,
+        "walkability_index": 6.6817
       },
       "geometry": {
         "type": "Polygon",
@@ -1602,7 +1610,11 @@
         "dem_mean": 24.04,
         "canopy_cover_pct": 5.18,
         "canopy_loss_pct": 0.29,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 639.7,
+        "transit_access_score": 1.1672,
+        "destination_accessibility": 1.6985,
+        "walkability_index": 2.3644
       },
       "geometry": {
         "type": "Polygon",
@@ -1891,7 +1903,11 @@
         "dem_mean": 18.82,
         "canopy_cover_pct": 6.48,
         "canopy_loss_pct": 3.54,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 429.6,
+        "transit_access_score": 2.5057,
+        "destination_accessibility": 2.2822,
+        "walkability_index": 4.1303
       },
       "geometry": {
         "type": "Polygon",
@@ -2968,7 +2984,11 @@
         "dem_mean": 18.72,
         "canopy_cover_pct": 10.9,
         "canopy_loss_pct": 0.44,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 544.8,
+        "transit_access_score": 1.1921,
+        "destination_accessibility": 1.5054,
+        "walkability_index": 0.9335
       },
       "geometry": {
         "type": "Polygon",
@@ -3453,7 +3473,11 @@
         "dem_mean": 22.33,
         "canopy_cover_pct": 3.77,
         "canopy_loss_pct": 0,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 380.8,
+        "transit_access_score": 1.5843,
+        "destination_accessibility": 1.5617,
+        "walkability_index": 1.2509
       },
       "geometry": {
         "type": "Polygon",
@@ -3642,7 +3666,11 @@
         "dem_mean": 23.36,
         "canopy_cover_pct": 38.01,
         "canopy_loss_pct": 15.91,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 222.7,
+        "transit_access_score": 0.6705,
+        "destination_accessibility": 1.0728,
+        "walkability_index": -3.8844
       },
       "geometry": {
         "type": "Polygon",
@@ -3859,7 +3887,11 @@
         "dem_mean": 26.93,
         "canopy_cover_pct": 17.2,
         "canopy_loss_pct": 6.51,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 498.3,
+        "transit_access_score": 1.9619,
+        "destination_accessibility": 1.8574,
+        "walkability_index": 1.181
       },
       "geometry": {
         "type": "Polygon",
@@ -5320,7 +5352,11 @@
         "dem_mean": 26.87,
         "canopy_cover_pct": 32.44,
         "canopy_loss_pct": 14.23,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 428.8,
+        "transit_access_score": 1.9315,
+        "destination_accessibility": 0.9394,
+        "walkability_index": -0.7664
       },
       "geometry": {
         "type": "Polygon",
@@ -5641,7 +5677,11 @@
         "dem_mean": 24.47,
         "canopy_cover_pct": 12.54,
         "canopy_loss_pct": 0.75,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 312.3,
+        "transit_access_score": 1.028,
+        "destination_accessibility": 0.8954,
+        "walkability_index": -2.3466
       },
       "geometry": {
         "type": "Polygon",
@@ -6150,7 +6190,11 @@
         "dem_mean": 34.16,
         "canopy_cover_pct": 14.5,
         "canopy_loss_pct": 2.28,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 597.6,
+        "transit_access_score": 0.7321,
+        "destination_accessibility": 0.6225,
+        "walkability_index": -2.4134
       },
       "geometry": {
         "type": "Polygon",
@@ -6899,7 +6943,11 @@
         "dem_mean": 41.02,
         "canopy_cover_pct": 41.85,
         "canopy_loss_pct": 1.03,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 206.6,
+        "transit_access_score": 0.7933,
+        "destination_accessibility": 1.0366,
+        "walkability_index": -3.8586
       },
       "geometry": {
         "type": "Polygon",
@@ -7856,7 +7904,11 @@
         "dem_mean": 20.49,
         "canopy_cover_pct": 14.69,
         "canopy_loss_pct": 1.32,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 507.3,
+        "transit_access_score": 1.1927,
+        "destination_accessibility": 0.8665,
+        "walkability_index": -1.359
       },
       "geometry": {
         "type": "Polygon",
@@ -8777,7 +8829,11 @@
         "dem_mean": 20.5,
         "canopy_cover_pct": 4.04,
         "canopy_loss_pct": 0,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 577.4,
+        "transit_access_score": 1.4171,
+        "destination_accessibility": 1.5463,
+        "walkability_index": 0.4709
       },
       "geometry": {
         "type": "Polygon",
@@ -9370,7 +9426,11 @@
         "dem_mean": 4.42,
         "canopy_cover_pct": 2.23,
         "canopy_loss_pct": 0.18,
-        "gvi_mean": null
+        "gvi_mean": null,
+        "intersection_density": 69.9,
+        "transit_access_score": 0.8149,
+        "destination_accessibility": 0.8712,
+        "walkability_index": -4.8574
       },
       "geometry": {
         "type": "Polygon",

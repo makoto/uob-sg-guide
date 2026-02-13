@@ -28,6 +28,7 @@ SUBZONES_PATH = os.path.join(GEO, "queenstown-subzones.geojson")
 BUILDINGS_PATH = os.path.join(GEO, "global", "queenstown-buildings.geojson")
 REMOTE_SENSING_PATH = os.path.join(GEO, "global", "queenstown-remote-sensing.geojson")
 MAPILLARY_GVI_PATH = os.path.join(GEO, "global", "queenstown-mapillary-gvi.geojson")
+WALKABILITY_PATH = os.path.join(GEO, "global", "queenstown-walkability.json")
 
 POINT_LAYERS = {
     "hawker_centres": os.path.join(DATA, "hawker-centres.geojson"),
@@ -489,6 +490,35 @@ else:
     print(f"  WARNING: {MAPILLARY_GVI_PATH} not found, skipping GVI")
 
 # ---------------------------------------------------------------------------
+# 8c. Walkability scoring (from generate_walkability.py output)
+# ---------------------------------------------------------------------------
+print("Joining walkability data...")
+
+WALK_FIELDS = [
+    "intersection_density", "transit_access_score",
+    "destination_accessibility", "walkability_index",
+]
+
+for sz in subzones:
+    for f in WALK_FIELDS:
+        sz[f] = None
+
+if os.path.exists(WALKABILITY_PATH):
+    with open(WALKABILITY_PATH, encoding="utf-8") as f:
+        walk_data = json.load(f)
+    walk_by_name = {entry["subzone_name"]: entry for entry in walk_data}
+    for sz in subzones:
+        entry = walk_by_name.get(sz["name"], {})
+        for f in WALK_FIELDS:
+            val = entry.get(f)
+            if val is not None:
+                sz[f] = val
+    matched = sum(1 for sz in subzones if sz["walkability_index"] is not None)
+    print(f"  Merged walkability for {matched} subzones")
+else:
+    print(f"  WARNING: {WALKABILITY_PATH} not found, skipping walkability")
+
+# ---------------------------------------------------------------------------
 # 9. Assemble output
 # ---------------------------------------------------------------------------
 print("Writing output files...")
@@ -508,6 +538,8 @@ FIELDS = [
     "lst_mean_c", "ndvi_mean", "ndbi_mean", "ghsl_height_mean",
     "dsm_mean", "dem_mean", "canopy_cover_pct", "canopy_loss_pct",
     "gvi_mean",
+    "intersection_density", "transit_access_score",
+    "destination_accessibility", "walkability_index",
 ]
 
 features_out = []
@@ -552,6 +584,10 @@ for sz in subzones:
         "canopy_cover_pct": sz["canopy_cover_pct"],
         "canopy_loss_pct": sz["canopy_loss_pct"],
         "gvi_mean": sz["gvi_mean"],
+        "intersection_density": sz["intersection_density"],
+        "transit_access_score": sz["transit_access_score"],
+        "destination_accessibility": sz["destination_accessibility"],
+        "walkability_index": sz["walkability_index"],
     }
 
     # GeoJSON feature: reuse original geometry
