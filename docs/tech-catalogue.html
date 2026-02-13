@@ -213,10 +213,10 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
   <table>
     <tr><th>Feature</th><th>CesiumJS API</th></tr>
     <tr><td>3D building rendering</td><td><code>Cesium3DTileset</code> + <code>Cesium3DTileStyle</code> (height-based colour conditions)</td></tr>
-    <tr><td>GeoJSON vector overlays (22 layers)</td><td><code>GeoJsonDataSource.load()</code> with lazy loading on toggle</td></tr>
+    <tr><td>GeoJSON vector overlays (22 layers)</td><td><code>GeoJsonDataSource.load()</code> with lazy loading on toggle; dynamic legends for street network, remote sensing, and walkability grid layers</td></tr>
     <tr><td>Satellite raster overlays (4 layers)</td><td><code>SingleTileImageryProvider</code> with georeferenced PNG bounds</td></tr>
     <tr><td>Choropleth heatmap (25 metrics)</td><td>Manual polygon entities with <code>PolygonHierarchy</code>, 5-step YlOrRd colour ramp</td></tr>
-    <tr><td>Click interaction</td><td><code>ScreenSpaceEventHandler</code> + <code>scene.pick()</code></td></tr>
+    <tr><td>Click interaction</td><td><code>ScreenSpaceEventHandler</code> + <code>scene.pick()</code>; Mapillary points show clickable link to view on Mapillary</td></tr>
     <tr><td>Terrain clamping</td><td><code>sampleTerrainMostDetailed()</code> for auto height offset</td></tr>
     <tr><td>Ground-clamped lines/labels</td><td><code>clampToGround: true</code>, <code>HeightReference.CLAMP_TO_GROUND</code></td></tr>
   </table>
@@ -360,8 +360,8 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
     <tr>
       <td><code>generate_walkability.py</code></td>
       <td><code>zensvi</code> conda env (Python 3.10)</td>
-      <td>Walk network (OSMnx), POI GeoJSONs, subzones, boundary</td>
-      <td><code>queenstown-walkability.json</code> + <code>queenstown-walkability-grid.geojson</code></td>
+      <td>Walk network (OSMnx), POI GeoJSONs, subzones, boundary, population data</td>
+      <td><code>queenstown-walkability.json</code> + <code>queenstown-walkability-grid.geojson</code> (704 KB, includes pop_density)</td>
       <td>OSMnx, NetworkX, SciPy, Shapely</td>
     </tr>
   </table>
