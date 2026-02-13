@@ -35,13 +35,18 @@
     #choropleth-legend { margin: 4px 12px 6px; display: none; }
     #choropleth-legend .gradient-bar { height: 10px; border-radius: 2px; background: linear-gradient(to right, #ffffb2, #fecc5c, #fd8d3c, #f03b20, #bd0026); }
     #choropleth-legend .legend-labels { display: flex; justify-content: space-between; font-size: 10px; color: #aaa; margin-top: 2px; }
+    #layer-legend { margin-top: 8px; font-size: 11px; display: none; }
+    #layer-legend .layer-legend-section { margin-bottom: 6px; }
+    #layer-legend .layer-legend-title { color: #999; margin-bottom: 2px; }
+    #layer-legend .layer-legend-gradient { height: 10px; border-radius: 2px; margin-top: 2px; }
+    #layer-legend .layer-legend-labels { display: flex; justify-content: space-between; font-size: 10px; color: #aaa; margin-top: 2px; }
   </style>
 </head>
 <body>
   <div id="cesiumContainer"></div>
   <div id="info">
     <h3>Queenstown 3D Buildings</h3>
-    <div>8,671 buildings | 22 layers | Click for details</div>
+    <div>8,671 buildings | 26 layers | 25 metrics | Click for details</div>
     <button id="basemap-toggle" onclick="toggleBasemap()">&#9788; Light</button>
     <div class="legend">
       <div style="color:#999; margin-bottom:2px;">Building height</div>
@@ -51,6 +56,7 @@
       <div class="legend-item"><span class="legend-swatch" style="background:cyan"></span> 15 &ndash; 30 m</div>
       <div class="legend-item"><span class="legend-swatch" style="background:white"></span> &le; 15 m</div>
     </div>
+    <div id="layer-legend"></div>
   </div>
   <div id="layer-panel">
     <div id="layer-panel-header" onclick="toggleLayerPanel()">
@@ -311,6 +317,13 @@
           html += `Canopy cover: ${gv('canopy_cover_pct')}%<br>`;
           html += `GHSL height: ${gv('ghsl_height_mean')} m<br>`;
           html += `DSM: ${gv('dsm_mean')} m | DEM: ${gv('dem_mean')} m<br>`;
+        } else if (gv('walkability') !== null && gv('int_density') !== null) {
+          // Walkability grid cell
+          html = `<b>Grid cell #${gv('cell_id')}</b> (100m)<br>`;
+          html += `Walkability: ${gv('walkability')}<br>`;
+          html += `Intersection density: ${gv('int_density')}/km²<br>`;
+          html += `Transit access: ${gv('transit_access')}<br>`;
+          html += `Destination access: ${gv('dest_access')}<br>`;
         } else if (gv('betweenness') !== null) {
           // Street network edge
           const name = gv('name') || '(unnamed road)';
@@ -373,6 +386,11 @@
       { id: 'heightctl', label: 'Height control zones', file: '../geo/gov-sg/queenstown-ura-height-control.geojson', color: '#ff9800', group: 'Planning', type: 'polygon', source: 'gov-sg' },
       // Street Network (global)
       { id: 'streetnet', label: 'Street network', file: '../geo/global/queenstown-street-network.geojson', color: '#00bcd4', group: 'Street Network', type: 'line', source: 'global' },
+      // Walkability heatmaps (global)
+      { id: 'walk_idx', label: 'Walkability grid', file: '../geo/global/queenstown-walkability-grid.geojson', color: '#4caf50', group: 'Street Network', type: 'polygon', source: 'global', colorField: 'walkability' },
+      { id: 'walk_intdens', label: 'Intersection density grid', file: '../geo/global/queenstown-walkability-grid.geojson', color: '#2196f3', group: 'Street Network', type: 'polygon', source: 'global', colorField: 'int_density' },
+      { id: 'walk_transit', label: 'Transit access grid', file: '../geo/global/queenstown-walkability-grid.geojson', color: '#9c27b0', group: 'Street Network', type: 'polygon', source: 'global', colorField: 'transit_access' },
+      { id: 'walk_dest', label: 'Destination access grid', file: '../geo/global/queenstown-walkability-grid.geojson', color: '#ff9800', group: 'Street Network', type: 'polygon', source: 'global', colorField: 'dest_access' },
       // Remote Sensing — raster image overlays (global)
       { id: 'rs_ndvi', label: 'NDVI (vegetation)', rasterFile: '../geo/global/rasters/queenstown-ndvi.png', color: '#4caf50', group: 'Remote Sensing', type: 'raster', source: 'global' },
       { id: 'rs_lst', label: 'Land surface temp', rasterFile: '../geo/global/rasters/queenstown-lst.png', color: '#f44336', group: 'Remote Sensing', type: 'raster', source: 'global' },
@@ -526,6 +544,7 @@
       // Built-in layers (boundary / subzones) — toggle entity visibility
       if (layer.builtin) {
         builtinEntities[id].forEach(e => { e.show = visible; });
+        updateLayerLegend();
         return;
       }
 
@@ -544,6 +563,7 @@
         } else if (layerState[id].imageryLayer) {
           layerState[id].imageryLayer.show = visible;
         }
+        updateLayerLegend();
         return;
       }
 
@@ -616,6 +636,42 @@
               }
             });
           }
+          // Walkability grid layers — 6-step colour ramp (like RS grid)
+          else if (layer.colorField) {
+            const field = layer.colorField;
+            const values = ds.entities.values
+              .map(e => e.properties && e.properties[field] ? e.properties[field].getValue() : null)
+              .filter(v => v !== null);
+            const minVal = Math.min(...values);
+            const maxVal = Math.max(...values);
+            const range = maxVal - minVal || 1;
+            // 6-step ramp from light to dark in each layer's hue
+            const ramps = {
+              '#4caf50': ['#e8f5e9','#a5d6a7','#66bb6a','#388e3c','#2e7d32','#1b5e20'], // green (walkability)
+              '#2196f3': ['#e3f2fd','#90caf9','#42a5f5','#1e88e5','#1565c0','#0d47a1'], // blue (intersection)
+              '#9c27b0': ['#f3e5f5','#ce93d8','#ab47bc','#8e24aa','#6a1b9a','#4a148c'], // purple (transit)
+              '#ff9800': ['#fff3e0','#ffcc80','#ffa726','#f57c00','#e65100','#bf360c'], // orange (destination)
+            };
+            const ramp = ramps[layer.color] || ['#f7f7f7','#d9d9d9','#bdbdbd','#969696','#636363','#252525'];
+            const alpha = 0.55;
+            ds.entities.values.forEach(entity => {
+              if (entity.polygon) {
+                const props = entity.properties;
+                const val = props && props[field] ? props[field].getValue() : null;
+                let c;
+                if (val !== null) {
+                  const t = (val - minVal) / range;  // 0..1
+                  const step = Math.min(Math.floor(t * 6), 5);
+                  c = Cesium.Color.fromCssColorString(ramp[step]).withAlpha(alpha);
+                } else {
+                  c = Cesium.Color.GRAY.withAlpha(0.15);
+                }
+                entity.polygon.material = c;
+                entity.polygon.outline = false;
+                entity.polygon.heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
+              }
+            });
+          }
           // Polygon layers (e.g. height control zones)
           else if (layer.type === 'polygon') {
             const baseColor = Cesium.Color.fromCssColorString(layer.color);
@@ -668,6 +724,7 @@
           console.warn(`Failed to load layer ${layer.label}:`, err);
           layerState[id].loaded = false;
         }
+        updateLayerLegend();
         return;
       }
 
@@ -677,6 +734,7 @@
       if (layerState[id].imageryLayer) {
         layerState[id].imageryLayer.show = visible;
       }
+      updateLayerLegend();
     }
 
     // ---------------------------------------------------------------
@@ -705,6 +763,10 @@
       { value: 'canopy_cover_pct', label: 'Tree canopy cover', unit: '%', fmt: 'float' },
       { value: 'ghsl_height_mean', label: 'GHSL building height', unit: ' m', fmt: 'float' },
       { value: 'dsm_mean', label: 'Surface elevation', unit: ' m', fmt: 'float' },
+      { value: 'intersection_density', label: 'Intersection density', unit: '/km\u00B2', fmt: 'int' },
+      { value: 'transit_access_score', label: 'Transit access', unit: '', fmt: 'float' },
+      { value: 'destination_accessibility', label: 'Destination access', unit: '', fmt: 'float' },
+      { value: 'walkability_index', label: 'Walkability (BEH-NWI)', unit: '', fmt: 'float' },
     ];
 
     const RAMP_COLORS = ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026'];
@@ -805,6 +867,128 @@
       legend.style.display = 'block';
       document.getElementById('choropleth-min').textContent = formatValue(min, metric.fmt, metric.unit);
       document.getElementById('choropleth-max').textContent = formatValue(max, metric.fmt, metric.unit);
+    }
+
+    // ---------------------------------------------------------------
+    // Dynamic layer legends
+    // ---------------------------------------------------------------
+    const LAYER_LEGEND_DEFS = {
+      streetnet: {
+        title: 'Betweenness centrality',
+        type: 'discrete',
+        items: [
+          { color: '#ff5722', label: '> 0.01 (high)' },
+          { color: '#ff9800', label: '0.005 – 0.01' },
+          { color: '#ffeb3b', label: '0.002 – 0.005' },
+          { color: '#00bcd4', label: '≤ 0.002 (low)' },
+        ]
+      },
+      walk_idx: {
+        title: 'Walkability index',
+        type: 'discrete',
+        items: [
+          { color: '#1b5e20', label: 'High' },
+          { color: '#2e7d32', label: '' },
+          { color: '#388e3c', label: '' },
+          { color: '#66bb6a', label: '' },
+          { color: '#a5d6a7', label: '' },
+          { color: '#e8f5e9', label: 'Low' },
+        ]
+      },
+      walk_intdens: {
+        title: 'Intersection density',
+        type: 'discrete',
+        items: [
+          { color: '#0d47a1', label: 'High' },
+          { color: '#1565c0', label: '' },
+          { color: '#1e88e5', label: '' },
+          { color: '#42a5f5', label: '' },
+          { color: '#90caf9', label: '' },
+          { color: '#e3f2fd', label: 'Low' },
+        ]
+      },
+      walk_transit: {
+        title: 'Transit access',
+        type: 'discrete',
+        items: [
+          { color: '#4a148c', label: 'High' },
+          { color: '#6a1b9a', label: '' },
+          { color: '#8e24aa', label: '' },
+          { color: '#ab47bc', label: '' },
+          { color: '#ce93d8', label: '' },
+          { color: '#f3e5f5', label: 'Low' },
+        ]
+      },
+      walk_dest: {
+        title: 'Destination access',
+        type: 'discrete',
+        items: [
+          { color: '#bf360c', label: 'High' },
+          { color: '#e65100', label: '' },
+          { color: '#f57c00', label: '' },
+          { color: '#ffa726', label: '' },
+          { color: '#ffcc80', label: '' },
+          { color: '#fff3e0', label: 'Low' },
+        ]
+      },
+      rs_ndvi: {
+        title: 'NDVI (vegetation)',
+        type: 'gradient',
+        gradient: 'linear-gradient(to right, #d73027, #fee08b, #1a9850)',
+        min: '-0.2', max: '0.8',
+      },
+      rs_lst: {
+        title: 'Land surface temperature',
+        type: 'gradient',
+        gradient: 'linear-gradient(to right, #2166ac, #f4a582, #b2182b)',
+        min: '25 °C', max: '40 °C',
+      },
+      rs_ndbi: {
+        title: 'Built-up index (NDBI)',
+        type: 'gradient',
+        gradient: 'linear-gradient(to right, #1a9850, #fee08b, #d73027)',
+        min: '-0.3', max: '0.3',
+      },
+      rs_canopy: {
+        title: 'Tree canopy cover',
+        type: 'gradient',
+        gradient: 'linear-gradient(to right, #ffffcc, #006837)',
+        min: '0%', max: '100%',
+      },
+      rs_grid: {
+        title: '100m grid (NDVI)',
+        type: 'discrete',
+        items: [
+          { color: '#1b5e20', label: '> 0.6' },
+          { color: '#2e7d32', label: '0.5 – 0.6' },
+          { color: '#388e3c', label: '0.4 – 0.5' },
+          { color: '#66bb6a', label: '0.3 – 0.4' },
+          { color: '#a5d6a7', label: '0.2 – 0.3' },
+          { color: '#e8f5e9', label: '≤ 0.2' },
+        ]
+      },
+    };
+
+    function updateLayerLegend() {
+      const container = document.getElementById('layer-legend');
+      let html = '';
+      for (const [id, def] of Object.entries(LAYER_LEGEND_DEFS)) {
+        if (!layerState[id] || !layerState[id].visible) continue;
+        html += '<div class="layer-legend-section">';
+        html += '<div class="layer-legend-title">' + def.title + '</div>';
+        if (def.type === 'discrete') {
+          def.items.forEach(item => {
+            const lbl = item.label || '&nbsp;';
+            html += '<div class="legend-item"><span class="legend-swatch" style="background:' + item.color + '"></span> ' + lbl + '</div>';
+          });
+        } else if (def.type === 'gradient') {
+          html += '<div class="layer-legend-gradient" style="background:' + def.gradient + '"></div>';
+          html += '<div class="layer-legend-labels"><span>' + def.min + '</span><span>' + def.max + '</span></div>';
+        }
+        html += '</div>';
+      }
+      container.innerHTML = html;
+      container.style.display = html ? 'block' : 'none';
     }
 
     buildLayerPanel();
