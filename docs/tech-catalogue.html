@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tech Catalogue - Queenstown Liveability Study</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #333; line-height: 1.6; }
+    h1 { border-bottom: 2px solid #2c5f8a; padding-bottom: 8px; }
+    h2 { color: #2c5f8a; margin-top: 32px; }
+    h3 { color: #444; margin-top: 24px; }
+    a { color: #2c5f8a; }
+    .back { font-size: 14px; margin-bottom: 16px; }
+    table { font-size: 13px; border-collapse: collapse; width: 100%; margin: 12px 0 20px 0; }
+    th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #eee; }
+    th { color: #666; font-weight: 600; background: #f8f9fa; border-bottom: 2px solid #ddd; position: sticky; top: 0; }
+    td { color: #555; }
+    tr:hover td { background: #f5f8fb; }
+    .badge { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 4px; font-weight: 500; }
+    .badge-python { background: #e8f0fe; color: #1a73e8; }
+    .badge-js { background: #fff3e0; color: #e65100; }
+    .badge-api { background: #fff3cd; color: #856404; }
+    .badge-ci { background: #e8eaf6; color: #3949ab; }
+    .badge-format { background: #e6f4ea; color: #1a7f37; }
+    .section-note { font-size: 13px; color: #666; margin: 4px 0 12px 0; font-style: italic; }
+    hr { border: none; border-top: 1px solid #ddd; margin: 32px 0; }
+    code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+    #toc { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px 20px; margin: 0 0 24px 0; }
+    #toc summary { font-weight: 600; cursor: pointer; color: #2c5f8a; font-size: 15px; }
+    #toc ul { margin: 8px 0 0 0; padding-left: 20px; list-style: none; }
+    #toc ul ul { padding-left: 18px; }
+    #toc li { margin: 3px 0; font-size: 13px; line-height: 1.5; }
+    #toc li::before { content: '–'; color: #aaa; margin-right: 6px; }
+    #toc a { text-decoration: none; }
+    #toc a:hover { text-decoration: underline; }
+    .arch-diagram { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px 20px; margin: 16px 0; font-family: monospace; font-size: 12px; line-height: 1.8; white-space: pre; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="back"><a href="index.html">&larr; Back to Home</a></div>
+  <h1>Tech Catalogue</h1>
+  <p>Technologies, libraries, and frameworks used in the Queenstown liveability study &mdash; covering data processing, 3D visualisation, remote sensing, and deployment.</p>
+
+  <!-- ===== TABLE OF CONTENTS ===== -->
+  <details id="toc" open>
+    <summary>Table of Contents</summary>
+    <ul>
+      <li><a href="#architecture">Architecture Overview</a></li>
+      <li><a href="#python">Python Data Pipeline</a>
+        <ul>
+          <li><a href="#py-core">Core Libraries</a></li>
+          <li><a href="#py-geospatial">Geospatial Libraries</a></li>
+          <li><a href="#py-remote-sensing">Remote Sensing &amp; Street Imagery</a></li>
+          <li><a href="#py-3dtiles">3D Tiles Generation</a></li>
+        </ul>
+      </li>
+      <li><a href="#frontend">Frontend / Viewer</a></li>
+      <li><a href="#apis">APIs &amp; Cloud Services</a></li>
+      <li><a href="#formats">Data Formats</a></li>
+      <li><a href="#ci-cd">CI/CD &amp; Deployment</a></li>
+      <li><a href="#scripts">Script Reference</a></li>
+      <li><a href="#environments">Environment Setup</a></li>
+    </ul>
+  </details>
+
+  <hr>
+
+  <h2 id="architecture">Architecture Overview</h2>
+  <div class="arch-diagram">
+Data Sources                    Processing                      Output
+─────────────                   ──────────                      ──────
+data.gov.sg  ──┐
+URA / OneMap ──┤                filter_queenstown_layers.py ──→ docs/geo/gov-sg/*.geojson
+LTA DataMall ──┘                generate_subzone_summary.py ──→ docs/geo/queenstown-subzone-summary.*
+
+OSM Overpass ──────────────────────────────────────────────────→ docs/geo/global/*-buildings*.geojson
+                                generate_3dtiles.py ───────────→ docs/3dtiles/tileset.json + .b3dm
+
+OSMnx ─────────┐
+Google Earth ──┤── fetch_global_layers.py ─────────────────────→ docs/geo/global/queenstown-*.geojson
+Engine         │                                                 docs/geo/global/rasters/*.png
+Mapillary ─────┘
+
+                                            ┌──────────────────────────────┐
+All GeoJSON + PNG + 3D Tiles ──────────────→│  CesiumJS Viewer (viewer.html) │
+                                            └──────────────────────────────┘
+                                                        │
+                                            GitHub Actions ──→ GitHub Pages
+  </div>
+
+  <hr>
+
+  <h2 id="python">Python Data Pipeline</h2>
+
+  <h3 id="py-core">Core Libraries</h3>
+  <table>
+    <tr><th>Library</th><th>Version</th><th>Purpose</th><th>Used In</th></tr>
+    <tr><td><a href="https://www.python.org/">Python</a></td><td>3.10 / 3.12</td><td>Runtime (3.10 for zensvi env, 3.12 for CI)</td><td>All scripts</td></tr>
+    <tr><td><a href="https://docs.python.org/3/library/json.html">json</a> (stdlib)</td><td>&mdash;</td><td>GeoJSON reading/writing</td><td>All scripts</td></tr>
+    <tr><td><a href="https://docs.python.org/3/library/csv.html">csv</a> (stdlib)</td><td>&mdash;</td><td>CSV parsing (census, resale prices)</td><td><code>generate_subzone_summary.py</code></td></tr>
+    <tr><td><a href="https://docs.python.org/3/library/statistics.html">statistics</a> (stdlib)</td><td>&mdash;</td><td>Median, mean calculations</td><td><code>generate_subzone_summary.py</code></td></tr>
+  </table>
+
+  <h3 id="py-geospatial">Geospatial Libraries</h3>
+  <table>
+    <tr><th>Library</th><th>Version</th><th>Purpose</th><th>Used In</th></tr>
+    <tr>
+      <td><a href="https://shapely.readthedocs.io/">Shapely</a></td>
+      <td>2.x</td>
+      <td>Geometry operations: point-in-polygon, line clipping, area/length calculations, spatial joins</td>
+      <td><code>filter_queenstown_layers.py</code>, <code>generate_subzone_summary.py</code>, <code>fetch_global_layers.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://geopandas.org/">GeoPandas</a></td>
+      <td>0.14</td>
+      <td>GeoDataFrame I/O, spatial data manipulation, GeoJSON/Shapefile export</td>
+      <td><code>fetch_global_layers.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://osmnx.readthedocs.io/">OSMnx</a></td>
+      <td>1.9</td>
+      <td>Download OpenStreetMap street networks, convert to graph, export edges as GeoJSON</td>
+      <td><code>fetch_global_layers.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://networkx.org/">NetworkX</a></td>
+      <td>3.3</td>
+      <td>Graph analysis: betweenness centrality computation on street network</td>
+      <td><code>fetch_global_layers.py</code> (via OSMnx)</td>
+    </tr>
+    <tr>
+      <td><a href="https://pyproj4.github.io/pyproj/">pyproj</a></td>
+      <td>3.x</td>
+      <td>Coordinate transformations: WGS84 &rarr; ECEF for 3D Tiles</td>
+      <td><code>generate_3dtiles.py</code></td>
+    </tr>
+  </table>
+
+  <h3 id="py-remote-sensing">Remote Sensing &amp; Street Imagery</h3>
+  <table>
+    <tr><th>Library</th><th>Version</th><th>Purpose</th><th>Used In</th></tr>
+    <tr>
+      <td><a href="https://developers.google.com/earth-engine/guides/python_install">earthengine-api</a> (<code>ee</code>)</td>
+      <td>1.7</td>
+      <td>Google Earth Engine Python client: compute zonal statistics from satellite imagery (Landsat, Sentinel-2, GHSL, ALOS, SRTM, Hansen), export raster thumbnails as PNG</td>
+      <td><code>fetch_global_layers.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/koito19960406/ZenSVI">ZenSVI</a></td>
+      <td>latest</td>
+      <td>Mapillary street-level image metadata download via <code>MLYDownloader</code></td>
+      <td><code>fetch_global_layers.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://pypi.org/project/python-dotenv/">python-dotenv</a></td>
+      <td>&mdash;</td>
+      <td>Load API keys from <code>.env</code> file</td>
+      <td><code>fetch_global_layers.py</code></td>
+    </tr>
+  </table>
+
+  <h3 id="py-3dtiles">3D Tiles Generation</h3>
+  <table>
+    <tr><th>Library</th><th>Version</th><th>Purpose</th><th>Used In</th></tr>
+    <tr>
+      <td><a href="https://numpy.org/">NumPy</a></td>
+      <td>1.x / 2.x</td>
+      <td>Array operations for vertex/triangle buffer construction</td>
+      <td><code>generate_3dtiles.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/nicola17/mapbox-earcut-python">mapbox_earcut</a></td>
+      <td>&mdash;</td>
+      <td>Polygon triangulation (earcut algorithm) for building footprint meshing</td>
+      <td><code>generate_3dtiles.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://gitlab.com/Oslandia/py3dtiles">py3dtiles</a></td>
+      <td>&mdash;</td>
+      <td>Construct B3DM (Batched 3D Model) files and tileset.json manifests</td>
+      <td><code>generate_3dtiles.py</code></td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <h2 id="frontend">Frontend / Viewer</h2>
+  <table>
+    <tr><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+    <tr>
+      <td><a href="https://cesium.com/platform/cesiumjs/">CesiumJS</a></td>
+      <td>1.124</td>
+      <td>3D geospatial viewer: renders 3D Tiles (extruded buildings), GeoJSON overlays, raster image overlays (<code>SingleTileImageryProvider</code>), terrain, and basemaps. Handles camera, picking, and entity display.</td>
+    </tr>
+    <tr>
+      <td>HTML / CSS / JavaScript</td>
+      <td>ES6+</td>
+      <td>Single-page viewer app. No build tools, no frameworks &mdash; plain vanilla JS loaded from CDN.</td>
+    </tr>
+    <tr>
+      <td><a href="https://carto.com/basemaps/">CARTO Basemaps</a></td>
+      <td>&mdash;</td>
+      <td>Dark and light raster basemap tiles via <code>UrlTemplateImageryProvider</code>. Free tier, OpenStreetMap-based.</td>
+    </tr>
+    <tr>
+      <td><a href="https://cesium.com/platform/cesium-ion/">Cesium ion</a></td>
+      <td>&mdash;</td>
+      <td>World terrain provider (asset ID 1). Free community account. Access token required.</td>
+    </tr>
+  </table>
+
+  <h3>Viewer features powered by CesiumJS</h3>
+  <table>
+    <tr><th>Feature</th><th>CesiumJS API</th></tr>
+    <tr><td>3D building rendering</td><td><code>Cesium3DTileset</code> + <code>Cesium3DTileStyle</code> (height-based colour conditions)</td></tr>
+    <tr><td>GeoJSON vector overlays (22 layers)</td><td><code>GeoJsonDataSource.load()</code> with lazy loading on toggle</td></tr>
+    <tr><td>Satellite raster overlays (4 layers)</td><td><code>SingleTileImageryProvider</code> with georeferenced PNG bounds</td></tr>
+    <tr><td>Choropleth heatmap (21 metrics)</td><td>Manual polygon entities with <code>PolygonHierarchy</code>, 5-step YlOrRd colour ramp</td></tr>
+    <tr><td>Click interaction</td><td><code>ScreenSpaceEventHandler</code> + <code>scene.pick()</code></td></tr>
+    <tr><td>Terrain clamping</td><td><code>sampleTerrainMostDetailed()</code> for auto height offset</td></tr>
+    <tr><td>Ground-clamped lines/labels</td><td><code>clampToGround: true</code>, <code>HeightReference.CLAMP_TO_GROUND</code></td></tr>
+  </table>
+
+  <hr>
+
+  <h2 id="apis">APIs &amp; Cloud Services</h2>
+  <table>
+    <tr><th>Service</th><th>Auth</th><th>What We Use</th><th>Script</th></tr>
+    <tr>
+      <td><a href="https://developers.google.com/earth-engine">Google Earth Engine</a></td>
+      <td><span class="badge badge-api">GCP project</span></td>
+      <td><code>ee.ImageCollection</code> filtering, <code>reduceRegions()</code> for zonal stats, <code>getThumbURL()</code> for raster export. Datasets: Landsat 9 (LST), Sentinel-2 (NDVI/NDBI), JRC GHSL (building height), ALOS AW3D30 (DSM), SRTM (DEM), Hansen (canopy cover).</td>
+      <td><code>fetch_global_layers.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://www.mapillary.com/developer">Mapillary API</a></td>
+      <td><span class="badge badge-api">API key</span></td>
+      <td>Street-level image metadata download via ZenSVI&rsquo;s vector tile fetcher. Returns image ID, lat/lon, compass angle, panoramic flag.</td>
+      <td><code>fetch_global_layers.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://overpass-turbo.eu/">Overpass API</a> (OSM)</td>
+      <td>None</td>
+      <td>Building footprints for Queenstown (one-time download).</td>
+      <td>Manual query</td>
+    </tr>
+    <tr>
+      <td><a href="https://osmnx.readthedocs.io/">OSMnx / Nominatim</a></td>
+      <td>None</td>
+      <td>Street network graph download via bounding box.</td>
+      <td><code>fetch_global_layers.py</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://ion.cesium.com/">Cesium ion</a></td>
+      <td><span class="badge badge-api">Access token</span></td>
+      <td>World terrain tiles for the 3D viewer.</td>
+      <td><code>viewer.html</code></td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <h2 id="formats">Data Formats</h2>
+  <table>
+    <tr><th>Format</th><th>Extension</th><th>Use</th><th>Notes</th></tr>
+    <tr>
+      <td><span class="badge badge-format">GeoJSON</span></td>
+      <td><code>.geojson</code></td>
+      <td>Primary vector format for all spatial layers</td>
+      <td>WGS84 (EPSG:4326). FeatureCollection with typed geometry (Point, LineString, Polygon, MultiPolygon). Used by CesiumJS <code>GeoJsonDataSource</code>.</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-format">CSV</span></td>
+      <td><code>.csv</code></td>
+      <td>Tabular data (census, resale prices, subzone summary)</td>
+      <td>UTF-8 with header row. Fields match GeoJSON properties for parity.</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-format">3D Tiles</span></td>
+      <td><code>.json</code> + <code>.b3dm</code></td>
+      <td>3D building visualisation</td>
+      <td><a href="https://www.ogc.org/standard/3dtiles/">OGC 3D Tiles 1.0</a>. tileset.json manifest + B3DM (Batched 3D Model) with glTF 2.0 mesh + batch table (building properties).</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-format">PNG</span></td>
+      <td><code>.png</code></td>
+      <td>Satellite raster overlays</td>
+      <td>Georeferenced by bounding box in viewer code. Colour-ramped by GEE. 1024px resolution. Rendered via <code>SingleTileImageryProvider</code>.</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-format">Shapefile</span></td>
+      <td><code>.shp/.dbf/.shx/.prj</code></td>
+      <td>Temporary format for ZenSVI boundary input</td>
+      <td>Not committed; generated at runtime by GeoPandas.</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <h2 id="ci-cd">CI/CD &amp; Deployment</h2>
+  <table>
+    <tr><th>Service</th><th>Configuration</th><th>Purpose</th></tr>
+    <tr>
+      <td><a href="https://github.com/features/actions">GitHub Actions</a></td>
+      <td><code>.github/workflows/deploy.yml</code></td>
+      <td>Build pipeline: installs Python deps, runs 3 scripts (<code>generate_subzone_summary.py</code>, <code>filter_queenstown_layers.py</code>, <code>generate_3dtiles.py</code>), uploads <code>docs/</code> as Pages artifact.</td>
+    </tr>
+    <tr>
+      <td><a href="https://pages.github.com/">GitHub Pages</a></td>
+      <td>Automatic from Actions</td>
+      <td>Hosts the static site (viewer, index, catalogues, all GeoJSON/PNG/3DTiles).</td>
+    </tr>
+  </table>
+  <p class="section-note"><code>fetch_global_layers.py</code> is NOT in CI &mdash; it requires the <code>zensvi</code> conda env, GEE authentication, and Mapillary API key. Run manually; outputs are committed to <code>docs/geo/global/</code>.</p>
+
+  <h3>CI Python dependencies</h3>
+  <p class="section-note">Installed in the GitHub Actions workflow via <code>pip install</code>:</p>
+  <table>
+    <tr><th>Package</th><th>CI Use</th></tr>
+    <tr><td><code>numpy</code></td><td>3D Tiles vertex buffers</td></tr>
+    <tr><td><code>pyproj</code></td><td>WGS84 &rarr; ECEF coordinate transforms</td></tr>
+    <tr><td><code>mapbox_earcut</code></td><td>Polygon triangulation</td></tr>
+    <tr><td><code>py3dtiles</code></td><td>B3DM file generation</td></tr>
+    <tr><td><code>shapely</code></td><td>Geometry operations for subzone summary and layer filtering</td></tr>
+  </table>
+
+  <hr>
+
+  <h2 id="scripts">Script Reference</h2>
+  <table>
+    <tr><th>Script</th><th>Runtime</th><th>Input</th><th>Output</th><th>Key Libraries</th></tr>
+    <tr>
+      <td><code>generate_subzone_summary.py</code></td>
+      <td>Python 3.10+</td>
+      <td>Subzones GeoJSON, point/line datasets (data.gov.sg), census CSV, resale CSV, remote sensing GeoJSON</td>
+      <td><code>queenstown-subzone-summary.geojson</code> + <code>.csv</code></td>
+      <td>Shapely, json, csv, statistics</td>
+    </tr>
+    <tr>
+      <td><code>filter_queenstown_layers.py</code></td>
+      <td>Python 3.10+</td>
+      <td>Island-wide GeoJSONs (data.gov.sg), boundary polygon</td>
+      <td>11 filtered <code>gov-sg/*.geojson</code> files</td>
+      <td>Shapely, json</td>
+    </tr>
+    <tr>
+      <td><code>generate_3dtiles.py</code></td>
+      <td>Python 3.10+</td>
+      <td>Buildings GeoJSON</td>
+      <td><code>tileset.json</code> + <code>buildings.b3dm</code></td>
+      <td>NumPy, pyproj, mapbox_earcut, py3dtiles</td>
+    </tr>
+    <tr>
+      <td><code>fetch_global_layers.py</code></td>
+      <td><code>zensvi</code> conda env (Python 3.10)</td>
+      <td>APIs: OSMnx, GEE, Mapillary</td>
+      <td>Street network, remote sensing, raster PNGs, grid, Mapillary points</td>
+      <td>OSMnx, NetworkX, ee, GeoPandas, ZenSVI, python-dotenv</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <h2 id="environments">Environment Setup</h2>
+
+  <h3>CI environment (GitHub Actions)</h3>
+  <table>
+    <tr><th>Setting</th><th>Value</th></tr>
+    <tr><td>OS</td><td>Ubuntu latest</td></tr>
+    <tr><td>Python</td><td>3.12</td></tr>
+    <tr><td>Packages</td><td><code>numpy pyproj mapbox_earcut py3dtiles shapely</code></td></tr>
+    <tr><td>Runs</td><td>On push to <code>main</code></td></tr>
+  </table>
+
+  <h3>Local environment (global layers)</h3>
+  <table>
+    <tr><th>Setting</th><th>Value</th></tr>
+    <tr><td>Conda env</td><td><code>zensvi</code> (<code>/opt/anaconda3/envs/zensvi/bin/python3</code>)</td></tr>
+    <tr><td>Python</td><td>3.10</td></tr>
+    <tr><td>Key packages</td><td><code>earthengine-api</code>, <code>osmnx</code>, <code>networkx</code>, <code>geopandas</code>, <code>zensvi</code>, <code>python-dotenv</code></td></tr>
+    <tr><td>GEE project</td><td><code>uobdubai</code></td></tr>
+    <tr><td>Secrets</td><td><code>.env</code> file with <code>YOUR_OWN_MLY_API_KEY</code></td></tr>
+  </table>
+
+  <h3>GEE satellite datasets used</h3>
+  <table>
+    <tr><th>Dataset ID</th><th>Sensor / Source</th><th>Resolution</th><th>Metric Derived</th></tr>
+    <tr><td><code>LANDSAT/LC09/C02/T1_L2</code></td><td>Landsat 9</td><td>30 m (thermal 100 m)</td><td>Land surface temperature (LST)</td></tr>
+    <tr><td><code>COPERNICUS/S2_SR_HARMONIZED</code></td><td>Sentinel-2</td><td>10 m</td><td>NDVI (vegetation), NDBI (built-up)</td></tr>
+    <tr><td><code>JRC/GHSL/P2023A/GHS_BUILT_H/2018</code></td><td>GHSL (JRC)</td><td>100 m</td><td>Mean built-up height</td></tr>
+    <tr><td><code>JAXA/ALOS/AW3D30/V4_1</code></td><td>ALOS PRISM</td><td>30 m</td><td>Digital surface model (DSM)</td></tr>
+    <tr><td><code>USGS/SRTMGL1_003</code></td><td>SRTM</td><td>30 m</td><td>Digital elevation model (DEM)</td></tr>
+    <tr><td><code>UMD/hansen/global_forest_change_2024_v1_12</code></td><td>Landsat (Hansen/UMD)</td><td>30 m</td><td>Tree canopy cover, canopy loss</td></tr>
+  </table>
+
+</body>
+</html>
