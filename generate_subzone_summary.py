@@ -52,11 +52,13 @@ POINT_LAYERS = {
     "supermarkets": os.path.join(DATA, "supermarkets.geojson"),
     "gyms": os.path.join(DATA, "gyms.geojson"),
     "community_clubs": os.path.join(DATA, "community-clubs.geojson"),
+    "sport_facilities": os.path.join(DATA, "sport-facilities.geojson"),
 }
 
 LINE_LAYERS = {
     "cycling_path": os.path.join(DATA, "cycling-path-network.geojson"),
     "park_connector": os.path.join(DATA, "park-connector-loop.geojson"),
+    "nparks_track": os.path.join(DATA, "nparks-tracks.geojson"),
 }
 
 POPULATION_CSV = os.path.join(DATA, "population-census-2020.csv")
@@ -200,6 +202,7 @@ print("Computing line lengths per subzone...")
 for sz in subzones:
     sz["cycling_path_km"] = 0.0
     sz["park_connector_km"] = 0.0
+    sz["nparks_track_km"] = 0.0
 
 for layer_name, path in LINE_LAYERS.items():
     if not os.path.exists(path):
@@ -238,6 +241,47 @@ for layer_name, path in LINE_LAYERS.items():
             sz[key] += length_m / 1000.0
             total += length_m / 1000.0
     print(f"  {layer_name}: {total:.2f} km total in {DISTRICT}")
+
+# ---------------------------------------------------------------------------
+# 3b. Polygon-area aggregation (clip + sum area)
+# ---------------------------------------------------------------------------
+print("Computing polygon areas per subzone...")
+
+POLYGON_AREA_LAYERS = {
+    "green_space": os.path.join(DATA, "nparks-parks-nature-reserves.geojson"),
+    "abc_waters": os.path.join(DATA, "abc-waters.geojson"),
+}
+
+for sz in subzones:
+    sz["green_space_area_km2"] = 0.0
+    sz["abc_waters_area_km2"] = 0.0
+
+for layer_name, path in POLYGON_AREA_LAYERS.items():
+    if not os.path.exists(path):
+        print(f"  WARNING: {path} not found, skipping")
+        continue
+    gj = load_geojson(path)
+    key = f"{layer_name}_area_km2"
+    total = 0.0
+    for feat in gj["features"]:
+        geom_raw = feat["geometry"]
+        if geom_raw is None:
+            continue
+        geom = shape(geom_raw)
+        if not geom.intersects(boundary_geom):
+            continue
+        for sz in subzones:
+            try:
+                clipped = sz["geom"].intersection(geom)
+            except Exception:
+                continue
+            if clipped.is_empty:
+                continue
+            if clipped.geom_type in ("Polygon", "MultiPolygon"):
+                area = polygon_area_km2(clipped)
+                sz[key] += area
+                total += area
+    print(f"  {layer_name}: {total:.4f} km² total in {DISTRICT}")
 
 # ---------------------------------------------------------------------------
 # 4. Population (Census 2020)
@@ -459,6 +503,7 @@ for sz in subzones:
     sz["amenity_count"] = amenity_total
     sz["amenity_density"] = round(amenity_total / area, 1) if area > 0 else 0
     sz["dwelling_density"] = round(sz["total_dwelling_units"] / area) if area > 0 else 0
+    sz["green_space_pct"] = round((sz["green_space_area_km2"] / area) * 100, 1) if area > 0 else 0
 
 # ---------------------------------------------------------------------------
 # 8. Remote sensing metrics (from fetch_global_layers.py GEE output)
@@ -565,7 +610,9 @@ FIELDS = [
     "hawker_centres", "parks", "supermarkets", "gyms", "community_clubs",
     "amenity_count", "amenity_density",
     "mrt_exits", "mrt_station_count",
-    "cycling_path_km", "park_connector_km",
+    "cycling_path_km", "park_connector_km", "nparks_track_km",
+    "sport_facilities",
+    "green_space_area_km2", "green_space_pct", "abc_waters_area_km2",
     "building_count", "hdb_count", "mean_height_m", "max_height_m",
     "avg_hdb_year", "total_dwelling_units", "dwelling_density",
     "resale_median_price", "resale_transaction_count",
@@ -600,6 +647,11 @@ for sz in subzones:
         "mrt_station_count": sz["mrt_station_count"],
         "cycling_path_km": round(sz["cycling_path_km"], 2),
         "park_connector_km": round(sz["park_connector_km"], 2),
+        "nparks_track_km": round(sz["nparks_track_km"], 2),
+        "sport_facilities": sz["sport_facilities"],
+        "green_space_area_km2": round(sz["green_space_area_km2"], 4),
+        "green_space_pct": sz["green_space_pct"],
+        "abc_waters_area_km2": round(sz["abc_waters_area_km2"], 4),
         "building_count": sz["building_count"],
         "hdb_count": sz["hdb_count"],
         "mean_height_m": sz["mean_height_m"],

@@ -74,7 +74,7 @@
   <div id="cesiumContainer"></div>
   <div id="info">
     <h3 id="info-title">Queenstown 3D Buildings</h3>
-    <div id="info-subtitle">8,671 buildings | 26 layers | 25 metrics | Click for details</div>
+    <div id="info-subtitle">8,671 buildings | 30 layers | 30 metrics | Click for details</div>
     <button id="basemap-toggle" onclick="toggleBasemap()">&#9788; Light</button>
     <div class="legend">
       <div style="color:#999; margin-bottom:2px;">Building height</div>
@@ -128,31 +128,31 @@
         label: 'Queenstown',
         camera: [103.7885, 1.2870, 2000],
         rasterBounds: [103.7502, 1.2550, 103.8166, 1.3188],
-        layerCounts: { hawker: 9, supermarket: 19, mrt: 26, parks: 9, parkfac: 370, parkconn: 36, cycling: 110, cc: 4, gym: 4, preschool: 81, chas: 43, hdb: 308, heightctl: 7, streetnet: 3788, walk_idx: 2178, walk_intdens: 2178, walk_transit: 2178, walk_dest: 2178, rs_grid: 2394 },
+        layerCounts: { hawker: 9, supermarket: 19, mrt: 26, parks: 9, parkfac: 370, parkconn: 36, nature: 12, abcwaters: 5, nptracks: 1559, cycling: 110, cc: 4, gym: 4, preschool: 81, chas: 43, sportfac: 1, hdb: 308, heightctl: 7, streetnet: 3788, walk_idx: 2178, walk_intdens: 2178, walk_transit: 2178, walk_dest: 2178, rs_grid: 2394 },
       },
       bishan: {
         label: 'Bishan',
         camera: [103.8395, 1.3550, 2000],
         rasterBounds: [103.8185, 1.3420, 103.8604, 1.3680],
-        layerCounts: { hawker: 1, supermarket: 8, mrt: 16, parks: 18, parkfac: 173, parkconn: 10, cycling: 160, cc: 4, gym: 5, preschool: 50, chas: 20, hdb: 1, heightctl: 0, streetnet: 1363, walk_idx: 769, walk_intdens: 769, walk_transit: 769, walk_dest: 769, rs_grid: 840 },
+        layerCounts: { hawker: 1, supermarket: 8, mrt: 16, parks: 18, parkfac: 173, parkconn: 10, nature: 20, abcwaters: 3, nptracks: 481, cycling: 160, cc: 4, gym: 5, preschool: 50, chas: 20, sportfac: 2, hdb: 1, heightctl: 0, streetnet: 1363, walk_idx: 769, walk_intdens: 769, walk_transit: 769, walk_dest: 769, rs_grid: 840 },
       },
       outram: {
         label: 'Outram',
         camera: [103.8423, 1.2817, 1500],
         rasterBounds: [103.8348, 1.2742, 103.8497, 1.2892],
-        layerCounts: { hawker: 5, supermarket: 7, mrt: 16, parks: 5, parkfac: 11, parkconn: 0, cycling: 27, cc: 2, gym: 19, preschool: 16, chas: 16, hdb: 1, heightctl: 0, streetnet: 711, walk_idx: 135, walk_intdens: 135, walk_transit: 135, walk_dest: 135, rs_grid: 175 },
+        layerCounts: { hawker: 5, supermarket: 7, mrt: 16, parks: 5, parkfac: 11, parkconn: 0, nature: 5, abcwaters: 0, nptracks: 192, cycling: 27, cc: 2, gym: 19, preschool: 16, chas: 16, sportfac: 1, hdb: 1, heightctl: 0, streetnet: 711, walk_idx: 135, walk_intdens: 135, walk_transit: 135, walk_dest: 135, rs_grid: 175 },
       },
       tampines: {
         label: 'Tampines',
         camera: [103.9549, 1.3450, 2000],
         rasterBounds: [103.9250, 1.3141, 103.9848, 1.3758],
-        layerCounts: { hawker: 3, supermarket: 25, mrt: 27, parks: 13, parkfac: 194, parkconn: 19, cycling: 471, cc: 6, gym: 4, preschool: 142, chas: 81, hdb: 19, heightctl: 0, streetnet: 4144, walk_idx: 2085, walk_intdens: 2085, walk_transit: 2085, walk_dest: 2085, rs_grid: 2230 },
+        layerCounts: { hawker: 3, supermarket: 25, mrt: 27, parks: 13, parkfac: 194, parkconn: 19, nature: 13, abcwaters: 3, nptracks: 449, cycling: 471, cc: 6, gym: 4, preschool: 142, chas: 81, sportfac: 1, hdb: 19, heightctl: 0, streetnet: 4144, walk_idx: 2085, walk_intdens: 2085, walk_transit: 2085, walk_dest: 2085, rs_grid: 2230 },
       },
       newton: {
         label: 'Newton',
         camera: [103.8377, 1.3085, 1500],
         rasterBounds: [103.8267, 1.2996, 103.8487, 1.3174],
-        layerCounts: { hawker: 1, supermarket: 0, mrt: 3, parks: 1, parkfac: 2, parkconn: 0, cycling: 0, cc: 1, gym: 1, preschool: 7, chas: 3, hdb: 0, heightctl: 0, streetnet: 838, walk_idx: 210, walk_intdens: 210, walk_transit: 210, walk_dest: 210, rs_grid: 265 },
+        layerCounts: { hawker: 1, supermarket: 0, mrt: 3, parks: 1, parkfac: 2, parkconn: 0, nature: 1, abcwaters: 0, nptracks: 0, cycling: 0, cc: 1, gym: 1, preschool: 7, chas: 3, sportfac: 0, hdb: 0, heightctl: 0, streetnet: 838, walk_idx: 210, walk_intdens: 210, walk_transit: 210, walk_dest: 210, rs_grid: 265 },
       },
     };
 
@@ -352,7 +352,7 @@
 
       // 7. Update info panel
       document.getElementById('info-title').textContent = dist.label + ' 3D Buildings';
-      document.getElementById('info-subtitle').textContent = 'Loading... | 26 layers | 25 metrics | Click for details';
+      document.getElementById('info-subtitle').textContent = 'Loading... | 30 layers | 30 metrics | Click for details';
 
       // 8. Reload boundary + subzones
       loadBoundary();
@@ -503,6 +503,9 @@
       { id: 'parks', label: 'Parks', file: '../geo/gov-sg/queenstown-parks.geojson', color: '#45b649', group: 'Green & Recreation', type: 'point', source: 'gov-sg' },
       { id: 'parkfac', label: 'Park facilities', file: '../geo/gov-sg/queenstown-park-facilities.geojson', color: '#7bc67e', group: 'Green & Recreation', type: 'point', source: 'gov-sg' },
       { id: 'parkconn', label: 'Park connectors', file: '../geo/gov-sg/queenstown-park-connectors.geojson', color: '#44ff44', group: 'Green & Recreation', type: 'line', source: 'gov-sg' },
+      { id: 'nature', label: 'Parks & nature reserves', file: '../geo/gov-sg/queenstown-nparks-parks-nature-reserves.geojson', color: '#2e7d32', group: 'Green & Recreation', type: 'polygon', source: 'gov-sg' },
+      { id: 'abcwaters', label: 'ABC Waters', file: '../geo/gov-sg/queenstown-abc-waters.geojson', color: '#0288d1', group: 'Green & Recreation', type: 'polygon', source: 'gov-sg' },
+      { id: 'nptracks', label: 'NParks tracks', file: '../geo/gov-sg/queenstown-nparks-tracks.geojson', color: '#8bc34a', group: 'Green & Recreation', type: 'line', source: 'gov-sg' },
       // Active Mobility
       { id: 'cycling', label: 'Cycling paths', file: '../geo/gov-sg/queenstown-cycling-paths.geojson', color: '#00ff88', group: 'Active Mobility', type: 'line', source: 'gov-sg' },
       // Community
@@ -510,6 +513,7 @@
       { id: 'gym', label: 'Gyms', file: '../geo/gov-sg/queenstown-gyms.geojson', color: '#e74c3c', group: 'Community', type: 'point', source: 'gov-sg' },
       { id: 'preschool', label: 'Pre-schools', file: '../geo/gov-sg/queenstown-preschools.geojson', color: '#f39c12', group: 'Community', type: 'point', source: 'gov-sg' },
       { id: 'chas', label: 'CHAS clinics', file: '../geo/gov-sg/queenstown-chas-clinics.geojson', color: '#e84393', group: 'Community', type: 'point', source: 'gov-sg' },
+      { id: 'sportfac', label: 'Sport facilities', file: '../geo/gov-sg/queenstown-sport-facilities.geojson', color: '#ff5252', group: 'Community', type: 'point', source: 'gov-sg' },
       // Housing
       { id: 'hdb', label: 'HDB blocks', file: '../geo/global/queenstown-buildings-hdb-enriched.geojson', color: '#ff5722', group: 'Housing', type: 'point', source: 'global' },
       // Planning
@@ -752,7 +756,7 @@
       choroLabel.textContent = 'Choropleth';
       const choroCount = document.createElement('span');
       choroCount.className = 'group-count';
-      choroCount.textContent = '25';
+      choroCount.textContent = '30';
       choroHeader.appendChild(choroChevron);
       choroHeader.appendChild(choroLabel);
       choroHeader.appendChild(choroCount);
@@ -1076,6 +1080,11 @@
           { value: 'mrt_station_count', label: 'MRT stations', unit: '', fmt: 'int', badge: 'cnt' },
           { value: 'cycling_path_km', label: 'Cycling paths', unit: ' km', fmt: 'float', badge: 'cnt' },
           { value: 'park_connector_km', label: 'Park connectors', unit: ' km', fmt: 'float', badge: 'cnt' },
+          { value: 'nparks_track_km', label: 'NParks tracks', unit: ' km', fmt: 'float', badge: 'cnt' },
+          { value: 'sport_facilities', label: 'Sport facilities', unit: '', fmt: 'int', badge: 'cnt' },
+          { value: 'green_space_pct', label: 'Green space coverage', unit: '%', fmt: 'float', badge: 'rate' },
+          { value: 'green_space_area_km2', label: 'Green space area', unit: ' km²', fmt: 'float', badge: 'cnt' },
+          { value: 'abc_waters_area_km2', label: 'ABC Waters area', unit: ' km²', fmt: 'float', badge: 'cnt' },
         ]
       },
       {

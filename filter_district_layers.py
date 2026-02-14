@@ -32,15 +32,19 @@ POINT_LAYERS = [
     ("pre-schools.geojson", "preschools.geojson"),
     ("chas-clinics.geojson", "chas-clinics.geojson"),
     ("park-facilities.geojson", "park-facilities.geojson"),
+    ("sport-facilities.geojson", "sport-facilities.geojson"),
 ]
 
 LINE_LAYERS = [
     ("cycling-path-network.geojson", "cycling-paths.geojson"),
     ("park-connector-loop.geojson", "park-connectors.geojson"),
+    ("nparks-tracks.geojson", "nparks-tracks.geojson"),
 ]
 
 POLYGON_LAYERS = [
     ("ura-height-control.geojson", "ura-height-control.geojson"),
+    ("nparks-parks-nature-reserves.geojson", "nparks-parks-nature-reserves.geojson"),
+    ("abc-waters.geojson", "abc-waters.geojson"),
 ]
 
 

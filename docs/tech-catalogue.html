@@ -69,11 +69,11 @@
 Data Sources                    Processing                      Output
 ─────────────                   ──────────                      ──────
 data.gov.sg  ──┐
-URA / OneMap ──┤                filter_queenstown_layers.py ──→ docs/geo/gov-sg/*.geojson
-LTA DataMall ──┘                generate_subzone_summary.py ──→ docs/geo/queenstown-subzone-summary.*
+URA / OneMap ──┤                filter_district_layers.py ──→ docs/geo/gov-sg/*.geojson
+LTA DataMall ──┘                generate_subzone_summary.py ──→ docs/geo/{district}-subzone-summary.*
 
 OSM Overpass ──────────────────────────────────────────────────→ docs/geo/global/*-buildings*.geojson
-                                generate_3dtiles.py ───────────→ docs/3dtiles/tileset.json + .b3dm
+                                generate_3dtiles.py ───────────→ docs/3dtiles/{district}/tileset.json + .b3dm
 
 OSMnx ─────────┐
 Google Earth ──┤── fetch_global_layers.py ─────────────────────→ docs/geo/global/queenstown-*.geojson
@@ -108,7 +108,7 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
       <td><a href="https://shapely.readthedocs.io/">Shapely</a></td>
       <td>2.x</td>
       <td>Geometry operations: point-in-polygon, line clipping, area/length calculations, spatial joins</td>
-      <td><code>filter_queenstown_layers.py</code>, <code>generate_subzone_summary.py</code>, <code>fetch_global_layers.py</code></td>
+      <td><code>filter_district_layers.py</code>, <code>generate_subzone_summary.py</code>, <code>fetch_global_layers.py</code></td>
     </tr>
     <tr>
       <td><a href="https://geopandas.org/">GeoPandas</a></td>
@@ -303,7 +303,7 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
     <tr>
       <td><a href="https://github.com/features/actions">GitHub Actions</a></td>
       <td><code>.github/workflows/deploy.yml</code></td>
-      <td>Build pipeline: installs Python deps, runs 3 scripts (<code>generate_subzone_summary.py</code>, <code>filter_queenstown_layers.py</code>, <code>generate_3dtiles.py</code>), uploads <code>docs/</code> as Pages artifact.</td>
+      <td>Build pipeline: installs Python deps, runs 3 scripts (<code>generate_subzone_summary.py</code>, <code>filter_district_layers.py</code>, <code>generate_3dtiles.py</code>), uploads <code>docs/</code> as Pages artifact.</td>
     </tr>
     <tr>
       <td><a href="https://pages.github.com/">GitHub Pages</a></td>
@@ -337,7 +337,7 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
       <td>Shapely, json, csv, statistics</td>
     </tr>
     <tr>
-      <td><code>filter_queenstown_layers.py</code></td>
+      <td><code>filter_district_layers.py</code></td>
       <td>Python 3.10+</td>
       <td>Island-wide GeoJSONs (data.gov.sg), boundary polygon</td>
       <td>11 filtered <code>gov-sg/*.geojson</code> files</td>
