@@ -46,7 +46,7 @@ Island-wide GeoJSON datasets live in `data/data-gov-sg/` (gitignored, ~11.5 MB).
 |---|---|---|---|
 | `extract_district.py` | URA master plan subzones GeoJSON | `docs/geo/{district}-boundary.geojson` + `{district}-subzones.geojson` | Yes |
 | `generate_subzone_summary.py` | Subzones + point/line/CSV + remote sensing + walkability | `docs/geo/{district}-subzone-summary.geojson` + `.csv` | Yes |
-| `filter_district_layers.py` | Boundary + 15 island-wide GeoJSONs | 15 `docs/geo/gov-sg/{district}-*.geojson` files | Yes |
+| `filter_district_layers.py` | Boundary + 16 island-wide GeoJSONs | 16 `docs/geo/gov-sg/{district}-*.geojson` files | Yes |
 | `generate_3dtiles.py` | Buildings GeoJSON | `docs/3dtiles/{district}/tileset.json` + B3DM | Yes |
 | `fetch_global_layers.py` | OSMnx, GEE, Mapillary APIs | `docs/geo/global/{district}-*.geojson` files | Manual (requires conda env + API keys). Default tasks: `buildings osmnx gee mapillary`. Additional tasks: `raster_pngs` (GEE raster PNG overlays), `rs_grid` (100m RS grid cells) |
 | `generate_walkability.py` | OSMnx walk network + subzones | `docs/geo/global/{district}-walkability.json` + `{district}-walkability-grid.geojson` | Manual (requires conda env) |
@@ -58,7 +58,7 @@ The CI workflow (`.github/workflows/deploy.yml`) loops over all 5 districts for 
 Files are organised into subdirectories by data provenance. All filenames use `{district}-` prefix (e.g., `queenstown-`, `bishan-`).
 
 - **`docs/geo/`** (root) — per-district boundary, subzones, subzone-summary GeoJSON + CSV (5 districts)
-- **`docs/geo/gov-sg/`** — 15 layers per district from Singapore government open data (75 files total for 5 districts)
+- **`docs/geo/gov-sg/`** — 16 layers per district from Singapore government open data (80 files total for 5 districts)
 - **`docs/geo/global/`** — OSM buildings, street network, remote sensing (subzone-level + 100m RS grid), and walkability (scores + grid) for all 5 districts. Mapillary for Queenstown, Bishan, Outram.
 - **`docs/geo/global/rasters/`** — 4 satellite raster PNGs per district from GEE (NDVI, LST, NDBI, canopy; 1024px each) for all 5 districts
 - **`docs/3dtiles/{district}/`** — per-district 3D tileset directories for all 5 districts (queenstown: 15 MB, bishan: 4.8 MB, outram: 1.4 MB, tampines: 9.8 MB, newton: 1.3 MB)

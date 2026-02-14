@@ -32,9 +32,13 @@ jobs:
 
       - name: Extract district boundaries
         run: |
-          for district in queenstown bishan outram tampines newton; do
-            python extract_district.py "$district"
-          done
+          if [ -d data/ura ]; then
+            for district in queenstown bishan outram tampines newton; do
+              python extract_district.py "$district"
+            done
+          else
+            echo "Source data not available, using committed files"
+          fi
 
       - name: Generate subzone summaries (GeoJSON + CSV)
         run: |

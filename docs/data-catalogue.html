@@ -269,7 +269,7 @@
     <tr><td>SVY21 coordinates</td><td>EPSG:3414</td><td>URA APIs, some LTA data</td></tr>
     <tr><td>Bus stop code</td><td><code>bus_stop_code</code></td><td>LTA bus stops, routes, passenger volumes</td></tr>
     <tr><td>Station name/code</td><td><code>station_name</code></td><td>LTA train stations, exits, passenger volumes</td></tr>
-    <tr><td>Spatial clip/intersect</td><td>Polygon boundary</td><td>All geospatial layers clipped to Queenstown</td></tr>
+    <tr><td>Spatial clip/intersect</td><td>Polygon boundary</td><td>All geospatial layers clipped to district boundary</td></tr>
     <tr><td>Address / postal code</td><td>Text matching</td><td>HDB data, schools, OneMap geocoding</td></tr>
   </table>
 
@@ -316,6 +316,7 @@
   <h3 id="polygon-layers">Polygon Layers (clipped to boundary) <small style="color:#888; font-weight:normal;">(gov-sg/)</small></h3>
   <table>
     <tr><th>Output File</th><th>Source Dataset</th><th>Features</th><th>Category</th></tr>
+    <tr><td><code>gov-sg/queenstown-ura-height-control.geojson</code></td><td>URA Building Height Control</td><td>7</td><td>Planning</td></tr>
     <tr><td><code>gov-sg/queenstown-nparks-parks-nature-reserves.geojson</code></td><td>NParks Parks &amp; Nature Reserves</td><td>12</td><td>Green &amp; Recreation</td></tr>
     <tr><td><code>gov-sg/queenstown-abc-waters.geojson</code></td><td>ABC Waters</td><td>5</td><td>Green &amp; Recreation</td></tr>
   </table>
@@ -338,7 +339,6 @@
     <tr><td><code>global/{district}-buildings-hdb-enriched.geojson</code></td><td>OSM buildings + HDB Property Info</td><td>queenstown: 308; tampines: 19; bishan: 1; outram: 1; newton: 0</td><td>Housing</td></tr>
     <tr><td><code>global/{district}-street-network.geojson</code></td><td>OSMnx drive network (betweenness centrality)</td><td>queenstown: 3,788; bishan: 1,363; outram: 711; tampines: 4,144; newton: 838</td><td>Street Network</td></tr>
     <tr><td><code>global/{district}-walkability-grid.geojson</code></td><td>OSMnx walk network + 100&thinsp;m grid + population density</td><td>queenstown: 2,178; bishan: 769; outram: 135; tampines: 2,085; newton: 210</td><td>Street Network (Intersection density grid only)</td></tr>
-    <tr><td><code>gov-sg/queenstown-ura-height-control.geojson</code></td><td>URA Building Height Control</td><td>7</td><td>Planning</td></tr>
     <tr><td><code>global/{district}-rs-grid.geojson</code></td><td>GEE 100&thinsp;m grid (NDVI, NDBI, LST, canopy) with dynamic legend</td><td>queenstown: 2,394; bishan: 840; outram: 175; tampines: 2,230; newton: 265</td><td>Remote Sensing</td></tr>
     <tr><td><code>global/rasters/{district}-ndvi.png</code></td><td>GEE satellite raster (Sentinel-2)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
     <tr><td><code>global/rasters/{district}-lst.png</code></td><td>GEE satellite raster (Landsat 9)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
