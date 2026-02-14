@@ -76,10 +76,9 @@ OSM Overpass ──────────────────────�
                                 generate_3dtiles.py ───────────→ docs/3dtiles/{district}/tileset.json + .b3dm
 
 OSMnx ─────────┐
-Google Earth ──┤── fetch_global_layers.py ─────────────────────→ docs/geo/global/queenstown-*.geojson
-Engine         │                                                 docs/geo/global/rasters/*.png
-Mapillary ─────┘
-                               generate_walkability.py ──────────→ docs/geo/global/queenstown-walkability*.json/geojson
+Google Earth ──┤── fetch_global_layers.py ─────────────────────→ docs/geo/global/{district}-*.geojson
+Engine ────────┘                                                 docs/geo/global/rasters/*.png
+                               generate_walkability.py ──────────→ docs/geo/global/{district}-walkability*.json/geojson
 
                                             ┌──────────────────────────────┐
 All GeoJSON + PNG + 3D Tiles ──────────────→│  CesiumJS Viewer (viewer.html) │
@@ -145,12 +144,12 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
       <td>Google Earth Engine Python client: compute zonal statistics from satellite imagery (Landsat, Sentinel-2, GHSL, ALOS, SRTM, Hansen), export raster thumbnails as PNG</td>
       <td><code>fetch_global_layers.py</code></td>
     </tr>
-    <tr>
+    <!-- <tr>
       <td><a href="https://github.com/koito19960406/ZenSVI">ZenSVI</a></td>
       <td>latest</td>
       <td>Mapillary street-level image metadata download via <code>MLYDownloader</code></td>
       <td><code>fetch_global_layers.py</code></td>
-    </tr>
+    </tr> -->
     <tr>
       <td><a href="https://pypi.org/project/python-dotenv/">python-dotenv</a></td>
       <td>&mdash;</td>
@@ -203,9 +202,14 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
       <td>Dark and light raster basemap tiles via <code>UrlTemplateImageryProvider</code>. Free tier, OpenStreetMap-based.</td>
     </tr>
     <tr>
+      <td><a href="https://opentopomap.org/">OpenTopoMap</a></td>
+      <td>&mdash;</td>
+      <td>Topographic raster basemap tiles via <code>UrlTemplateImageryProvider</code>. Free, OpenStreetMap-based with contour lines and hillshading.</td>
+    </tr>
+    <tr>
       <td><a href="https://cesium.com/platform/cesium-ion/">Cesium ion</a></td>
       <td>&mdash;</td>
-      <td>World terrain provider (asset ID 1). Free community account. Access token required.</td>
+      <td>World terrain provider (asset ID 1) and Bing Maps satellite imagery (asset ID 2, lazy-loaded). Free community account. Access token required.</td>
     </tr>
   </table>
 
@@ -213,10 +217,11 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
   <table>
     <tr><th>Feature</th><th>CesiumJS API</th></tr>
     <tr><td>3D building rendering</td><td><code>Cesium3DTileset</code> + <code>Cesium3DTileStyle</code> (height-based colour conditions)</td></tr>
-    <tr><td>GeoJSON vector overlays (22 layers)</td><td><code>GeoJsonDataSource.load()</code> with lazy loading on toggle; dynamic legends for street network, remote sensing, and walkability grid layers</td></tr>
+    <tr><td>GeoJSON vector overlays (20 layers)</td><td><code>GeoJsonDataSource.load()</code> with lazy loading on toggle; dynamic legends for street network, remote sensing, and intersection density grid layers</td></tr>
     <tr><td>Satellite raster overlays (4 layers)</td><td><code>SingleTileImageryProvider</code> with georeferenced PNG bounds</td></tr>
-    <tr><td>Choropleth heatmap (25 metrics)</td><td>Manual polygon entities with <code>PolygonHierarchy</code>, 5-step YlOrRd colour ramp</td></tr>
-    <tr><td>Click interaction</td><td><code>ScreenSpaceEventHandler</code> + <code>scene.pick()</code>; Mapillary points show clickable link to view on Mapillary</td></tr>
+    <tr><td>Choropleth heatmap (30 metrics)</td><td>Manual polygon entities with <code>PolygonHierarchy</code>, 5-step YlOrRd colour ramp</td></tr>
+    <tr><td>Basemap switching (4 options)</td><td>Dark (CARTO), Light (CARTO), Satellite (Bing via <code>IonImageryProvider</code>), Terrain (OpenTopoMap)</td></tr>
+    <tr><td>Click interaction</td><td><code>ScreenSpaceEventHandler</code> + <code>scene.pick()</code>; click any feature for attribute popup</td></tr>
     <tr><td>Terrain clamping</td><td><code>sampleTerrainMostDetailed()</code> for auto height offset</td></tr>
     <tr><td>Ground-clamped lines/labels</td><td><code>clampToGround: true</code>, <code>HeightReference.CLAMP_TO_GROUND</code></td></tr>
   </table>
@@ -232,17 +237,17 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
       <td><code>ee.ImageCollection</code> filtering, <code>reduceRegions()</code> for zonal stats, <code>getThumbURL()</code> for raster export. Datasets: Landsat 9 (LST), Sentinel-2 (NDVI/NDBI), JRC GHSL (building height), ALOS AW3D30 (DSM), SRTM (DEM), Hansen (canopy cover).</td>
       <td><code>fetch_global_layers.py</code></td>
     </tr>
-    <tr>
+    <!-- <tr>
       <td><a href="https://www.mapillary.com/developer">Mapillary API</a></td>
       <td><span class="badge badge-api">API key</span></td>
       <td>Street-level image metadata download via ZenSVI&rsquo;s vector tile fetcher. Returns image ID, lat/lon, compass angle, panoramic flag.</td>
       <td><code>fetch_global_layers.py</code></td>
-    </tr>
+    </tr> -->
     <tr>
       <td><a href="https://overpass-turbo.eu/">Overpass API</a> (OSM)</td>
       <td>None</td>
-      <td>Building footprints for Queenstown (one-time download).</td>
-      <td>Manual query</td>
+      <td>Building footprints for all 5 districts (queried via OSMnx).</td>
+      <td><code>fetch_global_layers.py</code></td>
     </tr>
     <tr>
       <td><a href="https://osmnx.readthedocs.io/">OSMnx / Nominatim</a></td>
@@ -303,7 +308,7 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
     <tr>
       <td><a href="https://github.com/features/actions">GitHub Actions</a></td>
       <td><code>.github/workflows/deploy.yml</code></td>
-      <td>Build pipeline: installs Python deps, runs 3 scripts (<code>generate_subzone_summary.py</code>, <code>filter_district_layers.py</code>, <code>generate_3dtiles.py</code>), uploads <code>docs/</code> as Pages artifact.</td>
+      <td>Build pipeline: installs Python deps, runs 4 scripts (<code>extract_district.py</code>, <code>generate_subzone_summary.py</code>, <code>filter_district_layers.py</code>, <code>generate_3dtiles.py</code>) for all 5 districts, uploads <code>docs/</code> as Pages artifact.</td>
     </tr>
     <tr>
       <td><a href="https://pages.github.com/">GitHub Pages</a></td>
@@ -311,7 +316,7 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
       <td>Hosts the static site (viewer, index, catalogues, all GeoJSON/PNG/3DTiles).</td>
     </tr>
   </table>
-  <p class="section-note"><code>fetch_global_layers.py</code> is NOT in CI &mdash; it requires the <code>zensvi</code> conda env, GEE authentication, and Mapillary API key. Run manually; outputs are committed to <code>docs/geo/global/</code>.</p>
+  <p class="section-note"><code>fetch_global_layers.py</code> is NOT in CI &mdash; it requires the <code>zensvi</code> conda env and GEE authentication. Run manually; outputs are committed to <code>docs/geo/global/</code>.</p>
 
   <h3>CI Python dependencies</h3>
   <p class="section-note">Installed in the GitHub Actions workflow via <code>pip install</code>:</p>
@@ -333,14 +338,14 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
       <td><code>generate_subzone_summary.py</code></td>
       <td>Python 3.10+</td>
       <td>Subzones GeoJSON, point/line datasets (data.gov.sg), census CSV, resale CSV, remote sensing GeoJSON</td>
-      <td><code>queenstown-subzone-summary.geojson</code> + <code>.csv</code></td>
+      <td><code>{district}-subzone-summary.geojson</code> + <code>.csv</code></td>
       <td>Shapely, json, csv, statistics</td>
     </tr>
     <tr>
       <td><code>filter_district_layers.py</code></td>
       <td>Python 3.10+</td>
       <td>Island-wide GeoJSONs (data.gov.sg), boundary polygon</td>
-      <td>11 filtered <code>gov-sg/*.geojson</code> files</td>
+      <td>16 filtered <code>gov-sg/*.geojson</code> files</td>
       <td>Shapely, json</td>
     </tr>
     <tr>
@@ -353,15 +358,15 @@ All GeoJSON + PNG + 3D Tiles ──────────────→│  C
     <tr>
       <td><code>fetch_global_layers.py</code></td>
       <td><code>zensvi</code> conda env (Python 3.10)</td>
-      <td>APIs: OSMnx, GEE, Mapillary</td>
-      <td>Street network, remote sensing, raster PNGs, grid, Mapillary points</td>
+      <td>APIs: OSMnx, GEE</td>
+      <td>Street network, remote sensing, raster PNGs, grid</td>
       <td>OSMnx, NetworkX, ee, GeoPandas, ZenSVI, python-dotenv</td>
     </tr>
     <tr>
       <td><code>generate_walkability.py</code></td>
       <td><code>zensvi</code> conda env (Python 3.10)</td>
       <td>Walk network (OSMnx), POI GeoJSONs, subzones, boundary, population data</td>
-      <td><code>queenstown-walkability.json</code> + <code>queenstown-walkability-grid.geojson</code> (704 KB, includes pop_density)</td>
+      <td><code>{district}-walkability.json</code> + <code>{district}-walkability-grid.geojson</code></td>
       <td>OSMnx, NetworkX, SciPy, Shapely</td>
     </tr>
   </table>

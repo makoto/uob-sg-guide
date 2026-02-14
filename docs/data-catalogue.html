@@ -37,7 +37,7 @@
 <body>
   <div class="back"><a href="index.html">&larr; Back to Home</a></div>
   <h1>Data Catalogue</h1>
-  <p>All available datasets from 8 data sources relevant to investigating perceived liveability in Singapore's Queenstown district. The pipeline now supports 5 districts: Queenstown, Bishan, Outram, Tampines, and Newton.</p>
+  <p>All available datasets from 7 data sources relevant to investigating perceived liveability in Singapore's Queenstown district. The pipeline now supports 5 districts: Queenstown, Bishan, Outram, Tampines, and Newton.</p>
 
   <!-- ===== TABLE OF CONTENTS ===== -->
   <details id="toc" open>
@@ -59,7 +59,7 @@
           <li><a href="#ura">2. URA Maps / Master Plan</a></li>
           <li><a href="#onemap">3. OneMap</a></li>
           <li><a href="#lta">4. LTA DataMall</a></li>
-          <li><a href="#mapillary">5. Mapillary</a></li>
+          <!-- <li><a href="#mapillary">5. Mapillary</a></li> -->
         </ul>
       </li>
       <li><a href="#access">Access Requirements</a></li>
@@ -72,7 +72,7 @@
           <li><a href="#polygon-layers">Polygon Layers</a></li>
           <li><a href="#subzone-summary">Subzone Summary</a></li>
           <li><a href="#viewer-layers">Additional Viewer Layers</a></li>
-          <li><a href="#global-layers">Global Layers (OSMnx / GEE / Mapillary)</a></li>
+          <li><a href="#global-layers">Global Layers (OSMnx / GEE)</a></li>
         </ul>
       </li>
     </ul>
@@ -85,13 +85,13 @@
   <h3 id="boundary-layers">Spatial Boundary &amp; Base Layers</h3>
   <table>
     <tr><th>Dataset</th><th>Source</th><th>Format</th><th>Queenstown?</th><th>Access</th></tr>
-    <tr><td>Planning Area Boundary</td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Filter by PLN_AREA_N</td><td><span class="badge badge-open">Open</span></td></tr>
-    <tr><td>Subzone Boundary (15 subzones)</td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Filter by PLN_AREA_N</td><td><span class="badge badge-open">Open</span></td></tr>
-    <tr><td>Land Use Layer (MP2019)</td><td>URA / data.gov.sg</td><td>GeoJSON (166 MB)</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
-    <tr><td>Building Height Control</td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
-    <tr><td>Street Block Layer</td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
-    <tr><td>Conservation Area Layer</td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
-    <tr><td>Draft Master Plan 2025</td><td>URA</td><td>PDF / Web</td><td>Queenstown sections</td><td><span class="badge badge-web">View</span></td></tr>
+    <tr><td><a href="https://data.gov.sg/collections/2104/view">Planning Area Boundary</a></td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Filter by PLN_AREA_N</td><td><span class="badge badge-open">Open</span></td></tr>
+    <tr><td><a href="https://data.gov.sg/datasets/d_8594ae9ff96d0c708bc2af633048edfb/view">Subzone Boundary (15 subzones)</a></td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Filter by PLN_AREA_N</td><td><span class="badge badge-open">Open</span></td></tr>
+    <tr><td><a href="https://data.gov.sg/datasets/d_90d86daa5bfaa371668b84fa5f01424f/view">Land Use Layer (MP2019)</a></td><td>URA / data.gov.sg</td><td>GeoJSON (166 MB)</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
+    <tr><td><a href="https://data.gov.sg/datasets/d_ee8e2e0d13a50a699f9100029b8c0b0a/view">Building Height Control</a></td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
+    <tr><td><a href="https://data.gov.sg/datasets/d_07b3e42fba1ec69cd6044bedd3545ccb/view">Street Block Layer</a></td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
+    <tr><td><a href="https://data.gov.sg/collections/1725/view">Conservation Area Layer</a></td><td>URA / data.gov.sg</td><td>GeoJSON</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
+    <tr><td><a href="https://www.uradraftmasterplan.gov.sg/regional-plans/central-region/introduction/">Draft Master Plan 2025</a></td><td>URA</td><td>PDF / Web</td><td>Queenstown sections</td><td><span class="badge badge-web">View</span></td></tr>
   </table>
 
   <h3 id="social-intensity">Social Intensity</h3>
@@ -127,7 +127,7 @@
     <tr><td>Footpath</td><td>LTA DataMall</td><td>Shapefile (7.1 MB)</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
     <tr><td>Covered Linkway</td><td>LTA DataMall</td><td>Shapefile</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
     <tr><td><a href="https://data.gov.sg/datasets/d_306cc1018cb733346681883ee6d73054/view">NParks Tracks</a></td><td>data.gov.sg</td><td>GeoJSON</td><td>Spatial clip</td><td><span class="badge badge-open">Open</span></td></tr>
-    <tr><td>Mapillary Street-Level Imagery</td><td>Mapillary</td><td>JPEG + JSON</td><td>Variable density</td><td><span class="badge badge-api">API token</span></td></tr>
+    <!-- <tr><td>Mapillary Street-Level Imagery</td><td>Mapillary</td><td>JPEG + JSON</td><td>Variable density</td><td><span class="badge badge-api">API token</span></td></tr> -->
   </table>
 
   <h3 id="microclimate">Microclimate</h3>
@@ -137,7 +137,7 @@
     <tr><td><a href="https://data.gov.sg/datasets/d_1744ca68dc7ed37221b17c441042405e/view">Monthly Climate Data</a></td><td>data.gov.sg</td><td>CSV</td><td>Single station</td><td><span class="badge badge-open">Open</span></td></tr>
     <tr><td><a href="https://data.gov.sg/datasets/d_03bb2eb67ad645d0188342fa74ad7066/view">Historical Daily Weather</a></td><td>data.gov.sg</td><td>CSV</td><td>Station-level</td><td><span class="badge badge-open">Open</span></td></tr>
     <tr><td><a href="https://data.gov.sg/datasets/d_8f5fa022cbda68494fa70e788600505b/view">Air Pollution Levels</a></td><td>data.gov.sg</td><td>CSV</td><td>Island-wide</td><td><span class="badge badge-open">Open</span></td></tr>
-    <tr><td>Mapillary Image Segmentation (GVI)</td><td>Mapillary</td><td>JSON per-image</td><td>Where images exist</td><td><span class="badge badge-api">API token</span></td></tr>
+    <!-- <tr><td>Mapillary Image Segmentation (GVI)</td><td>Mapillary</td><td>JSON per-image</td><td>Where images exist</td><td><span class="badge badge-api">API token</span></td></tr> -->
   </table>
 
   <h3 id="public-facilities">Public Facilities</h3>
@@ -235,6 +235,7 @@
     <tr><td>On-Request</td><td>Farecard Transactions, Taxi/PHC Trip Data</td><td>&mdash;</td><td><span class="badge badge-nda">NDA</span></td></tr>
   </table>
 
+  <!-- Mapillary section removed from viewer
   <h3 id="mapillary">5. Mapillary</h3>
   <p class="section-note">Crowdsourced street-level imagery (Meta). Images CC BY-SA 4.0. API: <code>https://graph.mapillary.com</code></p>
   <table>
@@ -245,6 +246,7 @@
     <tr><td>4</td><td>Image Segmentation</td><td>JSON per-image</td><td>Green View Index (GVI)</td></tr>
     <tr><td>5</td><td>3D Point Clouds (SfM)</td><td>JSON (zlib)</td><td>Street geometry, canopy estimation</td></tr>
   </table>
+  -->
 
   <hr>
 
@@ -252,7 +254,7 @@
   <table>
     <tr><th>Level</th><th>Sources</th><th>What You Need</th></tr>
     <tr><td><span class="badge badge-open">Open download</span></td><td>data.gov.sg, LTA static shapefiles</td><td>Nothing &mdash; direct download</td></tr>
-    <tr><td><span class="badge badge-api">Free API token</span></td><td>OneMap, LTA DataMall, Mapillary</td><td>Register online, get token/key</td></tr>
+    <tr><td><span class="badge badge-api">Free API token</span></td><td>OneMap, LTA DataMall</td><td>Register online, get token/key</td></tr>
     <tr><td><span class="badge badge-api">Free API key</span></td><td>URA Data Service</td><td>Register at URA SPACE</td></tr>
     <tr><td><span class="badge badge-nda">NDA required</span></td><td>LTA farecard/taxi trip data</td><td>Data sharing form + NDA</td></tr>
     <tr><td><span class="badge badge-web">View-only</span></td><td>URA SPACE map, DMP25 website</td><td>Browser</td></tr>
@@ -265,7 +267,7 @@
     <tr><th>Join Type</th><th>Field</th><th>Datasets Connected</th></tr>
     <tr><td>Planning area name</td><td><code>PLN_AREA_N = "QUEENSTOWN"</code></td><td>Boundaries, census, OneMap population, URA sale sites</td></tr>
     <tr><td>Subzone name</td><td><code>SUBZONE_N</code></td><td>Boundaries, census (finer granularity)</td></tr>
-    <tr><td>Lat/Lng coordinates</td><td>WGS84 (EPSG:4326)</td><td>All point datasets, Mapillary, OneMap routing</td></tr>
+    <tr><td>Lat/Lng coordinates</td><td>WGS84 (EPSG:4326)</td><td>All point datasets, OneMap routing</td></tr>
     <tr><td>SVY21 coordinates</td><td>EPSG:3414</td><td>URA APIs, some LTA data</td></tr>
     <tr><td>Bus stop code</td><td><code>bus_stop_code</code></td><td>LTA bus stops, routes, passenger volumes</td></tr>
     <tr><td>Station name/code</td><td><code>station_name</code></td><td>LTA train stations, exits, passenger volumes</td></tr>
@@ -277,7 +279,7 @@
 
   <h2 id="gaps">Gaps &amp; Limitations</h2>
   <div class="gap-item"><strong>No noise pollution data</strong> &mdash; would require primary data collection</div>
-  <div class="gap-item"><strong>No pedestrian foot traffic counts</strong> &mdash; could estimate via Mapillary or field observation</div>
+  <div class="gap-item"><strong>No pedestrian foot traffic counts</strong> &mdash; could estimate via field observation</div>
   <div class="gap-item"><strong>No sentiment/perception data</strong> &mdash; requires primary research (surveys, interviews)</div>
   <div class="gap-item"><strong>Microclimate data is coarse</strong> &mdash; weather stations don't capture Queenstown-specific microclimates</div>
   <div class="gap-item"><strong>DMP25 not yet machine-readable</strong> &mdash; must rely on MP2019 GeoJSON + DMP25 PDF/web</div>
@@ -293,79 +295,79 @@
   <h3 id="point-layers">Point Layers <small style="color:#888; font-weight:normal;">(gov-sg/)</small></h3>
   <table>
     <tr><th>Output File</th><th>Source Dataset</th><th>Features</th><th>Category</th></tr>
-    <tr><td><code>gov-sg/queenstown-hawker-centres.geojson</code></td><td>Hawker Centres</td><td>9</td><td>Food &amp; Daily Needs</td></tr>
-    <tr><td><code>gov-sg/queenstown-supermarkets.geojson</code></td><td>Supermarkets</td><td>19</td><td>Food &amp; Daily Needs</td></tr>
-    <tr><td><code>gov-sg/queenstown-mrt-exits.geojson</code></td><td>MRT Station Exits</td><td>26</td><td>Transit</td></tr>
-    <tr><td><code>gov-sg/queenstown-parks.geojson</code></td><td>Parks</td><td>9</td><td>Green &amp; Recreation</td></tr>
-    <tr><td><code>gov-sg/queenstown-park-facilities.geojson</code></td><td>Park Facilities</td><td>370</td><td>Green &amp; Recreation</td></tr>
-    <tr><td><code>gov-sg/queenstown-community-clubs.geojson</code></td><td>Community Clubs</td><td>4</td><td>Community</td></tr>
-    <tr><td><code>gov-sg/queenstown-gyms.geojson</code></td><td>Gyms@SG</td><td>4</td><td>Community</td></tr>
-    <tr><td><code>gov-sg/queenstown-preschools.geojson</code></td><td>Pre-Schools</td><td>81</td><td>Community</td></tr>
-    <tr><td><code>gov-sg/queenstown-chas-clinics.geojson</code></td><td>CHAS Clinics</td><td>43</td><td>Community</td></tr>
-    <tr><td><code>gov-sg/queenstown-sport-facilities.geojson</code></td><td>Sport Facilities</td><td>1</td><td>Community</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-hawker-centres.geojson"><code>gov-sg/queenstown-hawker-centres.geojson</code></a></td><td>Hawker Centres</td><td>9</td><td>Food &amp; Daily Needs</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-supermarkets.geojson"><code>gov-sg/queenstown-supermarkets.geojson</code></a></td><td>Supermarkets</td><td>19</td><td>Food &amp; Daily Needs</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-mrt-exits.geojson"><code>gov-sg/queenstown-mrt-exits.geojson</code></a></td><td>MRT Station Exits</td><td>26</td><td>Transit</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-parks.geojson"><code>gov-sg/queenstown-parks.geojson</code></a></td><td>Parks</td><td>9</td><td>Green &amp; Recreation</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-park-facilities.geojson"><code>gov-sg/queenstown-park-facilities.geojson</code></a></td><td>Park Facilities</td><td>370</td><td>Green &amp; Recreation</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-community-clubs.geojson"><code>gov-sg/queenstown-community-clubs.geojson</code></a></td><td>Community Clubs</td><td>4</td><td>Community</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-gyms.geojson"><code>gov-sg/queenstown-gyms.geojson</code></a></td><td>Gyms@SG</td><td>4</td><td>Community</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-preschools.geojson"><code>gov-sg/queenstown-preschools.geojson</code></a></td><td>Pre-Schools</td><td>81</td><td>Community</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-chas-clinics.geojson"><code>gov-sg/queenstown-chas-clinics.geojson</code></a></td><td>CHAS Clinics</td><td>43</td><td>Community</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-sport-facilities.geojson"><code>gov-sg/queenstown-sport-facilities.geojson</code></a></td><td>Sport Facilities</td><td>1</td><td>Community</td></tr>
   </table>
 
   <h3 id="line-layers">Line Layers (clipped to boundary) <small style="color:#888; font-weight:normal;">(gov-sg/)</small></h3>
   <table>
     <tr><th>Output File</th><th>Source Dataset</th><th>Features</th><th>Category</th></tr>
-    <tr><td><code>gov-sg/queenstown-cycling-paths.geojson</code></td><td>Cycling Path Network</td><td>110</td><td>Active Mobility</td></tr>
-    <tr><td><code>gov-sg/queenstown-park-connectors.geojson</code></td><td>Park Connector Loop</td><td>36</td><td>Green &amp; Recreation</td></tr>
-    <tr><td><code>gov-sg/queenstown-nparks-tracks.geojson</code></td><td>NParks Tracks</td><td>1,559</td><td>Green &amp; Recreation</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-cycling-paths.geojson"><code>gov-sg/queenstown-cycling-paths.geojson</code></a></td><td>Cycling Path Network</td><td>110</td><td>Active Mobility</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-park-connectors.geojson"><code>gov-sg/queenstown-park-connectors.geojson</code></a></td><td>Park Connector Loop</td><td>36</td><td>Green &amp; Recreation</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-nparks-tracks.geojson"><code>gov-sg/queenstown-nparks-tracks.geojson</code></a></td><td>NParks Tracks</td><td>1,559</td><td>Green &amp; Recreation</td></tr>
   </table>
 
   <h3 id="polygon-layers">Polygon Layers (clipped to boundary) <small style="color:#888; font-weight:normal;">(gov-sg/)</small></h3>
   <table>
     <tr><th>Output File</th><th>Source Dataset</th><th>Features</th><th>Category</th></tr>
-    <tr><td><code>gov-sg/queenstown-ura-height-control.geojson</code></td><td>URA Building Height Control</td><td>7</td><td>Planning</td></tr>
-    <tr><td><code>gov-sg/queenstown-nparks-parks-nature-reserves.geojson</code></td><td>NParks Parks &amp; Nature Reserves</td><td>12</td><td>Green &amp; Recreation</td></tr>
-    <tr><td><code>gov-sg/queenstown-abc-waters.geojson</code></td><td>ABC Waters</td><td>5</td><td>Green &amp; Recreation</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-ura-height-control.geojson"><code>gov-sg/queenstown-ura-height-control.geojson</code></a></td><td>URA Building Height Control</td><td>7</td><td>Planning</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-nparks-parks-nature-reserves.geojson"><code>gov-sg/queenstown-nparks-parks-nature-reserves.geojson</code></a></td><td>NParks Parks &amp; Nature Reserves</td><td>12</td><td>Green &amp; Recreation</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/blob/main/docs/geo/gov-sg/queenstown-abc-waters.geojson"><code>gov-sg/queenstown-abc-waters.geojson</code></a></td><td>ABC Waters</td><td>5</td><td>Green &amp; Recreation</td></tr>
   </table>
 
   <h3 id="subzone-summary">Subzone Summary</h3>
   <p class="section-note">Generated by <code>generate_subzone_summary.py --district {district}</code>. Spatially joins the above datasets plus population census and resale prices to each district's subzones (Queenstown: 15, Bishan: 3, Outram: 4, Tampines: 5, Newton: 6). Auto census name mapping via title-casing with exceptions for apostrophe-containing names (PEARL'S HILL, PEOPLE'S PARK, MONK'S HILL, NUS). Flexible resale town lookup.</p>
   <table>
     <tr><th>Output File</th><th>Format</th><th>Key Fields</th></tr>
-    <tr><td><code>{district}-subzone-summary.geojson</code></td><td>GeoJSON</td><td rowspan="2">population_density, amenity_density, amenity_count, mrt_station_count, cycling_path_km, park_connector_km, resale_median_price, resale_transaction_count, building_count, hdb_count, mean_height_m, max_height_m, population_elderly_65plus, avg_hdb_year, total_dwelling_units, dwelling_density, green_space_area_km2, green_space_pct, abc_waters_area_km2, nparks_track_km, sport_facilities, lst_mean_c, ndvi_mean, ndbi_mean, ghsl_height_mean, dsm_mean, dem_mean, canopy_cover_pct, canopy_loss_pct, gvi_mean, intersection_density, transit_access_score, destination_accessibility, walkability_index</td></tr>
-    <tr><td><code>{district}-subzone-summary.csv</code></td><td>CSV</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo"><code>{district}-subzone-summary.geojson</code></a></td><td>GeoJSON</td><td rowspan="2">population_density, amenity_density, amenity_count, mrt_station_count, cycling_path_km, park_connector_km, resale_median_price, resale_transaction_count, building_count, hdb_count, mean_height_m, max_height_m, population_elderly_65plus, avg_hdb_year, total_dwelling_units, dwelling_density, green_space_area_km2, green_space_pct, abc_waters_area_km2, nparks_track_km, sport_facilities, lst_mean_c, ndvi_mean, ndbi_mean, ghsl_height_mean, dsm_mean, dem_mean, canopy_cover_pct, canopy_loss_pct, gvi_mean, intersection_density, transit_access_score, destination_accessibility, walkability_index</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo"><code>{district}-subzone-summary.csv</code></a></td><td>CSV</td></tr>
   </table>
   <p class="section-note">Used by the <a href="3dtiles/viewer.html">3D Viewer</a> choropleth heatmap for each district: click a metric in the categorized choropleth accordion (5 sub-categories: Demographics &amp; Housing, Amenities &amp; Infrastructure, Buildings, Remote Sensing, Walkability) to colour subzones on a YlOrRd ramp. Each metric shows a type badge (CNT/RATE/IDX/SAT). 30 metrics available: population density, elderly share (65+, derived), amenity density, MRT stations, cycling paths, park connectors, resale flat price, avg building height, HDB blocks, total buildings, max building height, resale transactions, avg HDB year built, dwelling units, dwelling density, plus 5 green/blue infrastructure metrics &mdash; green space coverage (%), green space area (km&sup2;), ABC Waters area (km&sup2;), NParks tracks (km), sport facilities, plus 6 remote sensing metrics &mdash; Vegetation (NDVI), Built-up (NDBI), Land Surface Temp (&deg;C), Tree canopy cover (%), GHSL building height (m), Surface elevation (m), plus 4 walkability metrics &mdash; Intersection density, Transit access, Destination access, Walkability (BEH-NWI composite z-score). Derived fields: <code>avg_hdb_year</code> (mean HDB year completed), <code>total_dwelling_units</code> (sum of HDB dwelling units), <code>dwelling_density</code> (dwelling units per km&sup2;), <code>green_space_area_km2</code> (clipped park/reserve area per subzone), <code>green_space_pct</code> (percentage of subzone area covered by parks/reserves), <code>abc_waters_area_km2</code> (clipped ABC Waters area per subzone), <code>nparks_track_km</code> (total NParks track length per subzone in km), <code>sport_facilities</code> (sport facility point count per subzone). Remote sensing fields merged from <code>{district}-remote-sensing.geojson</code> (when available): <code>lst_mean_c</code>, <code>ndvi_mean</code>, <code>ndbi_mean</code>, <code>ghsl_height_mean</code>, <code>dsm_mean</code>, <code>dem_mean</code>, <code>canopy_cover_pct</code>, <code>canopy_loss_pct</code>, <code>gvi_mean</code>. Walkability fields merged from <code>{district}-walkability.json</code> (when available): <code>intersection_density</code>, <code>transit_access_score</code>, <code>destination_accessibility</code>, <code>walkability_index</code> (BEH-NWI z-score composite).</p>
 
   <h3 id="viewer-layers">Additional Viewer Layers</h3>
-  <p class="section-note">These layers are loaded directly by the <a href="3dtiles/viewer.html">3D Viewer</a> and are not produced by <code>filter_district_layers.py</code>. Buildings, street network, intersection density grid, remote sensing (subzone-level + RS grid + raster PNGs) are available for all 5 districts. Mapillary is available for Queenstown, Bishan, Outram.</p>
+  <p class="section-note">These layers are loaded directly by the <a href="3dtiles/viewer.html">3D Viewer</a> and are not produced by <code>filter_district_layers.py</code>. Buildings, street network, intersection density grid, remote sensing (subzone-level + RS grid + raster PNGs) are available for all 5 districts.</p>
   <table>
     <tr><th>Output File</th><th>Source Dataset</th><th>Features</th><th>Category</th></tr>
-    <tr><td><code>global/{district}-buildings.geojson</code></td><td>OSM building footprints (osmnx)</td><td>queenstown: 8,671; bishan: 3,766; outram: 1,589; tampines: 2,910; newton: 759</td><td>Buildings</td></tr>
-    <tr><td><code>global/{district}-buildings-osm-only.geojson</code></td><td>OSM buildings (non-HDB only)</td><td>Varies by district</td><td>Buildings</td></tr>
-    <tr><td><code>global/{district}-buildings-hdb-enriched.geojson</code></td><td>OSM buildings + HDB Property Info</td><td>queenstown: 308; tampines: 19; bishan: 1; outram: 1; newton: 0</td><td>Housing</td></tr>
-    <tr><td><code>global/{district}-street-network.geojson</code></td><td>OSMnx drive network (betweenness centrality)</td><td>queenstown: 3,788; bishan: 1,363; outram: 711; tampines: 4,144; newton: 838</td><td>Street Network</td></tr>
-    <tr><td><code>global/{district}-walkability-grid.geojson</code></td><td>OSMnx walk network + 100&thinsp;m grid + population density</td><td>queenstown: 2,178; bishan: 769; outram: 135; tampines: 2,085; newton: 210</td><td>Street Network (Intersection density grid only)</td></tr>
-    <tr><td><code>global/{district}-rs-grid.geojson</code></td><td>GEE 100&thinsp;m grid (NDVI, NDBI, LST, canopy) with dynamic legend</td><td>queenstown: 2,394; bishan: 840; outram: 175; tampines: 2,230; newton: 265</td><td>Remote Sensing</td></tr>
-    <tr><td><code>global/rasters/{district}-ndvi.png</code></td><td>GEE satellite raster (Sentinel-2)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
-    <tr><td><code>global/rasters/{district}-lst.png</code></td><td>GEE satellite raster (Landsat 9)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
-    <tr><td><code>global/rasters/{district}-ndbi.png</code></td><td>GEE satellite raster (Sentinel-2)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
-    <tr><td><code>global/rasters/{district}-canopy.png</code></td><td>GEE satellite raster (Hansen)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-buildings.geojson</code></a></td><td>OSM building footprints (osmnx)</td><td>queenstown: 8,671; bishan: 3,766; outram: 1,589; tampines: 2,910; newton: 759</td><td>Buildings</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-buildings-osm-only.geojson</code></a></td><td>OSM buildings (non-HDB only)</td><td>Varies by district</td><td>Buildings</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-buildings-hdb-enriched.geojson</code></a></td><td>OSM buildings + HDB Property Info</td><td>queenstown: 308; tampines: 19; bishan: 1; outram: 1; newton: 0</td><td>Housing</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-street-network.geojson</code></a></td><td>OSMnx drive network (betweenness centrality)</td><td>queenstown: 3,788; bishan: 1,363; outram: 711; tampines: 4,144; newton: 838</td><td>Street Network</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-walkability-grid.geojson</code></a></td><td>OSMnx walk network + 100&thinsp;m grid + population density</td><td>queenstown: 2,178; bishan: 769; outram: 135; tampines: 2,085; newton: 210</td><td>Street Network (Intersection density grid only)</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-rs-grid.geojson</code></a></td><td>GEE 100&thinsp;m grid (NDVI, NDBI, LST, canopy) with dynamic legend</td><td>queenstown: 2,394; bishan: 840; outram: 175; tampines: 2,230; newton: 265</td><td>Remote Sensing</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global/rasters"><code>global/rasters/{district}-ndvi.png</code></a></td><td>GEE satellite raster (Sentinel-2)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global/rasters"><code>global/rasters/{district}-lst.png</code></a></td><td>GEE satellite raster (Landsat 9)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global/rasters"><code>global/rasters/{district}-ndbi.png</code></a></td><td>GEE satellite raster (Sentinel-2)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global/rasters"><code>global/rasters/{district}-canopy.png</code></a></td><td>GEE satellite raster (Hansen)</td><td>&mdash;</td><td>Remote Sensing</td></tr>
   </table>
 
-  <h3 id="global-layers">Global Layers (OSMnx / GEE / Mapillary) <small style="color:#888; font-weight:normal;">(global/)</small></h3>
-  <p class="section-note">Generated by <code>fetch_global_layers.py --district {district} [tasks...]</code> and <code>generate_walkability.py --district {district}</code> from global data sources. Both scripts derive the bounding box from the district boundary GeoJSON. <code>fetch_global_layers.py</code> has 4 default tasks: <code>buildings</code> (OSM footprints + HDB enrichment via osmnx), <code>osmnx</code> (street network), <code>gee</code> (remote sensing), <code>mapillary</code> (street-level imagery). Two additional tasks: <code>raster_pngs</code> (GEE raster PNG overlays) and <code>rs_grid</code> (100m RS grid cells). Requires <code>zensvi</code> conda environment (osmnx, networkx, shapely). The <code>gee</code>, <code>raster_pngs</code>, <code>rs_grid</code>, and <code>mapillary</code> tasks additionally require GEE authentication and/or a Mapillary API key. Both scripts are run manually (not in CI). Buildings, street network, remote sensing (subzone-level + RS grid + raster PNGs), and walkability now exist for all 5 districts. Mapillary exists for Queenstown, Bishan, and Outram.</p>
+  <h3 id="global-layers">Global Layers (OSMnx / GEE) <small style="color:#888; font-weight:normal;">(global/)</small></h3>
+  <p class="section-note">Generated by <code>fetch_global_layers.py --district {district} [tasks...]</code> and <code>generate_walkability.py --district {district}</code> from global data sources. Both scripts derive the bounding box from the district boundary GeoJSON. <code>fetch_global_layers.py</code> has 3 default tasks: <code>buildings</code> (OSM footprints + HDB enrichment via osmnx), <code>osmnx</code> (street network), <code>gee</code> (remote sensing). Two additional tasks: <code>raster_pngs</code> (GEE raster PNG overlays) and <code>rs_grid</code> (100m RS grid cells). Requires <code>zensvi</code> conda environment (osmnx, networkx, shapely). The <code>gee</code>, <code>raster_pngs</code>, and <code>rs_grid</code> tasks additionally require GEE authentication. Both scripts are run manually (not in CI). Buildings, street network, remote sensing (subzone-level + RS grid + raster PNGs), and walkability now exist for all 5 districts.</p>
   <table>
     <tr><th>Output File</th><th>Source</th><th>Features</th><th>Key Fields / Notes</th></tr>
-    <tr><td><code>global/{district}-street-network.geojson</code></td><td>OSMnx (OpenStreetMap drive network)</td><td>queenstown: 3,788; bishan: 1,363; outram: 711; tampines: 4,144; newton: 838</td><td>highway, name, length, betweenness (approx. edge betweenness centrality, k=100). Rendered with dynamic legend. All 5 districts.</td></tr>
-    <tr><td><code>global/{district}-remote-sensing.geojson</code></td><td>Google Earth Engine (Landsat 9, Sentinel-2, GHSL, ALOS, SRTM, Hansen)</td><td>queenstown: 15; bishan: 3; outram: 4; tampines: 5; newton: 6 subzone polygons</td><td>lst_mean_c, ndvi_mean, ndbi_mean, ghsl_height_mean, dsm_mean, dem_mean, canopy_cover_pct, canopy_loss_pct. All 5 districts.</td></tr>
-    <tr><td><code>global/{district}-rs-grid.geojson</code></td><td>Google Earth Engine (Landsat 9, Sentinel-2, Hansen)</td><td>queenstown: 2,394; bishan: 840; outram: 175; tampines: 2,230; newton: 265 grid cells (100&thinsp;m)</td><td>ndvi, ndbi, lst_c, canopy_pct; pixel-level values aggregated to 100&thinsp;m grid. All 5 districts. Generated by <code>rs_grid</code> task.</td></tr>
-    <tr><td><code>global/{district}-mapillary-gvi.geojson</code></td><td>Mapillary / ZenSVI (street-level imagery metadata)</td><td>queenstown: 5,000; bishan: 5,000; outram: 5,000</td><td>image_id, is_pano; sampled from 2020&ndash;2025 imagery within district boundary. Available for Queenstown, Bishan, Outram. Not yet Tampines/Newton.</td></tr>
-    <tr><td><code>global/{district}-walkability.json</code></td><td>OSMnx (walk network) + subzones</td><td>queenstown: 15; bishan: 3; outram: 4; tampines: 5; newton: 6 subzones</td><td>intersection_density, transit_access_score, destination_accessibility, walkability_index (BEH-NWI z-score composite). All 5 districts.</td></tr>
-    <tr><td><code>global/{district}-walkability-grid.geojson</code></td><td>OSMnx (walk network) + 100&thinsp;m grid + population density</td><td>queenstown: 2,178; bishan: 769; outram: 135; tampines: 2,085; newton: 210 cells (100&thinsp;m)</td><td>cell_id, pop_density, transit_access, dest_access, int_density, walkability; fine-grained grid. Viewer shows only the Intersection density grid layer (spatial kernel method: counts walk-network nodes with degree&ge;3 within 300&thinsp;m radius, divided by circle area). Blue colour ramp with dynamic legend. All 5 districts.</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-street-network.geojson</code></a></td><td>OSMnx (OpenStreetMap drive network)</td><td>queenstown: 3,788; bishan: 1,363; outram: 711; tampines: 4,144; newton: 838</td><td>highway, name, length, betweenness (approx. edge betweenness centrality, k=100). Rendered with dynamic legend. All 5 districts.</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-remote-sensing.geojson</code></a></td><td>Google Earth Engine (Landsat 9, Sentinel-2, GHSL, ALOS, SRTM, Hansen)</td><td>queenstown: 15; bishan: 3; outram: 4; tampines: 5; newton: 6 subzone polygons</td><td>lst_mean_c, ndvi_mean, ndbi_mean, ghsl_height_mean, dsm_mean, dem_mean, canopy_cover_pct, canopy_loss_pct. All 5 districts.</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-rs-grid.geojson</code></a></td><td>Google Earth Engine (Landsat 9, Sentinel-2, Hansen)</td><td>queenstown: 2,394; bishan: 840; outram: 175; tampines: 2,230; newton: 265 grid cells (100&thinsp;m)</td><td>ndvi, ndbi, lst_c, canopy_pct; pixel-level values aggregated to 100&thinsp;m grid. All 5 districts. Generated by <code>rs_grid</code> task.</td></tr>
+    <!-- <tr><td><code>global/{district}-mapillary-gvi.geojson</code></td><td>Mapillary / ZenSVI (street-level imagery metadata)</td><td>queenstown: 5,000; bishan: 5,000; outram: 5,000</td><td>image_id, is_pano; sampled from 2020&ndash;2025 imagery within district boundary. Available for Queenstown, Bishan, Outram. Not yet Tampines/Newton.</td></tr> -->
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-walkability.json</code></a></td><td>OSMnx (walk network) + subzones</td><td>queenstown: 15; bishan: 3; outram: 4; tampines: 5; newton: 6 subzones</td><td>intersection_density, transit_access_score, destination_accessibility, walkability_index (BEH-NWI z-score composite). All 5 districts.</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global"><code>global/{district}-walkability-grid.geojson</code></a></td><td>OSMnx (walk network) + 100&thinsp;m grid + population density</td><td>queenstown: 2,178; bishan: 769; outram: 135; tampines: 2,085; newton: 210 cells (100&thinsp;m)</td><td>cell_id, pop_density, transit_access, dest_access, int_density, walkability; fine-grained grid. Viewer shows only the Intersection density grid layer (spatial kernel method: counts walk-network nodes with degree&ge;3 within 300&thinsp;m radius, divided by circle area). Blue colour ramp with dynamic legend. All 5 districts.</td></tr>
   </table>
 
   <h4>Raster Image Overlays <small style="color:#888; font-weight:normal;">(global/rasters/)</small></h4>
   <p class="section-note">Georeferenced satellite imagery from Google Earth Engine, exported as 1024px PNGs. Available for all 5 districts. Generated by <code>fetch_global_layers.py --district {district} raster_pngs</code>. Rendered in the <a href="3dtiles/viewer.html">3D Viewer</a> via CesiumJS <code>SingleTileImageryProvider</code>.</p>
   <table>
     <tr><th>File</th><th>Source</th><th>Description</th></tr>
-    <tr><td><code>global/rasters/{district}-ndvi.png</code></td><td>GEE (Sentinel-2)</td><td>Normalised Difference Vegetation Index</td></tr>
-    <tr><td><code>global/rasters/{district}-lst.png</code></td><td>GEE (Landsat 9)</td><td>Land Surface Temperature</td></tr>
-    <tr><td><code>global/rasters/{district}-ndbi.png</code></td><td>GEE (Sentinel-2)</td><td>Normalised Difference Built-up Index</td></tr>
-    <tr><td><code>global/rasters/{district}-canopy.png</code></td><td>GEE (Hansen)</td><td>Tree canopy cover percentage</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global/rasters"><code>global/rasters/{district}-ndvi.png</code></a></td><td>GEE (Sentinel-2)</td><td>Normalised Difference Vegetation Index</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global/rasters"><code>global/rasters/{district}-lst.png</code></a></td><td>GEE (Landsat 9)</td><td>Land Surface Temperature</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global/rasters"><code>global/rasters/{district}-ndbi.png</code></a></td><td>GEE (Sentinel-2)</td><td>Normalised Difference Built-up Index</td></tr>
+    <tr><td><a href="https://github.com/makoto/uob-queenstown/tree/main/docs/geo/global/rasters"><code>global/rasters/{district}-canopy.png</code></a></td><td>GEE (Hansen)</td><td>Tree canopy cover percentage</td></tr>
   </table>
   <p class="section-note">File sizes by district: Queenstown 2.2 MB, Bishan 650 KB, Outram 306 KB, Tampines 2.0 MB, Newton 428 KB.</p>
 

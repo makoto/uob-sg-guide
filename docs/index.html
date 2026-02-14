@@ -23,9 +23,9 @@
 
   <div class="card">
     <h3><a href="3dtiles/viewer.html">3D Buildings Viewer</a></h3>
-    <p>Multi-district viewer with district selector (Queenstown, Bishan, Outram, Tampines, Newton). Extruded 3D buildings for all 5 districts (Queenstown: 8,671; Bishan: 3,766; Outram: 1,589; Tampines: 2,910; Newton: 759) with height-based colour coding, 28 toggleable overlays (27 map layers) in 12 collapsible groups with feature counts per layer, provenance filter (Gov.sg / Global), and a categorized choropleth accordion with 30 subzone-level metrics across 5 sub-categories (with type badges: CNT/RATE/IDX/SAT). All gov-sg layers available for all districts. Street network, remote sensing (subzone-level + RS grid + raster PNGs), and walkability available for all 5 districts. Mapillary available for Queenstown, Bishan, Outram. Built with CesiumJS and 3D Tiles.</p>
+    <p>Multi-district viewer with district selector (Queenstown, Bishan, Outram, Tampines, Newton). Extruded 3D buildings for all 5 districts (Queenstown: 8,671; Bishan: 3,766; Outram: 1,589; Tampines: 2,910; Newton: 759) with height-based colour coding, 27 toggleable overlays in 10 collapsible groups with feature counts per layer, provenance filter (Gov.sg / Global), and a categorized choropleth accordion with 30 subzone-level metrics across 5 sub-categories (with type badges: CNT/RATE/IDX/SAT). All gov-sg layers available for all districts. Street network, remote sensing (subzone-level + RS grid + raster PNGs), and walkability available for all 5 districts. Built with CesiumJS and 3D Tiles.</p>
     <div class="details">
-      <p><strong>District selector:</strong> Switch between Queenstown, Bishan, Outram, Tampines, and Newton. Each district loads its own boundary, subzones, gov-sg layers, 3D building tileset, and choropleth data. Buildings, street network, remote sensing (subzone-level + RS grid + raster PNGs), and walkability (scores + grids) are available for all 5 districts. Mapillary imagery is available for Queenstown, Bishan, and Outram. Missing data is handled gracefully.</p>
+      <p><strong>District selector:</strong> Switch between Queenstown, Bishan, Outram, Tampines, and Newton. Each district loads its own boundary, subzones, gov-sg layers, 3D building tileset, and choropleth data. Buildings, street network, remote sensing (subzone-level + RS grid + raster PNGs), and walkability (scores + grids) are available for all 5 districts. Missing data is handled gracefully.</p>
       <p><strong>Data sources:</strong> OpenStreetMap building footprints (Overpass API) enriched with HDB property records (data.gov.sg). 308 HDB blocks matched by block number + street name.</p>
       <table>
         <tr><th>Height source</th><th>Count</th><th>Method</th></tr>
@@ -41,19 +41,20 @@
       <p><strong>Street network layer:</strong> Road edges from OSMnx drive network, coloured by betweenness centrality to highlight key corridors, with dynamic legend. Available for all 5 districts (Queenstown: 3,788; Bishan: 1,363; Outram: 711; Tampines: 4,144; Newton: 838 edges).</p>
       <p><strong>Intersection density grid:</strong> 100m grid cells coloured by intersection density, computed via spatial kernel method (counts walk-network nodes with degree&ge;3 within a 300m radius, divided by circle area). Available for all 5 districts (Queenstown: 2,178; Bishan: 769; Outram: 135; Tampines: 2,085; Newton: 210 cells). Click a cell to see the intersection density value and method description.</p>
       <p><strong>Remote sensing layers:</strong> Subzone-level remote sensing data available for all 5 districts (used by choropleth). Pixel-level raster overlays (NDVI, LST, NDBI, canopy cover) and 100m RS grid now available for all 5 districts (Queenstown: 2,394 cells; Bishan: 840; Outram: 175; Tampines: 2,230; Newton: 265).</p>
-      <p><strong>Mapillary images layer:</strong> Sampled street-level image locations from Mapillary/ZenSVI. Available for Queenstown, Bishan, Outram (5,000 points each). Not yet available for Tampines or Newton. Click to view images on Mapillary.</p>
+      <!-- Mapillary images layer removed from viewer -->
+
       <p style="margin-top:8px"><strong>Choropleth heatmap:</strong> A collapsible accordion in the Layers panel organizes 30 metrics into 5 sub-categories (Demographics &amp; Housing, Amenities &amp; Infrastructure, Buildings, Remote Sensing, Walkability). Each metric has a coloured type badge (CNT/RATE/IDX/SAT). Click a metric to colour subzones; use the &ldquo;Off&rdquo; button to deactivate. Metrics include population density, elderly share, amenity density, MRT stations, cycling paths, park connectors, resale flat price, avg building height, HDB blocks, total buildings, max building height, resale transactions, avg HDB year built, dwelling units, dwelling density, plus 5 green/blue infrastructure metrics: green space coverage (%), green space area (km&sup2;), ABC Waters area (km&sup2;), NParks tracks (km), and sport facilities, plus 6 remote sensing indicators: Vegetation (NDVI), Built-up (NDBI), Land Surface Temp, Tree canopy cover, GHSL building height, and Surface elevation, plus 4 walkability metrics: Intersection density, Transit access, Destination access, and Walkability (BEH-NWI). Uses a 5-step YlOrRd colour ramp with dynamic legend.</p>
     </div>
   </div>
 
   <div class="card">
     <h3><a href="data-catalogue.html">Data Catalogue</a></h3>
-    <p>Complete inventory of 60+ datasets from 8 sources (data.gov.sg, URA, OneMap, LTA DataMall, Mapillary, DMP25, OSMnx, Google Earth Engine) with access requirements and spatial join fields.</p>
+    <p>Complete inventory of 60+ datasets from 7 sources (data.gov.sg, URA, OneMap, LTA DataMall, DMP25, OSMnx, Google Earth Engine) with access requirements and spatial join fields.</p>
   </div>
 
   <div class="card">
     <h3><a href="tech-catalogue.html">Tech Catalogue</a></h3>
-    <p>Technologies, libraries, and frameworks: Python geospatial stack (Shapely, OSMnx, GeoPandas, GEE), CesiumJS 3D viewer, 3D Tiles pipeline (py3dtiles, mapbox_earcut), ZenSVI/Mapillary, and GitHub Actions CI/CD.</p>
+    <p>Technologies, libraries, and frameworks: Python geospatial stack (Shapely, OSMnx, GeoPandas, GEE), CesiumJS 3D viewer, 3D Tiles pipeline (py3dtiles, mapbox_earcut), and GitHub Actions CI/CD.</p>
   </div>
 
   <h2>Data Files</h2>
@@ -108,6 +109,7 @@
     <li><strong>Newton:</strong> <a href="geo/global/newton-walkability.json">Scores</a> (6 subzones) | <a href="geo/global/newton-walkability-grid.geojson">Grid</a> (210 cells)</li>
   </ul>
 
+  <!-- Mapillary section removed from viewer
   <h3>Mapillary (Queenstown, Bishan, Outram)</h3>
   <p style="font-size:13px; color:#666;">Sampled street-level image locations from Mapillary/ZenSVI. Not yet available for Tampines or Newton.</p>
   <ul>
@@ -115,6 +117,7 @@
     <li><strong>Bishan:</strong> <a href="geo/global/bishan-mapillary-gvi.geojson">Mapillary Images</a> (5,000 points)</li>
     <li><strong>Outram:</strong> <a href="geo/global/outram-mapillary-gvi.geojson">Mapillary Images</a> (5,000 points)</li>
   </ul>
+  -->
 
   <h3>Remote Sensing &mdash; Grid + Rasters (All Districts)</h3>
   <p style="font-size:13px; color:#666;">100m RS grid cells and raster PNG overlays from GEE, generated by <code>fetch_global_layers.py --district {name} rs_grid</code> and <code>raster_pngs</code>.</p>
