@@ -9,8 +9,8 @@ if [ -d data/data-gov-sg ]; then
   for d in "${DISTRICTS[@]}"; do
     echo ""
     echo "--- $d ---"
-    python3 generate_subzone_summary.py --district "$d"
-    python3 filter_district_layers.py --district "$d"
+    python3 src/generate_subzone_summary.py --district "$d"
+    python3 src/filter_district_layers.py --district "$d"
   done
 else
   echo "WARNING: data/data-gov-sg/ not found, skipping data regeneration"
@@ -21,7 +21,7 @@ echo ""
 echo "=== Generating 3D Tiles ==="
 for d in "${DISTRICTS[@]}"; do
   echo "--- $d ---"
-  python3 generate_3dtiles.py --district "$d"
+  python3 src/generate_3dtiles.py --district "$d"
 done
 
 echo ""
