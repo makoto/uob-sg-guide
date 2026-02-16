@@ -43,7 +43,7 @@
 <body>
   <div class="back"><a href="index.html">&larr; Back to Home</a></div>
   <h1>Map Viewer User Manual</h1>
-  <p>A guide to the <a href="viewer-deckgl.html">deck.gl map viewer</a> for the Singapore District Liveability Study. The viewer lets you explore 33 data layers and 39 choropleth metrics across five districts.</p>
+  <p>A guide to the <a href="viewer-deckgl.html">deck.gl map viewer</a> for the Singapore District Liveability Study. The viewer lets you explore 34 data layers and 39 choropleth metrics across five districts.</p>
 
   <details id="toc" open>
     <summary>Table of Contents</summary>
@@ -71,7 +71,7 @@
   <ul>
     <li><strong>Queenstown</strong> selected as the default district</li>
     <li><strong>Dark</strong> basemap (CARTO dark-matter)</li>
-    <li>Three layers on by default: <strong>District boundary</strong> (magenta outline), <strong>Subzones</strong> (cyan outlines with labels), and <strong>Buildings</strong> (extruded 3D with height-based colours)</li>
+    <li>Four layers on by default: <strong>District boundary</strong> (magenta outline), <strong>Subzones</strong> (cyan outlines with labels), <strong>Buildings</strong> (extruded 3D with height-based colours), and <strong>Other districts</strong> (gray outlines with labels showing the 4 other study areas)</li>
     <li>The camera tilted at 45 degrees for a 3D perspective</li>
   </ul>
   <div class="note"><strong>Queenstown is the primary study area.</strong> Some experimental features &mdash; notably the 5 UNA gravity accessibility layers and their 6 choropleth metrics &mdash; are currently available for Queenstown only. All other layers and metrics work across all five districts.</div>
@@ -82,13 +82,14 @@
   <!-- ===== NAVIGATION ===== -->
   <h2 id="navigation">Map Navigation</h2>
   <table>
-    <tr><th style="width:180px">Action</th><th>How</th></tr>
-    <tr><td><strong>Pan</strong></td><td>Click and drag the map</td></tr>
-    <tr><td><strong>Zoom</strong></td><td>Scroll wheel, or pinch on trackpad/touchscreen</td></tr>
-    <tr><td><strong>Rotate</strong></td><td>Right-click and drag (or Ctrl + drag)</td></tr>
-    <tr><td><strong>Tilt / pitch</strong></td><td>Right-click and drag up/down (or Ctrl + drag up/down). The default pitch is 45&deg;</td></tr>
-    <tr><td><strong>Reset bearing</strong></td><td>Click the compass button if using MapLibre (or double-right-click)</td></tr>
+    <tr><th style="width:180px">Action</th><th>Mouse</th><th>Trackpad / Touch</th></tr>
+    <tr><td><strong>Pan</strong></td><td>Left-click + drag</td><td>One-finger drag</td></tr>
+    <tr><td><strong>Zoom</strong></td><td>Scroll wheel</td><td>Pinch in/out</td></tr>
+    <tr><td><strong>Rotate</strong></td><td>Right-click + drag left/right</td><td>Two-finger rotate gesture, or <kbd>Ctrl</kbd> + drag left/right</td></tr>
+    <tr><td><strong>Tilt / pitch</strong></td><td>Right-click + drag up/down</td><td>Two-finger drag up/down, or <kbd>Ctrl</kbd> + drag up/down</td></tr>
+    <tr><td><strong>Reset north</strong></td><td colspan="2">Click the compass icon (bottom-right) to snap back to north-up</td></tr>
   </table>
+  <div class="tip"><strong>3D tip:</strong> The map starts tilted at 45&deg; to show extruded buildings. To rotate and tilt at the same time, hold <kbd>Ctrl</kbd> (or right-click) and drag in any direction. To return to a flat top-down view, tilt all the way up until the pitch reaches 0&deg;.</div>
 
   <!-- ===== DISTRICT SELECTOR ===== -->
   <h2 id="district-selector">District Selector</h2>
@@ -149,14 +150,15 @@
 
   <!-- ===== LAYER GROUPS REFERENCE ===== -->
   <h2 id="layer-groups">Layer Groups Reference</h2>
-  <p>All 33 toggleable layers across 10 groups:</p>
+  <p>All 34 toggleable layers across 10 groups:</p>
 
-  <h3>District (3 layers)</h3>
+  <h3>District (4 layers)</h3>
   <table>
     <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
     <tr><td>District boundary</td><td>Line</td><td>&mdash;</td><td>Magenta outline of the planning area</td></tr>
     <tr><td>Subzones</td><td>Line + labels</td><td>&mdash;</td><td>Cyan subzone outlines with centroid labels</td></tr>
     <tr><td>Buildings (extruded)</td><td>3D polygon</td><td>&mdash;</td><td>OSM building footprints extruded by height, colour-coded</td></tr>
+    <tr><td>Other districts</td><td>Line + labels</td><td>&mdash;</td><td>Gray outlines of the 4 other study districts with name labels. Click to see district name. On by default.</td></tr>
   </table>
 
   <h3>Food &amp; Daily Needs (3 layers)</h3>
