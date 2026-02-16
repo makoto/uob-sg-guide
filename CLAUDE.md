@@ -105,6 +105,10 @@ Documents all technologies, libraries, and frameworks used in the project: Pytho
 
 Definitions of acronyms and technical terms used across the project, organised in 5 sections: Remote Sensing & Terrain (DEM, DSM, SRTM, NDVI, NDBI, LST, canopy, GHSL, GEE, slope, RS grid, NIR/SWIR), Walkability & Network Analysis (BEH-NWI, intersection density, transit access, destination accessibility, Tobler's hiking function, slope-adjusted walkability, betweenness centrality, Dijkstra, walk network, UNA, gravity accessibility), Geospatial & Data Formats (GeoJSON, 3D Tiles/B3DM, CesiumJS, OSM/OSMnx, ECEF, WGS84, EPSG codes, POI, GVI), Singapore-Specific Terms (HDB, URA, MRT, CHAS, NParks, ABC Waters, LTA, subzone, planning area, hawker centre), and Statistics & Visualisation (z-score, choropleth, colour ramp, CNT/RATE/IDX/SAT badges, feature count).
 
+### User Manual (`docs/user-manual.html`)
+
+End-user guide for the deck.gl map viewer. Covers map navigation (pan, zoom, rotate, tilt), the district selector (5 districts), basemap styles (3 CARTO options), the layer panel structure (10 collapsible groups, provenance filter, feature counts, lazy loading), a full reference table of all 33 toggleable layers across 10 groups, click-popup content by layer type, the 39 choropleth metrics across 6 sub-categories (with type badge definitions: CNT, RATE, IDX, SAT), the 5 RS grid colour modes (NDVI, DEM, Slope, LST, NDBI), the 5 UNA gravity accessibility layers (Queenstown only), legend descriptions, and a tips/troubleshooting table. Includes 9 annotated screenshots in `docs/images/` (viewer overview, info panel, layer panel, expanded group, choropleth panel, choropleth map, RS grid modes, click popup, district switch). Styled to match `glossary.html` and `tech-catalogue.html`.
+
 ### 3D Viewer (`docs/3dtiles/viewer.html`)
 
 CesiumJS-based viewer with multi-district support:

@@ -2,7 +2,7 @@
 
 Geospatial analysis of perceived liveability across five Singapore planning districts: Queenstown, Bishan, Outram, Tampines, and Newton.
 
-> **Disclaimer:** This content is AI-generated. The author does not guarantee the accuracy of the analysis. Users should treat this as a guide and always refer to the original data sources to verify.
+> **Disclaimer:** This is an AI-assisted project. The data and analysis have not been independently verified — please cross-check with original sources before relying on them.
 
 ## Links
 
@@ -12,3 +12,4 @@ Geospatial analysis of perceived liveability across five Singapore planning dist
 - [Data Catalogue](https://makoto.github.io/uob-sg-guide/data-catalogue.html)
 - [Tech Catalogue](https://makoto.github.io/uob-sg-guide/tech-catalogue.html)
 - [Glossary & Data Dictionary](https://makoto.github.io/uob-sg-guide/glossary.html)
+- [Map Viewer User Manual](https://makoto.github.io/uob-sg-guide/user-manual.html)

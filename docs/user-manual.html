@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Map Viewer User Manual - Singapore District Liveability Study</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #333; line-height: 1.6; }
+    h1 { border-bottom: 2px solid #2c5f8a; padding-bottom: 8px; }
+    h2 { color: #2c5f8a; margin-top: 32px; }
+    h3 { color: #444; margin-top: 24px; }
+    a { color: #2c5f8a; }
+    .back { font-size: 14px; margin-bottom: 16px; }
+    table { font-size: 13px; border-collapse: collapse; width: 100%; margin: 12px 0 20px 0; }
+    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+    th { color: #666; font-weight: 600; background: #f8f9fa; border-bottom: 2px solid #ddd; position: sticky; top: 0; }
+    td { color: #555; }
+    tr:hover td { background: #f5f8fb; }
+    hr { border: none; border-top: 1px solid #ddd; margin: 32px 0; }
+    code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+    kbd { background: #f8f9fa; border: 1px solid #ccc; border-radius: 3px; padding: 1px 6px; font-size: 12px; font-family: monospace; box-shadow: 0 1px 0 #bbb; }
+    #toc { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px 20px; margin: 0 0 24px 0; }
+    #toc summary { font-weight: 600; cursor: pointer; color: #2c5f8a; font-size: 15px; }
+    #toc ul { margin: 8px 0 0 0; padding-left: 20px; list-style: none; }
+    #toc li { margin: 3px 0; font-size: 13px; line-height: 1.5; }
+    #toc li::before { content: '–'; color: #aaa; margin-right: 6px; }
+    #toc a { text-decoration: none; }
+    #toc a:hover { text-decoration: underline; }
+    .badge { display: inline-block; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 2px; letter-spacing: 0.3px; vertical-align: middle; }
+    .badge-cnt { background: #fff3e0; color: #e65100; }
+    .badge-rate { background: #e8f5e9; color: #2e7d32; }
+    .badge-idx { background: #e3f2fd; color: #1565c0; }
+    .badge-sat { background: #f3e5f5; color: #7b1fa2; }
+    .badge-sg { background: #fff3e0; color: #e65100; font-size: 10px; }
+    .badge-global { background: #e3f2fd; color: #1565c0; font-size: 10px; }
+    .tip { background: #f0f7ff; border-left: 3px solid #2c5f8a; padding: 10px 14px; margin: 12px 0; font-size: 13px; border-radius: 0 4px 4px 0; }
+    .note { background: #fff8e1; border-left: 3px solid #ffc107; padding: 10px 14px; margin: 12px 0; font-size: 13px; border-radius: 0 4px 4px 0; }
+    .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+    .screenshot { max-width: 100%; border: 1px solid #ddd; border-radius: 6px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .screenshot-small { max-width: 280px; border: 1px solid #ddd; border-radius: 6px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .screenshot-caption { font-size: 12px; color: #888; margin: -10px 0 16px 0; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="back"><a href="index.html">&larr; Back to Home</a></div>
+  <h1>Map Viewer User Manual</h1>
+  <p>A guide to the <a href="viewer-deckgl.html">deck.gl map viewer</a> for the Singapore District Liveability Study. The viewer lets you explore 33 data layers and 39 choropleth metrics across five districts.</p>
+
+  <details id="toc" open>
+    <summary>Table of Contents</summary>
+    <ul>
+      <li><a href="#getting-started">Getting Started</a></li>
+      <li><a href="#navigation">Map Navigation</a></li>
+      <li><a href="#district-selector">District Selector</a></li>
+      <li><a href="#basemap">Basemap Styles</a></li>
+      <li><a href="#layer-panel">Layer Panel</a></li>
+      <li><a href="#layer-groups">Layer Groups Reference</a></li>
+      <li><a href="#clicking">Clicking Features</a></li>
+      <li><a href="#choropleth">Choropleth Heatmap</a></li>
+      <li><a href="#rs-grid">Remote Sensing Grid Modes</a></li>
+      <li><a href="#una-gravity">UNA Gravity Layers</a></li>
+      <li><a href="#legends">Legends</a></li>
+      <li><a href="#tips">Tips &amp; Troubleshooting</a></li>
+    </ul>
+  </details>
+
+  <hr>
+
+  <!-- ===== GETTING STARTED ===== -->
+  <h2 id="getting-started">Getting Started</h2>
+  <p>Open <a href="viewer-deckgl.html">viewer-deckgl.html</a> in a modern browser (Chrome, Firefox, Safari, or Edge). The viewer loads with:</p>
+  <ul>
+    <li><strong>Queenstown</strong> selected as the default district</li>
+    <li><strong>Dark</strong> basemap (CARTO dark-matter)</li>
+    <li>Three layers on by default: <strong>District boundary</strong> (magenta outline), <strong>Subzones</strong> (cyan outlines with labels), and <strong>Buildings</strong> (extruded 3D with height-based colours)</li>
+    <li>The camera tilted at 45 degrees for a 3D perspective</li>
+  </ul>
+  <div class="note"><strong>Queenstown is the primary study area.</strong> Some experimental features &mdash; notably the 5 UNA gravity accessibility layers and their 6 choropleth metrics &mdash; are currently available for Queenstown only. All other layers and metrics work across all five districts.</div>
+  <div class="tip">The viewer uses WebGL for GPU-accelerated rendering. If the map appears blank, check that hardware acceleration is enabled in your browser settings.</div>
+  <img src="images/viewer-overview.png" alt="Viewer overview showing Queenstown with dark basemap, buildings, and boundary" class="screenshot">
+  <p class="screenshot-caption">Default view: Queenstown district with dark basemap, extruded buildings, boundary, and subzone outlines.</p>
+
+  <!-- ===== NAVIGATION ===== -->
+  <h2 id="navigation">Map Navigation</h2>
+  <table>
+    <tr><th style="width:180px">Action</th><th>How</th></tr>
+    <tr><td><strong>Pan</strong></td><td>Click and drag the map</td></tr>
+    <tr><td><strong>Zoom</strong></td><td>Scroll wheel, or pinch on trackpad/touchscreen</td></tr>
+    <tr><td><strong>Rotate</strong></td><td>Right-click and drag (or Ctrl + drag)</td></tr>
+    <tr><td><strong>Tilt / pitch</strong></td><td>Right-click and drag up/down (or Ctrl + drag up/down). The default pitch is 45&deg;</td></tr>
+    <tr><td><strong>Reset bearing</strong></td><td>Click the compass button if using MapLibre (or double-right-click)</td></tr>
+  </table>
+
+  <!-- ===== DISTRICT SELECTOR ===== -->
+  <h2 id="district-selector">District Selector</h2>
+  <p>A dropdown at the top of the layer panel lets you switch between five districts:</p>
+  <table>
+    <tr><th>District</th><th>Subzones</th><th>Buildings</th></tr>
+    <tr><td>Queenstown</td><td>15</td><td>8,671</td></tr>
+    <tr><td>Bishan</td><td>3</td><td>3,766</td></tr>
+    <tr><td>Outram</td><td>4</td><td>1,589</td></tr>
+    <tr><td>Tampines</td><td>5</td><td>2,910</td></tr>
+    <tr><td>Newton</td><td>6</td><td>759</td></tr>
+  </table>
+  <p>Switching districts:</p>
+  <ul>
+    <li>Flies the camera to the new district with a smooth animation</li>
+    <li>Clears all loaded data and resets layer checkboxes</li>
+    <li>Reloads the three default layers (boundary, subzones, buildings)</li>
+    <li>Resets any active choropleth to &ldquo;Off&rdquo;</li>
+  </ul>
+  <div class="note">Some layers may have zero features for certain districts (e.g., Newton has 0 cycling paths). These appear dimmed in the layer panel.</div>
+  <img src="images/district-bishan.png" alt="Viewer after switching to Bishan district" class="screenshot">
+  <p class="screenshot-caption">After switching to Bishan: the camera flies to the new district and reloads default layers.</p>
+
+  <!-- ===== BASEMAP ===== -->
+  <h2 id="basemap">Basemap Styles</h2>
+  <p>Click the basemap button in the top-left info panel to cycle through three CARTO styles:</p>
+  <table>
+    <tr><th>Style</th><th>Description</th></tr>
+    <tr><td><strong>Dark</strong> (default)</td><td>Dark grey background. Best contrast for coloured layers and buildings.</td></tr>
+    <tr><td><strong>Light</strong></td><td>White background with grey labels. Good for screenshots and print.</td></tr>
+    <tr><td><strong>Voyager</strong></td><td>Coloured map with road and place labels. Most context for orientation.</td></tr>
+  </table>
+  <p>All basemaps are served by CARTO and require no API token.</p>
+  <img src="images/info-panel.png" alt="Info panel showing title, basemap button, and building height legend" class="screenshot-small">
+  <p class="screenshot-caption">The info panel (top-left) with the basemap button, title, and building height legend.</p>
+
+  <!-- ===== LAYER PANEL ===== -->
+  <h2 id="layer-panel">Layer Panel</h2>
+  <p>The layer panel is in the top-right corner. Click the &ldquo;Layers&rdquo; header to collapse or expand it.</p>
+  <h3>Structure</h3>
+  <ul>
+    <li><strong>District selector</strong> &mdash; dropdown at the top</li>
+    <li><strong>Provenance filter bar</strong> &mdash; two toggle buttons:
+      <span class="badge badge-sg">SG</span> Gov.sg and
+      <span class="badge badge-global">Global</span> Global.
+      Deactivating a filter disables and unchecks all layers from that source.</li>
+    <li><strong>10 collapsible groups</strong> &mdash; click any group header to expand/collapse. The District group is expanded by default; all others are collapsed.</li>
+    <li><strong>Feature counts</strong> &mdash; each layer shows its count in parentheses, e.g. &ldquo;Hawker centres (9)&rdquo;. Group headers show the group total.</li>
+    <li><strong>Colour swatches</strong> &mdash; circles for points, thin bars for lines, semi-transparent squares for polygons</li>
+    <li><strong>Lazy loading</strong> &mdash; data is fetched only when you first check a layer&rsquo;s checkbox. Subsequent toggles reuse cached data.</li>
+    <li><strong>Choropleth accordion</strong> &mdash; a separate collapsible section at the bottom (see <a href="#choropleth">Choropleth</a>)</li>
+    <li><strong>Data Catalogue link</strong> &mdash; footer link at the bottom opening the <a href="data-catalogue.html">Data Catalogue</a> in a new tab</li>
+  </ul>
+  <img src="images/layer-panel.png" alt="Layer panel showing 10 collapsible groups" class="screenshot-small">
+  <p class="screenshot-caption">The layer panel with 10 collapsible groups, district selector at top, and provenance filter buttons.</p>
+  <img src="images/layer-group-expanded.png" alt="Layer panel with Food & Daily Needs group expanded" class="screenshot-small">
+  <p class="screenshot-caption">Expanded group showing checkboxes, feature counts, source badges, and colour swatches.</p>
+
+  <!-- ===== LAYER GROUPS REFERENCE ===== -->
+  <h2 id="layer-groups">Layer Groups Reference</h2>
+  <p>All 33 toggleable layers across 10 groups:</p>
+
+  <h3>District (3 layers)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>District boundary</td><td>Line</td><td>&mdash;</td><td>Magenta outline of the planning area</td></tr>
+    <tr><td>Subzones</td><td>Line + labels</td><td>&mdash;</td><td>Cyan subzone outlines with centroid labels</td></tr>
+    <tr><td>Buildings (extruded)</td><td>3D polygon</td><td>&mdash;</td><td>OSM building footprints extruded by height, colour-coded</td></tr>
+  </table>
+
+  <h3>Food &amp; Daily Needs (3 layers)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>Hawker centres</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Government-managed food courts</td></tr>
+    <tr><td>Supermarkets</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Supermarket locations</td></tr>
+    <tr><td>UNA food access</td><td>Gravity</td><td><span class="badge badge-global">Global</span></td><td>Per-building gravity accessibility to hawker centres + supermarkets</td></tr>
+  </table>
+
+  <h3>Transit (2 layers)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>MRT exits</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Mass Rapid Transit station exit locations</td></tr>
+    <tr><td>UNA transit access</td><td>Gravity</td><td><span class="badge badge-global">Global</span></td><td>Per-building gravity accessibility to MRT exits</td></tr>
+  </table>
+
+  <h3>Green &amp; Recreation (7 layers)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>Parks</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Park locations</td></tr>
+    <tr><td>Park facilities</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Facilities within parks (shelters, playgrounds, etc.)</td></tr>
+    <tr><td>Park connectors</td><td>Line</td><td><span class="badge badge-sg">SG</span></td><td>Pedestrian/cycling paths connecting parks</td></tr>
+    <tr><td>Parks &amp; nature reserves</td><td>Polygon</td><td><span class="badge badge-sg">SG</span></td><td>NParks park and nature reserve boundaries</td></tr>
+    <tr><td>ABC Waters</td><td>Polygon</td><td><span class="badge badge-sg">SG</span></td><td>Active Beautiful Clean Waters programme areas</td></tr>
+    <tr><td>NParks tracks</td><td>Line</td><td><span class="badge badge-sg">SG</span></td><td>Walking/hiking tracks inside parks</td></tr>
+    <tr><td>UNA green access</td><td>Gravity</td><td><span class="badge badge-global">Global</span></td><td>Per-building gravity accessibility to parks</td></tr>
+  </table>
+
+  <h3>Active Mobility (1 layer)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>Cycling paths</td><td>Line</td><td><span class="badge badge-sg">SG</span></td><td>Designated cycling path network</td></tr>
+  </table>
+
+  <h3>Community (7 layers)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>Community clubs</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Community club locations</td></tr>
+    <tr><td>Gyms</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Gym/fitness centre locations</td></tr>
+    <tr><td>Pre-schools</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Pre-school locations</td></tr>
+    <tr><td>CHAS clinics</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Community Health Assist Scheme clinic locations</td></tr>
+    <tr><td>Sport facilities</td><td>Point</td><td><span class="badge badge-sg">SG</span></td><td>Sport facility locations</td></tr>
+    <tr><td>UNA health access</td><td>Gravity</td><td><span class="badge badge-global">Global</span></td><td>Per-building gravity accessibility to CHAS clinics</td></tr>
+    <tr><td>UNA education access</td><td>Gravity</td><td><span class="badge badge-global">Global</span></td><td>Per-building gravity accessibility to pre-schools</td></tr>
+  </table>
+
+  <h3>Housing (1 layer)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>HDB blocks</td><td>Point</td><td><span class="badge badge-global">Global</span></td><td>HDB public housing blocks coloured by construction era: <span class="swatch" style="background:#e74c3c"></span>pre-1980, <span class="swatch" style="background:#f39c12"></span>1980&ndash;1999, <span class="swatch" style="background:#2ecc71"></span>2000+</td></tr>
+  </table>
+
+  <h3>Planning (1 layer)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>Height control zones</td><td>Polygon + labels</td><td><span class="badge badge-sg">SG</span></td><td>URA storey-limit zones with text labels (e.g. &ldquo;36 sty&rdquo;)</td></tr>
+  </table>
+
+  <h3>Street Network (3 layers)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>Street network</td><td>Line</td><td><span class="badge badge-global">Global</span></td><td>OSMnx drive network coloured by betweenness centrality</td></tr>
+    <tr><td>Intersection density grid</td><td>Grid (100m)</td><td><span class="badge badge-global">Global</span></td><td>Walk-network intersection density per cell (blue ramp)</td></tr>
+    <tr><td>Walkability grid</td><td>Grid (100m)</td><td><span class="badge badge-global">Global</span></td><td>BEH-NWI walkability score per cell (green ramp)</td></tr>
+  </table>
+
+  <h3>Remote Sensing (5 layers)</h3>
+  <table>
+    <tr><th>Layer</th><th>Type</th><th>Source</th><th>Description</th></tr>
+    <tr><td>NDVI (vegetation)</td><td>Raster</td><td><span class="badge badge-global">Global</span></td><td>Satellite vegetation index overlay</td></tr>
+    <tr><td>Land surface temp</td><td>Raster</td><td><span class="badge badge-global">Global</span></td><td>Thermal satellite imagery</td></tr>
+    <tr><td>Built-up (NDBI)</td><td>Raster</td><td><span class="badge badge-global">Global</span></td><td>Built-up surface index overlay</td></tr>
+    <tr><td>Tree canopy cover</td><td>Raster</td><td><span class="badge badge-global">Global</span></td><td>Canopy cover percentage overlay</td></tr>
+    <tr><td>100m grid (clickable)</td><td>Grid (100m)</td><td><span class="badge badge-global">Global</span></td><td>Clickable grid with 5 colour modes (see <a href="#rs-grid">RS Grid Modes</a>)</td></tr>
+  </table>
+
+  <!-- ===== CLICKING FEATURES ===== -->
+  <h2 id="clicking">Clicking Features</h2>
+  <p>Click any visible feature on the map to open a popup in the bottom-left corner. The information shown depends on the layer type:</p>
+  <table>
+    <tr><th style="width:170px">Layer</th><th>Popup content</th></tr>
+    <tr><td><strong>Buildings</strong></td><td>Name, building type, height (m), storeys, height source, data source, year completed (if HDB)</td></tr>
+    <tr><td><strong>HDB blocks</strong></td><td>Block name/number, street, year completed, dwelling units, use flags (residential/commercial/market)</td></tr>
+    <tr><td><strong>RS grid</strong></td><td>Cell ID, NDVI, NDBI, LST (&deg;C), canopy %, elevation (m), slope (&deg;)</td></tr>
+    <tr><td><strong>Walkability grid</strong></td><td>Cell ID, intersection density, transit access, destination access, walkability, slope-adjusted variants</td></tr>
+    <tr><td><strong>Street network</strong></td><td>Road name, length (m), betweenness centrality, road type</td></tr>
+    <tr><td><strong>Height control</strong></td><td>Max storeys, zone type</td></tr>
+    <tr><td><strong>UNA gravity</strong></td><td>Building name, composite score, per-category scores (food, transit, green, health, education)</td></tr>
+    <tr><td><strong>Choropleth</strong></td><td>Subzone name, active metric value</td></tr>
+    <tr><td><strong>Other features</strong></td><td>Feature name</td></tr>
+  </table>
+  <p>Click on an empty area of the map to dismiss the popup.</p>
+  <img src="images/click-popup.png" alt="Building click popup showing height and data source" class="screenshot-small">
+  <p class="screenshot-caption">The bottom-left popup after clicking a building, showing type, height, and data source.</p>
+
+  <!-- ===== CHOROPLETH ===== -->
+  <h2 id="choropleth">Choropleth Heatmap</h2>
+  <p>The choropleth shades subzone polygons by a selected metric. It is found in the collapsible &ldquo;Choropleth&rdquo; section at the bottom of the layer panel.</p>
+  <h3>How to use</h3>
+  <ol>
+    <li>Expand the <strong>Choropleth</strong> section (click the header)</li>
+    <li>Expand a sub-category (e.g. Demographics &amp; Housing)</li>
+    <li>Click any metric row to activate it &mdash; subzones will be shaded using a yellow-orange-red (YlOrRd) colour ramp</li>
+    <li>Click <strong>Off</strong> at the top of the section to deactivate the choropleth</li>
+  </ol>
+  <p>The choropleth legend (gradient bar with min/max values) appears between the Off button and the sub-categories.</p>
+
+  <h3>39 metrics across 6 sub-categories</h3>
+  <p>Each metric has a type badge:</p>
+  <ul>
+    <li><span class="badge badge-cnt">CNT</span> Count &mdash; raw totals (e.g. dwelling units, HDB blocks)</li>
+    <li><span class="badge badge-rate">RATE</span> Rate / density &mdash; normalised by area or population</li>
+    <li><span class="badge badge-idx">IDX</span> Index / score &mdash; composite or derived measures</li>
+    <li><span class="badge badge-sat">SAT</span> Satellite-derived &mdash; remote sensing data</li>
+  </ul>
+
+  <table>
+    <tr><th>Sub-category</th><th>Metrics</th><th>Examples</th></tr>
+    <tr><td>Demographics &amp; Housing</td><td>8</td><td>Population density, elderly share, resale flat price</td></tr>
+    <tr><td>Amenities &amp; Infrastructure</td><td>9</td><td>Amenity density, MRT stations, green space coverage</td></tr>
+    <tr><td>Buildings</td><td>3</td><td>Total buildings, avg height, max height</td></tr>
+    <tr><td>Remote Sensing</td><td>6</td><td>NDVI, NDBI, LST, canopy cover, GHSL height, elevation</td></tr>
+    <tr><td>Walkability</td><td>7</td><td>BEH-NWI walkability, slope-adjusted walkability, intersection density</td></tr>
+    <tr><td>UNA Gravity</td><td>6</td><td>Composite accessibility, food, transit, green, health, education</td></tr>
+  </table>
+  <p>Data is sourced from the per-district <code>{district}-subzone-summary.geojson</code> file, which is lazy-loaded on first use and cached.</p>
+  <img src="images/choropleth-panel.png" alt="Choropleth section with Demographics expanded and Population density active" class="screenshot-small">
+  <p class="screenshot-caption">The Choropleth section with Demographics &amp; Housing expanded and Population density metric active.</p>
+  <img src="images/choropleth-map.png" alt="Map showing subzones shaded by population density" class="screenshot">
+  <p class="screenshot-caption">Subzones shaded by population density using the YlOrRd colour ramp.</p>
+
+  <!-- ===== RS GRID MODES ===== -->
+  <h2 id="rs-grid">Remote Sensing Grid Modes</h2>
+  <p>The RS grid layer (&ldquo;100m grid (clickable)&rdquo; in the Remote Sensing group) supports 5 colour modes. Small toggle buttons appear below the grid checkbox when the Remote Sensing group is expanded.</p>
+  <table>
+    <tr><th>Mode</th><th>Field</th><th>Colour ramp</th><th>Description</th></tr>
+    <tr><td><strong>NDVI</strong> (default)</td><td><code>ndvi</code></td><td>Light green &rarr; dark green</td><td>Vegetation greenness (&minus;1 to +1)</td></tr>
+    <tr><td><strong>DEM</strong></td><td><code>dem_m</code></td><td>Blue &rarr; red</td><td>Elevation in metres above sea level (SRTM 30m)</td></tr>
+    <tr><td><strong>Slope</strong></td><td><code>slope_deg</code></td><td>Yellow &rarr; dark green</td><td>Terrain steepness in degrees</td></tr>
+    <tr><td><strong>LST</strong></td><td><code>lst_c</code></td><td>Blue &rarr; red</td><td>Land surface temperature in &deg;C</td></tr>
+    <tr><td><strong>NDBI</strong></td><td><code>ndbi</code></td><td>Green &rarr; red</td><td>Built-up intensity (&minus;1 to +1)</td></tr>
+  </table>
+  <p>The legend in the info panel updates dynamically to show the current field name, gradient, and min/max values computed from the data. Click any grid cell to see all 6 properties (NDVI, NDBI, LST, canopy %, DEM, slope) regardless of the active colour mode.</p>
+  <img src="images/rs-grid-modes.png" alt="RS grid in NDVI mode with colour mode toggle buttons" class="screenshot">
+  <p class="screenshot-caption">The RS grid in NDVI mode. Toggle buttons (NDVI / DEM / Slope / LST / NDBI) appear below the grid checkbox.</p>
+
+  <!-- ===== UNA GRAVITY ===== -->
+  <h2 id="una-gravity">UNA Gravity Layers</h2>
+  <p>Five UNA (Urban Network Analysis) gravity accessibility layers show how accessible each residential building is to nearby destinations, weighted by walking distance decay. They appear in their respective groups:</p>
+  <table>
+    <tr><th>Layer</th><th>Group</th><th>Destinations</th></tr>
+    <tr><td>UNA food access</td><td>Food &amp; Daily Needs</td><td>Hawker centres + supermarkets</td></tr>
+    <tr><td>UNA transit access</td><td>Transit</td><td>MRT exits</td></tr>
+    <tr><td>UNA green access</td><td>Green &amp; Recreation</td><td>Parks</td></tr>
+    <tr><td>UNA health access</td><td>Community</td><td>CHAS clinics</td></tr>
+    <tr><td>UNA education access</td><td>Community</td><td>Pre-schools</td></tr>
+  </table>
+  <p>Each layer displays building centroids as small circles. Higher scores (brighter opacity) mean better accessibility. Click a building to see all five category scores plus the composite score.</p>
+  <div class="note"><strong>Queenstown only:</strong> UNA gravity data is currently available for Queenstown only. Other districts show 0 features for these layers.</div>
+  <p>The Choropleth section also includes 6 UNA Gravity metrics (composite + 5 categories) that show subzone-level averages.</p>
+
+  <!-- ===== LEGENDS ===== -->
+  <h2 id="legends">Legends</h2>
+  <p>The info panel (top-left) shows contextual legends:</p>
+  <ul>
+    <li><strong>Building height legend</strong> &mdash; always visible. Shows the 5-step colour scale:
+      <span class="swatch" style="background:red"></span>&gt;100 m,
+      <span class="swatch" style="background:orange"></span>50&ndash;100 m,
+      <span class="swatch" style="background:yellow"></span>30&ndash;50 m,
+      <span class="swatch" style="background:cyan"></span>15&ndash;30 m,
+      <span class="swatch" style="background:white; border:1px solid #ccc"></span>&le;15 m</li>
+    <li><strong>Layer-specific legends</strong> &mdash; appear below the building legend when the relevant layer is toggled on:
+      <ul>
+        <li>Street network &mdash; betweenness centrality (4-step discrete)</li>
+        <li>Intersection density &mdash; blue ramp (low to high)</li>
+        <li>Walkability grid &mdash; green gradient (low to high)</li>
+        <li>Raster overlays (NDVI, LST, NDBI, canopy) &mdash; gradient with value range</li>
+        <li>RS grid &mdash; dynamic gradient matching the active colour mode</li>
+      </ul>
+    </li>
+    <li><strong>Choropleth legend</strong> &mdash; appears inside the Choropleth section when a metric is active. Shows a YlOrRd gradient bar with formatted min/max values.</li>
+  </ul>
+
+  <!-- ===== TIPS ===== -->
+  <h2 id="tips">Tips &amp; Troubleshooting</h2>
+  <table>
+    <tr><th style="width:200px">Issue</th><th>Solution</th></tr>
+    <tr><td>Stale or missing data</td><td>Hard-refresh the page (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) to clear the browser cache.</td></tr>
+    <tr><td>Layer not loading</td><td>Check the browser console (<kbd>F12</kbd>) for warnings. Some layers have 0 features for certain districts and will fail gracefully.</td></tr>
+    <tr><td>Layers overlapping</td><td>Layers render in a fixed z-order: rasters at the bottom, then choropleth, polygons, grids, lines, boundaries, buildings, points, HDB, and gravity on top. Toggle off layers you don&rsquo;t need.</td></tr>
+    <tr><td>Choropleth not visible</td><td>The choropleth renders below buildings. Disable the Buildings layer, or tilt the map to see subzone shading beneath the 3D buildings.</td></tr>
+    <tr><td>UNA layers show 0</td><td>UNA gravity data is only available for Queenstown. Switch to Queenstown to see these layers.</td></tr>
+    <tr><td>Slow initial load</td><td>Default layers (boundary, subzones, buildings) are loaded immediately. All other layers are lazy-loaded only when toggled on to minimise initial load time.</td></tr>
+    <tr><td>District switch resets layers</td><td>This is by design. Switching districts clears all cached data and resets checkboxes to prevent stale cross-district data.</td></tr>
+  </table>
+
+  <hr>
+  <p style="font-size: 12px; color: #999; text-align: center;">Singapore District Liveability Study &mdash; Map Viewer User Manual</p>
+</body>
+</html>
