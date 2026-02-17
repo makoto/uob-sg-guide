@@ -43,7 +43,7 @@
 <body>
   <div class="back"><a href="index.html">&larr; Back to Home</a></div>
   <h1>Map Viewer User Manual</h1>
-  <p>A guide to the <a href="viewer-deckgl.html">deck.gl map viewer</a> for the Singapore District Liveability Study. The viewer lets you explore 29 data layers and 33 choropleth metrics across five districts.</p>
+  <p>A guide to the <a href="viewer-deckgl.html">deck.gl map viewer</a> for the Singapore District Liveability Study. The viewer lets you explore 29 data layers and 33 choropleth metrics across five districts, with an in-viewer Data Catalogue modal for live layer and metric summaries.</p>
 
   <details id="toc" open>
     <summary>Table of Contents</summary>
@@ -59,6 +59,7 @@
       <li><a href="#choropleth">Choropleth Heatmap</a></li>
       <li><a href="#rs-grid">Remote Sensing Grid Modes</a></li>
 
+      <li><a href="#data-catalogue">Data Catalogue Modal</a></li>
       <li><a href="#sharing">Sharing &amp; URL State</a></li>
       <li><a href="#legends">Legends</a></li>
       <li><a href="#tips">Tips &amp; Troubleshooting</a></li>
@@ -144,7 +145,7 @@
     <li><strong>Colour swatches</strong> &mdash; circles for points, thin bars for lines, semi-transparent squares for polygons</li>
     <li><strong>Lazy loading</strong> &mdash; data is fetched only when you first check a layer&rsquo;s checkbox. Subsequent toggles reuse cached data.</li>
     <li><strong>Choropleth accordion</strong> &mdash; a separate collapsible section at the bottom (see <a href="#choropleth">Choropleth</a>)</li>
-    <li><strong>Data Catalogue link</strong> &mdash; footer link at the bottom opening the <a href="data-catalogue.html">Data Catalogue</a> in a new tab</li>
+    <li><strong>Data Catalogue button</strong> &mdash; footer button at the bottom that opens an in-viewer Data Catalogue modal. The modal shows a Map Layers table (visibility status, feature counts, source links, file links) and a Subzone Metrics table (values respecting the active subzone filter). A &ldquo;Visible layers only&rdquo; toggle filters the layers table. The modal footer links to the full static <a href="data-catalogue.html">Data Catalogue</a> page for additional detail.</li>
   </ul>
   <img src="images/layer-panel.png" alt="Layer panel showing 10 collapsible groups" class="screenshot-small">
   <p class="screenshot-caption">The layer panel with 10 collapsible groups, district selector at top, and provenance filter buttons.</p>
@@ -322,6 +323,34 @@
   <img src="images/rs-grid-modes.png" alt="RS grid in NDVI mode with colour mode toggle buttons" class="screenshot">
   <p class="screenshot-caption">The RS grid in NDVI mode. Toggle buttons (NDVI / DEM / Slope / LST / NDBI) appear below the grid checkbox.</p>
 
+  <!-- ===== DATA CATALOGUE MODAL ===== -->
+  <h2 id="data-catalogue">Data Catalogue Modal</h2>
+  <p>Click the <strong>Data Catalogue</strong> button at the bottom of the layer panel to open a dark-themed modal overlay showing a live summary of all layers and subzone metrics for the current district.</p>
+  <h3>Map Layers table</h3>
+  <p>A 6-column table listing every layer:</p>
+  <ul>
+    <li><strong>Vis</strong> &mdash; green dot if the layer is currently visible, grey otherwise</li>
+    <li><strong>Layer</strong> &mdash; layer name</li>
+    <li><strong>Group</strong> &mdash; the layer group (e.g. Food &amp; Daily Needs, Transit)</li>
+    <li><strong>Source</strong> &mdash; data source with a link (when available)</li>
+    <li><strong>Features</strong> &mdash; feature count; respects the active subzone filter when data is loaded</li>
+    <li><strong>File</strong> &mdash; link to the GeoJSON file on GitHub</li>
+  </ul>
+  <p>Use the <strong>Visible layers only</strong> checkbox at the top to filter the table to only currently-visible layers.</p>
+  <h3>Subzone Metrics section</h3>
+  <p>Between the section header and the metrics table, a row of inline <strong>subzone name chips</strong> shows all subzones for the current district in alphabetical order. Subzones excluded by the <a href="#subzone-filter">subzone filter</a> are dimmed (grey text, lighter background), providing at-a-glance visibility of which subzones are selected.</p>
+  <p>Below the chips is a 4-column table listing all 37 choropleth metrics:</p>
+  <ul>
+    <li><strong>Metric</strong> &mdash; human-readable metric name</li>
+    <li><strong>Category</strong> &mdash; sub-category (Demographics &amp; Housing, Amenities, etc.)</li>
+    <li><strong>Source</strong> &mdash; data provenance</li>
+    <li><strong>Value</strong> &mdash; aggregated value across the selected subzones (sum for counts, min&ndash;max range for rates/indices; single value when one subzone is selected)</li>
+  </ul>
+  <h3>Closing the modal</h3>
+  <p>Close the modal by clicking the <strong>&times;</strong> button, clicking the dark overlay outside the modal content, or pressing the <kbd>Escape</kbd> key.</p>
+  <div class="tip">The modal&rsquo;s open/closed state is included in shareable URLs via the <code>cat=1</code> parameter. If you share a link while the modal is open, the recipient will see it open automatically.</div>
+  <div class="tip">The modal footer includes a link to the full static <a href="data-catalogue.html">Data Catalogue</a> page, which provides additional detail on all datasets, access requirements, demographics matrix, and spatial join fields.</div>
+
   <!-- ===== SHARING ===== -->
   <h2 id="sharing">Sharing &amp; URL State</h2>
   <p>The viewer automatically saves your current view state into the browser&rsquo;s URL bar. You can share exact map configurations with others by copying the URL.</p>
@@ -338,11 +367,12 @@
     <tr><td><code>rs</code></td><td>RS grid colour mode (omitted when default NDVI)</td><td><code>rs=lst</code></td></tr>
     <tr><td><code>base</code></td><td>Basemap index: 0 = Dark, 1 = Light, 2 = Voyager (omitted when Dark)</td><td><code>base=2</code></td></tr>
     <tr><td><code>experimental</code></td><td>Enables UNA gravity accessibility layers (hidden by default)</td><td><code>experimental=true</code></td></tr>
+    <tr><td><code>cat</code></td><td>Opens the Data Catalogue modal on load (omitted when closed)</td><td><code>cat=1</code></td></tr>
   </table>
   <h3>How it works</h3>
   <ul>
-    <li>Every time you toggle a layer, change the district, switch a choropleth metric, adjust the subzone filter, change the basemap, or switch the RS grid mode, the URL updates automatically (without reloading the page).</li>
-    <li>When someone opens a shared link, the viewer restores the full state: the correct district, visible layers, subzone selection, choropleth metric, RS grid mode, and basemap.</li>
+    <li>Every time you toggle a layer, change the district, switch a choropleth metric, adjust the subzone filter, change the basemap, switch the RS grid mode, or open/close the Data Catalogue modal, the URL updates automatically (without reloading the page).</li>
+    <li>When someone opens a shared link, the viewer restores the full state: the correct district, visible layers, subzone selection, choropleth metric, RS grid mode, basemap, and Data Catalogue modal (open/closed).</li>
   </ul>
   <div class="tip"><strong>Tip:</strong> Use shared links to create bookmarks for specific analysis views &mdash; for example, a link showing Outram with only green space layers and the NDVI choropleth active.</div>
 

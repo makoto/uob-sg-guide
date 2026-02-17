@@ -38,6 +38,9 @@
   <div class="back"><a href="index.html">&larr; Back to Home</a></div>
   <h1>Data Catalogue</h1>
   <p>All available datasets from 7 data sources relevant to investigating perceived liveability in Singapore's Queenstown district. The pipeline now supports 5 districts: Queenstown, Marymount (Bishan), Outram, Bukit Merah, and Newton.</p>
+  <div class="tip" style="background:#f0f7ff; border-left:3px solid #2c5f8a; padding:10px 14px; margin:12px 0; font-size:13px; border-radius:0 4px 4px 0;">
+    <strong>Tip:</strong> A live summary of layers and subzone metrics is also available as an in-viewer modal &mdash; click the &ldquo;Data Catalogue&rdquo; button at the bottom of the layer panel in the <a href="viewer-deckgl.html">map viewer</a>.
+  </div>
 
   <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:12px 16px; margin:16px 0; font-size:13px; color:#664d03;">
     <strong>Disclaimer:</strong> This is an AI-assisted project. The data and analysis have not been independently verified &mdash; please cross-check with original sources before relying on them.
@@ -74,6 +77,7 @@
           <li><a href="#point-layers">Point Layers</a></li>
           <li><a href="#line-layers">Line Layers</a></li>
           <li><a href="#polygon-layers">Polygon Layers</a></li>
+          <li><a href="#demographics-matrix">Demographics Matrix</a></li>
           <li><a href="#subzone-summary">Subzone Summary</a></li>
           <li><a href="#viewer-layers">Additional Viewer Layers</a></li>
           <li><a href="#global-layers">Global Layers (OSMnx / GEE)</a></li>
@@ -325,6 +329,62 @@
     <tr><td><a href="https://github.com/makoto/uob-sg-guide/blob/main/docs/geo/gov-sg/queenstown-ura-height-control.geojson"><code>gov-sg/queenstown-ura-height-control.geojson</code></a></td><td>URA Building Height Control</td><td>7</td><td>Planning</td></tr>
     <tr><td><a href="https://github.com/makoto/uob-sg-guide/blob/main/docs/geo/gov-sg/queenstown-nparks-parks-nature-reserves.geojson"><code>gov-sg/queenstown-nparks-parks-nature-reserves.geojson</code></a></td><td>NParks Parks &amp; Nature Reserves</td><td>12</td><td>Green &amp; Recreation</td></tr>
     <tr><td><a href="https://github.com/makoto/uob-sg-guide/blob/main/docs/geo/gov-sg/queenstown-abc-waters.geojson"><code>gov-sg/queenstown-abc-waters.geojson</code></a></td><td>ABC Waters</td><td>5</td><td>Green &amp; Recreation</td></tr>
+  </table>
+
+  <h3 id="demographics-matrix">Demographics Matrix</h3>
+  <p class="section-note">Key demographics by subzone across all 5 districts. Source: <a href="https://data.gov.sg/datasets/d_d95ae740c0f8961a0b10435836660ce0/view">Census of Population 2020</a> (SINGSTAT) for population/elderly; Census 2020 + HDB Property Info for dwelling units; subzone area from URA Master Plan geometry. Sorted by population within each district.</p>
+  <table>
+    <tr><th>Subzone / District</th><th style="text-align:right">Area (km&sup2;)</th><th style="text-align:right">Population</th><th style="text-align:right">Pop/km&sup2;</th><th style="text-align:right">Elderly 65+</th><th style="text-align:right">Dwellings</th></tr>
+    <tr style="background:#f0f4f8;font-weight:600;"><td>Queenstown (15 subzones)</td><td style="text-align:right">21.8</td><td style="text-align:right">95,960</td><td style="text-align:right">4,396</td><td style="text-align:right">20,290</td><td style="text-align:right">34,390</td></tr>
+    <tr><td style="padding-left:24px">Margaret Drive</td><td style="text-align:right">1.033</td><td style="text-align:right">16,090</td><td style="text-align:right">15,569</td><td style="text-align:right">2,480</td><td style="text-align:right">8,755</td></tr>
+    <tr><td style="padding-left:24px">Mei Chin</td><td style="text-align:right">0.754</td><td style="text-align:right">15,570</td><td style="text-align:right">20,657</td><td style="text-align:right">3,270</td><td style="text-align:right">5,018</td></tr>
+    <tr><td style="padding-left:24px">Ghim Moh</td><td style="text-align:right">0.489</td><td style="text-align:right">13,850</td><td style="text-align:right">28,332</td><td style="text-align:right">3,190</td><td style="text-align:right">5,265</td></tr>
+    <tr><td style="padding-left:24px">Holland Drive</td><td style="text-align:right">0.474</td><td style="text-align:right">12,680</td><td style="text-align:right">26,760</td><td style="text-align:right">3,490</td><td style="text-align:right">5,505</td></tr>
+    <tr><td style="padding-left:24px">Dover</td><td style="text-align:right">1.390</td><td style="text-align:right">11,080</td><td style="text-align:right">7,973</td><td style="text-align:right">2,100</td><td style="text-align:right">3,095</td></tr>
+    <tr><td style="padding-left:24px">Tanglin Halt</td><td style="text-align:right">0.561</td><td style="text-align:right">10,590</td><td style="text-align:right">18,876</td><td style="text-align:right">2,640</td><td style="text-align:right">3,372</td></tr>
+    <tr><td style="padding-left:24px">Commonwealth</td><td style="text-align:right">0.313</td><td style="text-align:right">7,000</td><td style="text-align:right">22,391</td><td style="text-align:right">1,820</td><td style="text-align:right">3,380</td></tr>
+    <tr><td style="padding-left:24px">Pasir Panjang 1</td><td style="text-align:right">1.092</td><td style="text-align:right">4,510</td><td style="text-align:right">4,130</td><td style="text-align:right">610</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Pasir Panjang 2</td><td style="text-align:right">0.859</td><td style="text-align:right">3,060</td><td style="text-align:right">3,562</td><td style="text-align:right">590</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">One North</td><td style="text-align:right">2.017</td><td style="text-align:right">720</td><td style="text-align:right">357</td><td style="text-align:right">30</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Queensway</td><td style="text-align:right">0.633</td><td style="text-align:right">270</td><td style="text-align:right">426</td><td style="text-align:right">50</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">National University Of S&rsquo;Pore</td><td style="text-align:right">1.765</td><td style="text-align:right">240</td><td style="text-align:right">136</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Port</td><td style="text-align:right">7.657</td><td style="text-align:right">120</td><td style="text-align:right">16</td><td style="text-align:right">20</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Singapore Polytechnic</td><td style="text-align:right">0.954</td><td style="text-align:right">100</td><td style="text-align:right">105</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Kent Ridge</td><td style="text-align:right">1.839</td><td style="text-align:right">80</td><td style="text-align:right">43</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+    <tr style="background:#f0f4f8;font-weight:600;"><td>Marymount / Bishan (3 subzones)</td><td style="text-align:right">7.7</td><td style="text-align:right">87,320</td><td style="text-align:right">11,401</td><td style="text-align:right">16,040</td><td style="text-align:right">96</td></tr>
+    <tr><td style="padding-left:24px">Marymount</td><td style="text-align:right">1.977</td><td style="text-align:right">29,620</td><td style="text-align:right">14,979</td><td style="text-align:right">4,510</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Upper Thomson</td><td style="text-align:right">3.875</td><td style="text-align:right">29,390</td><td style="text-align:right">7,584</td><td style="text-align:right">6,000</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Bishan East</td><td style="text-align:right">1.807</td><td style="text-align:right">28,310</td><td style="text-align:right">15,671</td><td style="text-align:right">5,530</td><td style="text-align:right">96</td></tr>
+    <tr style="background:#f0f4f8;font-weight:600;"><td>Outram (4 subzones)</td><td style="text-align:right">1.4</td><td style="text-align:right">18,330</td><td style="text-align:right">13,263</td><td style="text-align:right">4,710</td><td style="text-align:right">250</td></tr>
+    <tr><td style="padding-left:24px">Chinatown</td><td style="text-align:right">0.591</td><td style="text-align:right">10,490</td><td style="text-align:right">17,744</td><td style="text-align:right">2,090</td><td style="text-align:right">250</td></tr>
+    <tr><td style="padding-left:24px">Pearl&rsquo;s Hill</td><td style="text-align:right">0.565</td><td style="text-align:right">6,120</td><td style="text-align:right">10,824</td><td style="text-align:right">2,080</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">China Square</td><td style="text-align:right">0.134</td><td style="text-align:right">1,430</td><td style="text-align:right">10,679</td><td style="text-align:right">460</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">People&rsquo;s Park</td><td style="text-align:right">0.092</td><td style="text-align:right">290</td><td style="text-align:right">3,153</td><td style="text-align:right">80</td><td style="text-align:right">0</td></tr>
+    <tr style="background:#f0f4f8;font-weight:600;"><td>Bukit Merah (17 subzones)</td><td style="text-align:right">14.6</td><td style="text-align:right">151,270</td><td style="text-align:right">10,391</td><td style="text-align:right">33,370</td><td style="text-align:right">4,625</td></tr>
+    <tr><td style="padding-left:24px">Telok Blangah Drive</td><td style="text-align:right">1.465</td><td style="text-align:right">19,320</td><td style="text-align:right">13,189</td><td style="text-align:right">3,780</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Tiong Bahru Station</td><td style="text-align:right">0.353</td><td style="text-align:right">15,120</td><td style="text-align:right">42,814</td><td style="text-align:right">2,820</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Bukit Ho Swee</td><td style="text-align:right">0.555</td><td style="text-align:right">14,390</td><td style="text-align:right">25,907</td><td style="text-align:right">3,620</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Alexandra Hill</td><td style="text-align:right">1.037</td><td style="text-align:right">13,490</td><td style="text-align:right">13,005</td><td style="text-align:right">3,420</td><td style="text-align:right">2,290</td></tr>
+    <tr><td style="padding-left:24px">Henderson Hill</td><td style="text-align:right">0.599</td><td style="text-align:right">13,320</td><td style="text-align:right">22,227</td><td style="text-align:right">3,340</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Tiong Bahru</td><td style="text-align:right">0.451</td><td style="text-align:right">12,890</td><td style="text-align:right">28,572</td><td style="text-align:right">2,600</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Telok Blangah Rise</td><td style="text-align:right">0.537</td><td style="text-align:right">12,150</td><td style="text-align:right">22,623</td><td style="text-align:right">3,310</td><td style="text-align:right">1,893</td></tr>
+    <tr><td style="padding-left:24px">Redhill</td><td style="text-align:right">0.390</td><td style="text-align:right">10,620</td><td style="text-align:right">27,215</td><td style="text-align:right">1,710</td><td style="text-align:right">442</td></tr>
+    <tr><td style="padding-left:24px">Telok Blangah Way</td><td style="text-align:right">0.279</td><td style="text-align:right">9,230</td><td style="text-align:right">33,119</td><td style="text-align:right">2,350</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Kampong Tiong Bahru</td><td style="text-align:right">0.368</td><td style="text-align:right">9,010</td><td style="text-align:right">24,497</td><td style="text-align:right">2,540</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Everton Park</td><td style="text-align:right">0.640</td><td style="text-align:right">7,810</td><td style="text-align:right">12,203</td><td style="text-align:right">1,890</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Depot Road</td><td style="text-align:right">0.445</td><td style="text-align:right">6,540</td><td style="text-align:right">14,687</td><td style="text-align:right">1,060</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Maritime Square</td><td style="text-align:right">2.717</td><td style="text-align:right">3,620</td><td style="text-align:right">1,332</td><td style="text-align:right">490</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Alexandra North</td><td style="text-align:right">0.296</td><td style="text-align:right">2,620</td><td style="text-align:right">8,861</td><td style="text-align:right">170</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Bukit Merah</td><td style="text-align:right">0.414</td><td style="text-align:right">1,110</td><td style="text-align:right">2,678</td><td style="text-align:right">270</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">City Terminals</td><td style="text-align:right">3.475</td><td style="text-align:right">20</td><td style="text-align:right">6</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Singapore General Hospital</td><td style="text-align:right">0.537</td><td style="text-align:right">10</td><td style="text-align:right">19</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+    <tr style="background:#f0f4f8;font-weight:600;"><td>Newton (6 subzones)</td><td style="text-align:right">2.1</td><td style="text-align:right">8,270</td><td style="text-align:right">3,970</td><td style="text-align:right">1,200</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Cairnhill</td><td style="text-align:right">0.455</td><td style="text-align:right">3,880</td><td style="text-align:right">8,535</td><td style="text-align:right">560</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Orange Grove</td><td style="text-align:right">0.338</td><td style="text-align:right">1,790</td><td style="text-align:right">5,288</td><td style="text-align:right">320</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Goodwood Park</td><td style="text-align:right">0.354</td><td style="text-align:right">1,260</td><td style="text-align:right">3,563</td><td style="text-align:right">150</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Monk&rsquo;s Hill</td><td style="text-align:right">0.174</td><td style="text-align:right">1,030</td><td style="text-align:right">5,926</td><td style="text-align:right">150</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Newton Circus</td><td style="text-align:right">0.215</td><td style="text-align:right">250</td><td style="text-align:right">1,163</td><td style="text-align:right">20</td><td style="text-align:right">0</td></tr>
+    <tr><td style="padding-left:24px">Istana Negara</td><td style="text-align:right">0.547</td><td style="text-align:right">60</td><td style="text-align:right">110</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
   </table>
 
   <h3 id="subzone-summary">Subzone Summary</h3>

@@ -92,6 +92,31 @@
     #layer-legend .layer-legend-gradient { height: 10px; border-radius: 2px; margin-top: 2px; }
     #layer-legend .layer-legend-labels { display: flex; justify-content: space-between; font-size: 10px; color: #aaa; margin-top: 2px; }
     .deck-tooltip { font-family: sans-serif !important; font-size: 12px !important; }
+    /* Data Catalogue modal */
+    #catalogue-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10; justify-content: center; align-items: center; }
+    #catalogue-modal.open { display: flex; }
+    #catalogue-content { background: rgba(20,20,20,0.95); color: #ddd; border-radius: 8px; max-width: 760px; width: 92%; max-height: 80vh; overflow-y: auto; padding: 16px 20px; font-family: sans-serif; font-size: 12px; position: relative; }
+    #catalogue-content h2 { margin: 0 0 10px; font-size: 15px; color: #fff; }
+    .cat-close { position: absolute; top: 10px; right: 14px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px 8px; font-size: 14px; cursor: pointer; line-height: 1; }
+    .cat-close:hover { background: rgba(255,255,255,0.3); }
+    .cat-filter-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 11px; color: #aaa; }
+    .cat-filter-row label { cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .cat-section-header { color: #888; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 0 4px; margin-top: 12px; }
+    .cat-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    .cat-table th { text-align: left; color: #999; font-size: 10px; text-transform: uppercase; padding: 4px 8px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+    .cat-table th.num { text-align: right; }
+    .cat-table td { padding: 3px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+    .cat-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .cat-table tr:hover { background: rgba(255,255,255,0.04); }
+    .cat-table a { color: #4fc3f7; text-decoration: none; }
+    .cat-table a:hover { text-decoration: underline; }
+    .cat-vis { font-size: 10px; }
+    .cat-vis.on { color: #4caf50; }
+    .cat-vis.off { color: #555; }
+    .cat-footnotes { margin-top: 10px; font-size: 10px; color: #777; line-height: 1.5; }
+    .cat-footer { margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: #888; display: flex; justify-content: space-between; align-items: center; }
+    .cat-footer a { color: #4fc3f7; text-decoration: none; }
+    .cat-footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -118,6 +143,7 @@
     <div id="layer-panel-body"></div>
   </div>
   <div id="picked"></div>
+  <div id="catalogue-modal"><div id="catalogue-content"></div></div>
 
   <script>
     // ---------------------------------------------------------------
@@ -240,50 +266,50 @@
     // ---------------------------------------------------------------
     var LAYERS = [
       // District
-      { id: 'boundary', label: 'District boundary', file: 'geo/queenstown-boundary.geojson', color: '#ff00ff', group: 'District', deckType: 'boundary', onByDefault: true },
-      { id: 'subzones', label: 'Subzones', file: 'geo/queenstown-subzones.geojson', color: '#00ffff', group: 'District', deckType: 'subzones', onByDefault: true },
-      { id: 'buildings', label: 'Buildings (extruded)', file: 'geo/global/queenstown-buildings.geojson', color: '#ffffff', group: 'District', deckType: 'buildings', onByDefault: true },
-      { id: 'other_districts', label: 'Other districts', file: null, color: '#888888', group: 'District', deckType: 'other_districts', onByDefault: true },
+      { id: 'boundary', label: 'District boundary', file: 'geo/queenstown-boundary.geojson', color: '#ff00ff', group: 'District', deckType: 'boundary', onByDefault: true, sourceLabel: 'URA / data.gov.sg', sourceUrl: 'https://data.gov.sg/collections/2104/view' },
+      { id: 'subzones', label: 'Subzones', file: 'geo/queenstown-subzones.geojson', color: '#00ffff', group: 'District', deckType: 'subzones', onByDefault: true, sourceLabel: 'URA / data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_8594ae9ff96d0c708bc2af633048edfb/view' },
+      { id: 'buildings', label: 'Buildings (extruded)', file: 'geo/global/queenstown-buildings.geojson', color: '#ffffff', group: 'District', deckType: 'buildings', onByDefault: true, sourceLabel: 'OSMnx', sourceUrl: null },
+      { id: 'other_districts', label: 'Other districts', file: null, color: '#888888', group: 'District', deckType: 'other_districts', onByDefault: true, sourceLabel: 'URA / data.gov.sg', sourceUrl: null },
       // Food & Daily Needs
-      { id: 'hawker', label: 'Hawker centres', file: 'geo/gov-sg/queenstown-hawker-centres.geojson', color: '#ff6b35', group: 'Food & Daily Needs', deckType: 'point', source: 'gov-sg' },
-      { id: 'supermarket', label: 'Supermarkets', file: 'geo/gov-sg/queenstown-supermarkets.geojson', color: '#4ecdc4', group: 'Food & Daily Needs', deckType: 'point', source: 'gov-sg' },
-      { id: 'grav_food', label: 'UNA food access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#ff6b35', group: 'Food & Daily Needs', deckType: 'gravity', gravityField: 'gravity_food', source: 'global', experimental: true },
+      { id: 'hawker', label: 'Hawker centres', file: 'geo/gov-sg/queenstown-hawker-centres.geojson', color: '#ff6b35', group: 'Food & Daily Needs', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_4a086da0a5553be1d89383cd90d07ecd/view' },
+      { id: 'supermarket', label: 'Supermarkets', file: 'geo/gov-sg/queenstown-supermarkets.geojson', color: '#4ecdc4', group: 'Food & Daily Needs', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_cac2c32f01960a3ad7202a99c27268a0/view' },
+      { id: 'grav_food', label: 'UNA food access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#ff6b35', group: 'Food & Daily Needs', deckType: 'gravity', gravityField: 'gravity_food', source: 'global', experimental: true, sourceLabel: 'UNA (madina)', sourceUrl: null },
       // Transit
-      { id: 'mrt', label: 'MRT exits', file: 'geo/gov-sg/queenstown-mrt-exits.geojson', color: '#2c5f8a', group: 'Transit', deckType: 'point', source: 'gov-sg' },
-      { id: 'grav_transit', label: 'UNA transit access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#2c5f8a', group: 'Transit', deckType: 'gravity', gravityField: 'gravity_transit', source: 'global', experimental: true },
+      { id: 'mrt', label: 'MRT exits', file: 'geo/gov-sg/queenstown-mrt-exits.geojson', color: '#2c5f8a', group: 'Transit', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_b39d3a0871985372d7e1637193335da5/view' },
+      { id: 'grav_transit', label: 'UNA transit access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#2c5f8a', group: 'Transit', deckType: 'gravity', gravityField: 'gravity_transit', source: 'global', experimental: true, sourceLabel: 'UNA (madina)', sourceUrl: null },
       // Green & Recreation
-      { id: 'parks', label: 'Parks', file: 'geo/gov-sg/queenstown-parks.geojson', color: '#45b649', group: 'Green & Recreation', deckType: 'point', source: 'gov-sg' },
-      { id: 'parkfac', label: 'Park facilities', file: 'geo/gov-sg/queenstown-park-facilities.geojson', color: '#7bc67e', group: 'Green & Recreation', deckType: 'point', source: 'gov-sg' },
-      { id: 'parkconn', label: 'Park connectors', file: 'geo/gov-sg/queenstown-park-connectors.geojson', color: '#44ff44', group: 'Green & Recreation', deckType: 'line', source: 'gov-sg' },
-      { id: 'nature', label: 'Parks & nature reserves', file: 'geo/gov-sg/queenstown-nparks-parks-nature-reserves.geojson', color: '#2e7d32', group: 'Green & Recreation', deckType: 'polygon', source: 'gov-sg' },
-      { id: 'abcwaters', label: 'ABC Waters', file: 'geo/gov-sg/queenstown-abc-waters.geojson', color: '#0288d1', group: 'Green & Recreation', deckType: 'polygon', source: 'gov-sg' },
-      { id: 'nptracks', label: 'NParks tracks', file: 'geo/gov-sg/queenstown-nparks-tracks.geojson', color: '#8bc34a', group: 'Green & Recreation', deckType: 'line', source: 'gov-sg' },
-      { id: 'grav_green', label: 'UNA green access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#45b649', group: 'Green & Recreation', deckType: 'gravity', gravityField: 'gravity_green', source: 'global', experimental: true },
+      { id: 'parks', label: 'Parks', file: 'geo/gov-sg/queenstown-parks.geojson', color: '#45b649', group: 'Green & Recreation', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/dataset/parks' },
+      { id: 'parkfac', label: 'Park facilities', file: 'geo/gov-sg/queenstown-park-facilities.geojson', color: '#7bc67e', group: 'Green & Recreation', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_14d807e20158338fd578c2913953516e/view' },
+      { id: 'parkconn', label: 'Park connectors', file: 'geo/gov-sg/queenstown-park-connectors.geojson', color: '#44ff44', group: 'Green & Recreation', deckType: 'line', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_a69ef89737379f231d2ae93fd1c5707f/view' },
+      { id: 'nature', label: 'Parks & nature reserves', file: 'geo/gov-sg/queenstown-nparks-parks-nature-reserves.geojson', color: '#2e7d32', group: 'Green & Recreation', deckType: 'polygon', source: 'gov-sg', sourceLabel: 'NParks', sourceUrl: null },
+      { id: 'abcwaters', label: 'ABC Waters', file: 'geo/gov-sg/queenstown-abc-waters.geojson', color: '#0288d1', group: 'Green & Recreation', deckType: 'polygon', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_b5f239cc954bb7920245a7b8ad95dde8/view' },
+      { id: 'nptracks', label: 'NParks tracks', file: 'geo/gov-sg/queenstown-nparks-tracks.geojson', color: '#8bc34a', group: 'Green & Recreation', deckType: 'line', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_306cc1018cb733346681883ee6d73054/view' },
+      { id: 'grav_green', label: 'UNA green access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#45b649', group: 'Green & Recreation', deckType: 'gravity', gravityField: 'gravity_green', source: 'global', experimental: true, sourceLabel: 'UNA (madina)', sourceUrl: null },
       // Active Mobility
-      { id: 'cycling', label: 'Cycling paths', file: 'geo/gov-sg/queenstown-cycling-paths.geojson', color: '#00ff88', group: 'Active Mobility', deckType: 'line', source: 'gov-sg' },
+      { id: 'cycling', label: 'Cycling paths', file: 'geo/gov-sg/queenstown-cycling-paths.geojson', color: '#00ff88', group: 'Active Mobility', deckType: 'line', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_8f468b25193f64be8a16fa7d8f60f553/view' },
       // Community
-      { id: 'cc', label: 'Community clubs', file: 'geo/gov-sg/queenstown-community-clubs.geojson', color: '#9b59b6', group: 'Community', deckType: 'point', source: 'gov-sg' },
-      { id: 'gym', label: 'Gyms', file: 'geo/gov-sg/queenstown-gyms.geojson', color: '#e74c3c', group: 'Community', deckType: 'point', source: 'gov-sg' },
-      { id: 'preschool', label: 'Pre-schools', file: 'geo/gov-sg/queenstown-preschools.geojson', color: '#f39c12', group: 'Community', deckType: 'point', source: 'gov-sg' },
-      { id: 'chas', label: 'CHAS clinics', file: 'geo/gov-sg/queenstown-chas-clinics.geojson', color: '#e84393', group: 'Community', deckType: 'point', source: 'gov-sg' },
-      { id: 'sportfac', label: 'Sport facilities', file: 'geo/gov-sg/queenstown-sport-facilities.geojson', color: '#ff5252', group: 'Community', deckType: 'point', source: 'gov-sg' },
-      { id: 'grav_health', label: 'UNA health access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#e84393', group: 'Community', deckType: 'gravity', gravityField: 'gravity_health', source: 'global', experimental: true },
-      { id: 'grav_education', label: 'UNA education access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#f39c12', group: 'Community', deckType: 'gravity', gravityField: 'gravity_education', source: 'global', experimental: true },
+      { id: 'cc', label: 'Community clubs', file: 'geo/gov-sg/queenstown-community-clubs.geojson', color: '#9b59b6', group: 'Community', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/dataset/community-clubs' },
+      { id: 'gym', label: 'Gyms', file: 'geo/gov-sg/queenstown-gyms.geojson', color: '#e74c3c', group: 'Community', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_b3ae090692ecf632116c9885cfbd3424/view' },
+      { id: 'preschool', label: 'Pre-schools', file: 'geo/gov-sg/queenstown-preschools.geojson', color: '#f39c12', group: 'Community', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_61eefab99958fd70e6aab17320a71f1c/view' },
+      { id: 'chas', label: 'CHAS clinics', file: 'geo/gov-sg/queenstown-chas-clinics.geojson', color: '#e84393', group: 'Community', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_548c33ea2d99e29ec63a7cc9edcccedc/view' },
+      { id: 'sportfac', label: 'Sport facilities', file: 'geo/gov-sg/queenstown-sport-facilities.geojson', color: '#ff5252', group: 'Community', deckType: 'point', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_9b87bab59d036a60fad2a91530e10773/view' },
+      { id: 'grav_health', label: 'UNA health access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#e84393', group: 'Community', deckType: 'gravity', gravityField: 'gravity_health', source: 'global', experimental: true, sourceLabel: 'UNA (madina)', sourceUrl: null },
+      { id: 'grav_education', label: 'UNA education access', file: 'geo/global/queenstown-una-gravity.geojson', color: '#f39c12', group: 'Community', deckType: 'gravity', gravityField: 'gravity_education', source: 'global', experimental: true, sourceLabel: 'UNA (madina)', sourceUrl: null },
       // Housing
-      { id: 'hdb', label: 'HDB blocks', file: 'geo/global/queenstown-buildings-hdb-enriched.geojson', color: '#ff5722', group: 'Housing', deckType: 'hdb', source: 'global' },
+      { id: 'hdb', label: 'HDB blocks', file: 'geo/global/queenstown-buildings-hdb-enriched.geojson', color: '#ff5722', group: 'Housing', deckType: 'hdb', source: 'global', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_17f5382f26140b1fdae0ba2ef6239d2f/view' },
       // Planning
-      { id: 'heightctl', label: 'Height control zones', file: 'geo/gov-sg/queenstown-ura-height-control.geojson', color: '#ff9800', group: 'Planning', deckType: 'polygon', source: 'gov-sg' },
+      { id: 'heightctl', label: 'Height control zones', file: 'geo/gov-sg/queenstown-ura-height-control.geojson', color: '#ff9800', group: 'Planning', deckType: 'polygon', source: 'gov-sg', sourceLabel: 'data.gov.sg', sourceUrl: 'https://data.gov.sg/datasets/d_ee8e2e0d13a50a699f9100029b8c0b0a/view' },
       // Street Network
-      { id: 'streetnet', label: 'Street network', file: 'geo/global/queenstown-street-network.geojson', color: '#00bcd4', group: 'Street Network', deckType: 'streetnet', source: 'global' },
-      { id: 'walk_intdens', label: 'Intersection density grid', file: 'geo/global/queenstown-walkability-grid.geojson', color: '#2196f3', group: 'Street Network', deckType: 'walk_intdens', source: 'global' },
-      { id: 'walk_grid', label: 'Walkability grid', file: 'geo/global/queenstown-walkability-grid.geojson', color: '#4caf50', group: 'Street Network', deckType: 'walk_grid', source: 'global' },
+      { id: 'streetnet', label: 'Street network', file: 'geo/global/queenstown-street-network.geojson', color: '#00bcd4', group: 'Street Network', deckType: 'streetnet', source: 'global', sourceLabel: 'OSMnx', sourceUrl: null },
+      { id: 'walk_intdens', label: 'Intersection density grid', file: 'geo/global/queenstown-walkability-grid.geojson', color: '#2196f3', group: 'Street Network', deckType: 'walk_intdens', source: 'global', sourceLabel: 'OSMnx', sourceUrl: null },
+      { id: 'walk_grid', label: 'Walkability grid', file: 'geo/global/queenstown-walkability-grid.geojson', color: '#4caf50', group: 'Street Network', deckType: 'walk_grid', source: 'global', sourceLabel: 'OSMnx', sourceUrl: null },
       // Remote Sensing — raster overlays
-      { id: 'rs_ndvi', label: 'NDVI (vegetation)', rasterFile: 'geo/global/rasters/queenstown-ndvi.png', color: '#4caf50', group: 'Remote Sensing', deckType: 'raster', source: 'global' },
-      { id: 'rs_lst', label: 'Land surface temp', rasterFile: 'geo/global/rasters/queenstown-lst.png', color: '#f44336', group: 'Remote Sensing', deckType: 'raster', source: 'global' },
-      { id: 'rs_ndbi', label: 'Built-up (NDBI)', rasterFile: 'geo/global/rasters/queenstown-ndbi.png', color: '#ff9800', group: 'Remote Sensing', deckType: 'raster', source: 'global' },
-      { id: 'rs_canopy', label: 'Tree canopy cover', rasterFile: 'geo/global/rasters/queenstown-canopy.png', color: '#2e7d32', group: 'Remote Sensing', deckType: 'raster', source: 'global' },
+      { id: 'rs_ndvi', label: 'NDVI (vegetation)', rasterFile: 'geo/global/rasters/queenstown-ndvi.png', color: '#4caf50', group: 'Remote Sensing', deckType: 'raster', source: 'global', sourceLabel: 'GEE', sourceUrl: null },
+      { id: 'rs_lst', label: 'Land surface temp', rasterFile: 'geo/global/rasters/queenstown-lst.png', color: '#f44336', group: 'Remote Sensing', deckType: 'raster', source: 'global', sourceLabel: 'GEE', sourceUrl: null },
+      { id: 'rs_ndbi', label: 'Built-up (NDBI)', rasterFile: 'geo/global/rasters/queenstown-ndbi.png', color: '#ff9800', group: 'Remote Sensing', deckType: 'raster', source: 'global', sourceLabel: 'GEE', sourceUrl: null },
+      { id: 'rs_canopy', label: 'Tree canopy cover', rasterFile: 'geo/global/rasters/queenstown-canopy.png', color: '#2e7d32', group: 'Remote Sensing', deckType: 'raster', source: 'global', sourceLabel: 'GEE', sourceUrl: null },
       // Remote Sensing — clickable 100m grid
-      { id: 'rs_grid', label: '100m grid (clickable)', file: 'geo/global/queenstown-rs-grid.geojson', color: '#8bc34a', group: 'Remote Sensing', deckType: 'rs_grid', source: 'global' },
+      { id: 'rs_grid', label: '100m grid (clickable)', file: 'geo/global/queenstown-rs-grid.geojson', color: '#8bc34a', group: 'Remote Sensing', deckType: 'rs_grid', source: 'global', sourceLabel: 'GEE', sourceUrl: null },
     ];
 
     // Filter out experimental layers unless ?experimental=true
@@ -442,6 +468,7 @@
     // URL state persistence
     // ---------------------------------------------------------------
     var urlChoroplethKey = '';
+    var catalogueOpenFromUrl = false;
 
     function restoreStateFromUrl() {
       var params = new URLSearchParams(window.location.search);
@@ -470,6 +497,7 @@
         var idx = parseInt(baseParam, 10);
         if (idx >= 0 && idx < BASEMAPS.length) basemapIndex = idx;
       }
+      if (params.get('cat') === '1') catalogueOpenFromUrl = true;
     }
     restoreStateFromUrl();
 
@@ -487,6 +515,7 @@
       if (activeChoropleth) parts.push('choro=' + activeChoropleth);
       if (rsGridMode !== 'ndvi') parts.push('rs=' + rsGridMode);
       if (basemapIndex !== 0) parts.push('base=' + basemapIndex);
+      if (document.getElementById('catalogue-modal') && document.getElementById('catalogue-modal').classList.contains('open')) parts.push('cat=1');
       return parts.join('&');
     }
 
@@ -667,6 +696,260 @@
       if (fmt === 'price') return '$' + Math.round(v / 1000).toLocaleString() + 'K';
       return String(v) + unit;
     }
+
+    // ---------------------------------------------------------------
+    // Data Catalogue — subzone metrics definition
+    // ---------------------------------------------------------------
+    var SUBZONE_METRICS = [
+      { key: 'area_km2', label: 'Area (km\u00B2)', category: 'Demographics & Housing', source: 'Geometry', aggregate: 'sum', fmt: 'float', unit: ' km\u00B2' },
+      { key: 'population_total', label: 'Population', category: 'Demographics & Housing', source: 'Census 2020', aggregate: 'sum', fmt: 'int', unit: '' },
+      { key: 'population_density', label: 'Population density (/km\u00B2)', category: 'Demographics & Housing', source: 'Derived \u00B9', aggregate: 'range', fmt: 'int', unit: '' },
+      { key: 'population_elderly_65plus', label: 'Elderly (65+)', category: 'Demographics & Housing', source: 'Census 2020', aggregate: 'sum', fmt: 'int', unit: '' },
+      { key: 'elderly_pct', label: 'Elderly share (%)', category: 'Demographics & Housing', source: 'Derived \u00B2', aggregate: 'range', fmt: 'pct', unit: '%', derived: true },
+      { key: 'total_dwelling_units', label: 'Dwelling units', category: 'Demographics & Housing', source: 'Census 2020', aggregate: 'sum', fmt: 'int', unit: '' },
+      { key: 'dwelling_density', label: 'Dwelling density (/km\u00B2)', category: 'Demographics & Housing', source: 'Derived \u00B3', aggregate: 'range', fmt: 'int', unit: '' },
+      { key: 'hdb_count', label: 'HDB blocks', category: 'Demographics & Housing', source: 'data.gov.sg', aggregate: 'sum', fmt: 'int', unit: '' },
+      { key: 'avg_hdb_year', label: 'Avg HDB year built', category: 'Demographics & Housing', source: 'data.gov.sg', aggregate: 'range', fmt: 'int', unit: '' },
+      { key: 'resale_median_price', label: 'Resale median price', category: 'Demographics & Housing', source: 'data.gov.sg', aggregate: 'range', fmt: 'price', unit: '' },
+      { key: 'resale_transaction_count', label: 'Resale transactions', category: 'Demographics & Housing', source: 'data.gov.sg', aggregate: 'sum', fmt: 'int', unit: '' },
+      { key: 'amenity_density', label: 'Amenity density (/km\u00B2)', category: 'Amenities & Infrastructure', source: 'Derived', aggregate: 'range', fmt: 'float', unit: '' },
+      { key: 'mrt_station_count', label: 'MRT stations', category: 'Amenities & Infrastructure', source: 'data.gov.sg', aggregate: 'sum', fmt: 'int', unit: '' },
+      { key: 'cycling_path_km', label: 'Cycling paths (km)', category: 'Amenities & Infrastructure', source: 'data.gov.sg', aggregate: 'sum', fmt: 'float', unit: ' km' },
+      { key: 'park_connector_km', label: 'Park connectors (km)', category: 'Amenities & Infrastructure', source: 'data.gov.sg', aggregate: 'sum', fmt: 'float', unit: ' km' },
+      { key: 'nparks_track_km', label: 'NParks tracks (km)', category: 'Amenities & Infrastructure', source: 'data.gov.sg', aggregate: 'sum', fmt: 'float', unit: ' km' },
+      { key: 'sport_facilities', label: 'Sport facilities', category: 'Amenities & Infrastructure', source: 'data.gov.sg', aggregate: 'sum', fmt: 'int', unit: '' },
+      { key: 'green_space_pct', label: 'Green space coverage (%)', category: 'Amenities & Infrastructure', source: 'Derived', aggregate: 'range', fmt: 'float', unit: '%' },
+      { key: 'green_space_area_km2', label: 'Green space area (km\u00B2)', category: 'Amenities & Infrastructure', source: 'NParks', aggregate: 'sum', fmt: 'float', unit: ' km\u00B2' },
+      { key: 'abc_waters_area_km2', label: 'ABC Waters area (km\u00B2)', category: 'Amenities & Infrastructure', source: 'data.gov.sg', aggregate: 'sum', fmt: 'float', unit: ' km\u00B2' },
+      { key: 'building_count', label: 'Total buildings', category: 'Buildings', source: 'OSMnx', aggregate: 'sum', fmt: 'int', unit: '' },
+      { key: 'mean_height_m', label: 'Avg building height (m)', category: 'Buildings', source: 'OSMnx', aggregate: 'range', fmt: 'float', unit: ' m' },
+      { key: 'max_height_m', label: 'Max building height (m)', category: 'Buildings', source: 'OSMnx', aggregate: 'range', fmt: 'float', unit: ' m' },
+      { key: 'ndvi_mean', label: 'Vegetation (NDVI)', category: 'Remote Sensing', source: 'GEE', aggregate: 'range', fmt: 'float', unit: '' },
+      { key: 'ndbi_mean', label: 'Built-up (NDBI)', category: 'Remote Sensing', source: 'GEE', aggregate: 'range', fmt: 'float', unit: '' },
+      { key: 'lst_mean_c', label: 'Land Surface Temp (\u00B0C)', category: 'Remote Sensing', source: 'GEE', aggregate: 'range', fmt: 'float', unit: ' \u00B0C' },
+      { key: 'canopy_cover_pct', label: 'Tree canopy cover (%)', category: 'Remote Sensing', source: 'GEE', aggregate: 'range', fmt: 'float', unit: '%' },
+      { key: 'ghsl_height_mean', label: 'GHSL building height (m)', category: 'Remote Sensing', source: 'GEE', aggregate: 'range', fmt: 'float', unit: ' m' },
+      { key: 'dsm_mean', label: 'Surface elevation (m)', category: 'Remote Sensing', source: 'GEE', aggregate: 'range', fmt: 'float', unit: ' m' },
+      { key: 'intersection_density', label: 'Intersection density (/km\u00B2)', category: 'Walkability', source: 'OSMnx', aggregate: 'range', fmt: 'int', unit: '' },
+      { key: 'transit_access_score', label: 'Transit access', category: 'Walkability', source: 'OSMnx', aggregate: 'range', fmt: 'float', unit: '' },
+      { key: 'destination_accessibility', label: 'Destination access', category: 'Walkability', source: 'OSMnx', aggregate: 'range', fmt: 'float', unit: '' },
+      { key: 'walkability_index', label: 'Walkability (BEH-NWI)', category: 'Walkability', source: 'OSMnx', aggregate: 'range', fmt: 'float', unit: '' },
+      { key: 'walkability_slope', label: 'Walkability (slope-adj)', category: 'Walkability', source: 'OSMnx', aggregate: 'range', fmt: 'float', unit: '' },
+      { key: 'transit_access_slope', label: 'Transit (slope-adj)', category: 'Walkability', source: 'OSMnx', aggregate: 'range', fmt: 'float', unit: '' },
+      { key: 'dest_access_slope', label: 'Dest access (slope-adj)', category: 'Walkability', source: 'OSMnx', aggregate: 'range', fmt: 'float', unit: '' },
+    ];
+
+    // ---------------------------------------------------------------
+    // Data Catalogue — modal functions
+    // ---------------------------------------------------------------
+    var catalogueVisibleOnly = false;
+
+    function buildCatalogueModal() {
+      var c = document.getElementById('catalogue-content');
+      var distLabel = DISTRICTS[currentDistrict].label;
+
+      var html = '<button class="cat-close" onclick="closeCatalogue()">&times;</button>';
+      html += '<h2>Data Catalogue \u2014 ' + distLabel + '</h2>';
+
+      // Filter row
+      html += '<div class="cat-filter-row">';
+      html += '<label><input type="checkbox" id="cat-visible-only" ' + (catalogueVisibleOnly ? 'checked' : '') + '> Visible layers only</label>';
+      if (selectedSubzones) {
+        html += '<span>Subzone filter: ' + selectedSubzones.length + ' selected</span>';
+      }
+      html += '</div>';
+
+      // MAP LAYERS section
+      html += '<div class="cat-section-header">Map Layers</div>';
+      html += '<table class="cat-table"><thead><tr>';
+      html += '<th>Vis</th><th>Layer</th><th>Group</th><th>Source</th><th class="num">Features</th><th>File</th>';
+      html += '</tr></thead><tbody id="catalogue-layers-tbody"></tbody></table>';
+
+      // SUBZONE METRICS section
+      var summaryFile = 'geo/' + currentDistrict + '-subzone-summary.geojson';
+      var ghBase = 'https://github.com/makoto/uob-sg-guide/blob/main/docs/';
+      html += '<div class="cat-section-header">Subzone Metrics';
+      html += ' <a href="' + ghBase + summaryFile + '" target="_blank" style="font-size:10px;text-transform:none;color:#4fc3f7;margin-left:8px;">View source</a>';
+      html += '</div>';
+      html += '<div id="catalogue-subzone-list" style="margin:6px 0 8px;font-size:11px;line-height:1.8;"></div>';
+      html += '<table class="cat-table"><thead><tr>';
+      html += '<th>Metric</th><th>Category</th><th>Source</th><th class="num">Value</th>';
+      html += '</tr></thead><tbody id="catalogue-metrics-tbody"></tbody></table>';
+
+      // Footnotes
+      html += '<div class="cat-footnotes">';
+      html += '\u00B9 population / area &nbsp; \u00B2 elderly 65+ / population &nbsp; \u00B3 dwelling units / area';
+      html += '</div>';
+
+      // Footer
+      html += '<div class="cat-footer">';
+      html += '<span id="cat-summary"></span>';
+      html += '<a href="data-catalogue.html" target="_blank">Full data catalogue</a>';
+      html += '</div>';
+
+      c.innerHTML = html;
+
+      document.getElementById('cat-visible-only').addEventListener('change', function() {
+        catalogueVisibleOnly = this.checked;
+        populateCatalogueTable();
+      });
+    }
+
+    function populateCatalogueTable() {
+      var counts = DISTRICTS[currentDistrict].layerCounts || {};
+      var ghBase = 'https://github.com/makoto/uob-sg-guide/blob/main/docs/';
+
+      // --- Map Layers table ---
+      var tbody = document.getElementById('catalogue-layers-tbody');
+      if (!tbody) return;
+      var rows = '';
+      var shownLayers = 0;
+      var totalLayers = 0;
+
+      LAYERS.forEach(function(layer) {
+        totalLayers++;
+        var vis = !!(layerState[layer.id] && layerState[layer.id].visible);
+        if (catalogueVisibleOnly && !vis) return;
+        shownLayers++;
+
+        var visIcon = vis ? '<span class="cat-vis on">\u25CF</span>' : '<span class="cat-vis off">\u25CB</span>';
+
+        // Source column
+        var srcHtml = layer.sourceLabel || '\u2014';
+        if (layer.sourceUrl) {
+          srcHtml = '<a href="' + layer.sourceUrl + '" target="_blank">' + srcHtml + '</a>';
+        }
+
+        // Feature count
+        var countHtml = '\u2014';
+        if (layer.deckType === 'raster' || layer.id === 'other_districts') {
+          countHtml = '\u2014';
+        } else if (selectedSubzones && subzonePolygons && layerState[layer.id] && layerState[layer.id].data) {
+          var filtered = filterBySubzone(layerState[layer.id].data);
+          countHtml = filtered.features.length.toLocaleString();
+        } else if (counts[layer.id] !== undefined) {
+          countHtml = counts[layer.id].toLocaleString();
+        }
+
+        // File link
+        var fileHtml = '\u2014';
+        if (layer.file) {
+          var filePath = layerFile(layer.file);
+          fileHtml = '<a href="' + ghBase + filePath + '" target="_blank">' + filePath.split('/').pop() + '</a>';
+        } else if (layer.rasterFile) {
+          var filePath = layerFile(layer.rasterFile);
+          fileHtml = '<a href="' + ghBase + filePath + '" target="_blank">' + filePath.split('/').pop() + '</a>';
+        }
+
+        rows += '<tr>';
+        rows += '<td>' + visIcon + '</td>';
+        rows += '<td>' + layer.label + '</td>';
+        rows += '<td>' + layer.group + '</td>';
+        rows += '<td>' + srcHtml + '</td>';
+        rows += '<td class="num">' + countHtml + '</td>';
+        rows += '<td>' + fileHtml + '</td>';
+        rows += '</tr>';
+      });
+      tbody.innerHTML = rows;
+
+      // --- Subzone Metrics table ---
+      var mtbody = document.getElementById('catalogue-metrics-tbody');
+      if (!mtbody) return;
+      var mrows = '';
+
+      var szListEl = document.getElementById('catalogue-subzone-list');
+
+      if (!choroplethData) {
+        // Trigger load
+        var url = 'geo/' + currentDistrict + '-subzone-summary.geojson';
+        fetchGeoJSON(url).then(function(data) {
+          choroplethData = data;
+          populateCatalogueTable();
+        });
+        mrows = '<tr><td colspan="4" style="color:#888;">Loading subzone data...</td></tr>';
+        if (szListEl) szListEl.innerHTML = '<span style="color:#888;">Loading...</span>';
+      } else {
+        // Populate subzone list
+        if (szListEl) {
+          var allNames = choroplethData.features.map(function(f) {
+            return f.properties.subzone_name || f.properties.SUBZONE_N || '';
+          }).sort();
+          var szHtml = allNames.map(function(name) {
+            var isActive = !selectedSubzones || selectedSubzones.indexOf(name) >= 0;
+            return '<span style="display:inline-block;padding:1px 6px;margin:1px 2px;border-radius:3px;' +
+              'background:rgba(255,255,255,' + (isActive ? '0.12' : '0.04') + ');' +
+              'color:' + (isActive ? '#ddd' : '#555') + ';">' + name + '</span>';
+          }).join('');
+          szListEl.innerHTML = szHtml;
+        }
+
+        var features = choroplethData.features;
+        if (selectedSubzones) {
+          features = features.filter(function(f) {
+            var name = f.properties.subzone_name || f.properties.SUBZONE_N || '';
+            return selectedSubzones.indexOf(name) >= 0;
+          });
+        }
+        var isSingle = features.length === 1;
+
+        SUBZONE_METRICS.forEach(function(m) {
+          var vals = features.map(function(f) {
+            return getMetricValue(f.properties, m.key);
+          }).filter(function(v) { return v !== null && v !== undefined && !isNaN(v); });
+
+          var valHtml = '\u2014';
+          if (vals.length > 0) {
+            if (isSingle) {
+              valHtml = formatValue(vals[0], m.fmt, m.unit);
+            } else if (m.aggregate === 'sum') {
+              var total = vals.reduce(function(s, v) { return s + v; }, 0);
+              valHtml = formatValue(total, m.fmt, m.unit);
+            } else {
+              var mn = Math.min.apply(null, vals);
+              var mx = Math.max.apply(null, vals);
+              valHtml = formatValue(mn, m.fmt, '') + ' \u2013 ' + formatValue(mx, m.fmt, m.unit);
+            }
+          }
+
+          mrows += '<tr>';
+          mrows += '<td>' + m.label + '</td>';
+          mrows += '<td>' + m.category + '</td>';
+          mrows += '<td>' + m.source + '</td>';
+          mrows += '<td class="num">' + valHtml + '</td>';
+          mrows += '</tr>';
+        });
+      }
+      mtbody.innerHTML = mrows;
+
+      // Summary
+      var summary = document.getElementById('cat-summary');
+      if (summary) {
+        summary.textContent = shownLayers + ' of ' + totalLayers + ' layers' + (selectedSubzones ? ' \u00B7 ' + (choroplethData ? choroplethData.features.filter(function(f) {
+          var name = f.properties.subzone_name || f.properties.SUBZONE_N || '';
+          return !selectedSubzones || selectedSubzones.indexOf(name) >= 0;
+        }).length : '?') + ' subzones' : '');
+      }
+    }
+
+    function openDataCatalogue() {
+      buildCatalogueModal();
+      populateCatalogueTable();
+      document.getElementById('catalogue-modal').classList.add('open');
+      updateUrl();
+    }
+
+    function closeCatalogue() {
+      document.getElementById('catalogue-modal').classList.remove('open');
+      updateUrl();
+    }
+
+    // Close on overlay click or Escape key
+    document.getElementById('catalogue-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeCatalogue();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeCatalogue();
+    });
 
     // ---------------------------------------------------------------
     // Layer creation functions
@@ -1627,13 +1910,13 @@
       body.appendChild(choroHeader);
       body.appendChild(choroBody);
 
-      // Data catalogue link
-      var catLink = document.createElement('a');
-      catLink.className = 'catalogue-link';
-      catLink.href = 'data-catalogue.html';
-      catLink.target = '_blank';
-      catLink.textContent = '\uD83D\uDCC2 Data Catalogue & Downloads';
-      body.appendChild(catLink);
+      // Data catalogue button (opens in-viewer modal)
+      var catBtn = document.createElement('button');
+      catBtn.className = 'catalogue-link';
+      catBtn.style.cssText = 'border:none;cursor:pointer;background:none;width:100%;';
+      catBtn.textContent = '\uD83D\uDCC2 Data Catalogue';
+      catBtn.addEventListener('click', function(e) { e.preventDefault(); openDataCatalogue(); });
+      body.appendChild(catBtn);
     }
 
     function buildSubzoneFilter(body) {
@@ -2008,6 +2291,7 @@
     document.getElementById('basemap-toggle').innerHTML = BASEMAPS[nextBase].label + ' &#9654;';
     buildLayerPanel();
     loadDefaultLayers();
+    if (catalogueOpenFromUrl) openDataCatalogue();
   </script>
 </body>
 </html>
