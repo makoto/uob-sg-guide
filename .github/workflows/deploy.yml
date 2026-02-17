@@ -28,12 +28,12 @@ jobs:
           python-version: "3.12"
 
       - name: Install Python dependencies
-        run: pip install numpy pyproj mapbox_earcut py3dtiles shapely
+        run: pip install shapely
 
       - name: Extract district boundaries
         run: |
           if [ -d data/ura ]; then
-            for district in queenstown bishan outram tampines newton; do
+            for district in queenstown bishan outram bukit-merah newton; do
               python src/extract_district.py "$district"
             done
           else
@@ -43,7 +43,7 @@ jobs:
       - name: Generate subzone summaries (GeoJSON + CSV)
         run: |
           if [ -d data/data-gov-sg ]; then
-            for district in queenstown bishan outram tampines newton; do
+            for district in queenstown bishan outram bukit-merah newton; do
               python src/generate_subzone_summary.py --district "$district"
             done
           else
@@ -53,18 +53,12 @@ jobs:
       - name: Filter district layers (POI + network GeoJSON)
         run: |
           if [ -d data/data-gov-sg ]; then
-            for district in queenstown bishan outram tampines newton; do
+            for district in queenstown bishan outram bukit-merah newton; do
               python src/filter_district_layers.py --district "$district"
             done
           else
             echo "Source data not available, using committed files"
           fi
-
-      - name: Generate 3D Tiles (B3DM + tileset.json)
-        run: |
-          for district in queenstown bishan outram tampines newton; do
-            python src/generate_3dtiles.py --district "$district"
-          done
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

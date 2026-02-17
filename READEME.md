@@ -22,7 +22,7 @@
 • Queenstown => This is what my group is focusing. Other area is covered by different group
 • Bishan
 • Outram
-• Tampines
+• Bukit Merah
 • Newton
 
 ## Research framework

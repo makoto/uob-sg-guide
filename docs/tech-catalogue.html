@@ -38,7 +38,7 @@
 <body>
   <div class="back"><a href="index.html">&larr; Back to Home</a></div>
   <h1>Tech Catalogue</h1>
-  <p>Technologies, libraries, and frameworks used in the Singapore District Liveability Study &mdash; covering data processing, 3D visualisation, remote sensing, and deployment.</p>
+  <p>Technologies, libraries, and frameworks used in the Singapore District Liveability Study &mdash; covering data processing, visualisation, remote sensing, and deployment.</p>
 
   <!-- ===== TABLE OF CONTENTS ===== -->
   <details id="toc" open>
@@ -50,7 +50,6 @@
           <li><a href="#py-core">Core Libraries</a></li>
           <li><a href="#py-geospatial">Geospatial Libraries</a></li>
           <li><a href="#py-remote-sensing">Remote Sensing &amp; Street Imagery</a></li>
-          <li><a href="#py-3dtiles">3D Tiles Generation</a></li>
         </ul>
       </li>
       <li><a href="#frontend">Frontend / Viewers</a></li>
@@ -73,16 +72,12 @@ URA / OneMap ──┤                src/filter_district_layers.py ──→ do
 LTA DataMall ──┘                src/generate_subzone_summary.py ──→ docs/geo/{district}-subzone-summary.*
 
 OSM Overpass ──────────────────────────────────────────────────→ docs/geo/global/*-buildings*.geojson
-                                src/generate_3dtiles.py ───────→ docs/3dtiles/{district}/tileset.json + .b3dm
 
 OSMnx ─────────┐
 Google Earth ──┤── src/fetch_global_layers.py ─────────────────→ docs/geo/global/{district}-*.geojson
 Engine ────────┘                                                 docs/geo/global/rasters/*.png
                                src/generate_walkability.py ────→ docs/geo/global/{district}-walkability*.json/geojson
 
-                                            ┌──────────────────────────────────────┐
-All GeoJSON + PNG + 3D Tiles ──────────────→│ CesiumJS Viewer (3dtiles/viewer.html)  │
-                                            └──────────────────────────────────────┘
                                             ┌──────────────────────────────────────┐
 All GeoJSON + PNG ─────────────────────────→│ deck.gl Viewer (viewer-deckgl.html)    │
                                             └──────────────────────────────────────┘
@@ -130,12 +125,6 @@ All GeoJSON + PNG ────────────────────�
       <td>Graph analysis: betweenness centrality computation on street network</td>
       <td><a href="https://github.com/makoto/uob-sg-guide/blob/main/src/fetch_global_layers.py"><code>src/fetch_global_layers.py</code></a> (via OSMnx)</td>
     </tr>
-    <tr>
-      <td><a href="https://pyproj4.github.io/pyproj/">pyproj</a></td>
-      <td>3.x</td>
-      <td>Coordinate transformations: WGS84 &rarr; ECEF for 3D Tiles</td>
-      <td><a href="https://github.com/makoto/uob-sg-guide/blob/main/src/generate_3dtiles.py"><code>src/generate_3dtiles.py</code></a></td>
-    </tr>
   </table>
 
   <h3 id="py-remote-sensing">Remote Sensing &amp; Street Imagery</h3>
@@ -161,60 +150,12 @@ All GeoJSON + PNG ────────────────────�
     </tr>
   </table>
 
-  <h3 id="py-3dtiles">3D Tiles Generation</h3>
-  <table>
-    <tr><th>Library</th><th>Version</th><th>Purpose</th><th>Used In</th></tr>
-    <tr>
-      <td><a href="https://numpy.org/">NumPy</a></td>
-      <td>1.x / 2.x</td>
-      <td>Array operations for vertex/triangle buffer construction</td>
-      <td><a href="https://github.com/makoto/uob-sg-guide/blob/main/src/generate_3dtiles.py"><code>src/generate_3dtiles.py</code></a></td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/nicola17/mapbox-earcut-python">mapbox_earcut</a></td>
-      <td>&mdash;</td>
-      <td>Polygon triangulation (earcut algorithm) for building footprint meshing</td>
-      <td><a href="https://github.com/makoto/uob-sg-guide/blob/main/src/generate_3dtiles.py"><code>src/generate_3dtiles.py</code></a></td>
-    </tr>
-    <tr>
-      <td><a href="https://gitlab.com/Oslandia/py3dtiles">py3dtiles</a></td>
-      <td>&mdash;</td>
-      <td>Construct B3DM (Batched 3D Model) files and tileset.json manifests</td>
-      <td><a href="https://github.com/makoto/uob-sg-guide/blob/main/src/generate_3dtiles.py"><code>src/generate_3dtiles.py</code></a></td>
-    </tr>
-  </table>
-
   <hr>
 
   <h2 id="frontend">Frontend / Viewers</h2>
 
-  <h3>CesiumJS Viewer (<code>docs/3dtiles/viewer.html</code>)</h3>
-  <table>
-    <tr><th>Technology</th><th>Version</th><th>Purpose</th></tr>
-    <tr>
-      <td><a href="https://cesium.com/platform/cesiumjs/">CesiumJS</a></td>
-      <td>1.124</td>
-      <td>3D geospatial viewer: renders 3D Tiles (extruded buildings), GeoJSON overlays, raster image overlays (<code>SingleTileImageryProvider</code>), terrain, and basemaps. Handles camera, picking, and entity display.</td>
-    </tr>
-    <tr>
-      <td><a href="https://carto.com/basemaps/">CARTO Basemaps</a></td>
-      <td>&mdash;</td>
-      <td>Dark and light raster basemap tiles via <code>UrlTemplateImageryProvider</code>. Free tier, OpenStreetMap-based.</td>
-    </tr>
-    <tr>
-      <td><a href="https://opentopomap.org/">OpenTopoMap</a></td>
-      <td>&mdash;</td>
-      <td>Topographic raster basemap tiles via <code>UrlTemplateImageryProvider</code>. Free, OpenStreetMap-based with contour lines and hillshading.</td>
-    </tr>
-    <tr>
-      <td><a href="https://cesium.com/platform/cesium-ion/">Cesium ion</a></td>
-      <td>&mdash;</td>
-      <td>World terrain provider (asset ID 1) and Bing Maps satellite imagery (asset ID 2, lazy-loaded). Free community account. Access token required.</td>
-    </tr>
-  </table>
-
   <h3>deck.gl Viewer (<code>docs/viewer-deckgl.html</code>)</h3>
-  <p class="section-note">Lightweight alternative viewer. No Cesium Ion token required. Buildings extruded from GeoJSON (no 3D Tiles/B3DM). Same 33 layers plus walkability grid and 5 UNA gravity layers; 39 choropleth metrics.</p>
+  <p class="section-note">Buildings extruded from GeoJSON. 29 toggleable layers plus walkability grid and 5 UNA gravity layers; 39 choropleth metrics.</p>
   <table>
     <tr><th>Technology</th><th>Version</th><th>Purpose</th></tr>
     <tr>
@@ -242,19 +183,6 @@ All GeoJSON + PNG ────────────────────�
       <td>ES6+</td>
       <td>Single-page viewer apps. No build tools, no frameworks &mdash; plain vanilla JS loaded from CDN.</td>
     </tr>
-  </table>
-
-  <h3>CesiumJS viewer features</h3>
-  <table>
-    <tr><th>Feature</th><th>CesiumJS API</th></tr>
-    <tr><td>3D building rendering</td><td><code>Cesium3DTileset</code> + <code>Cesium3DTileStyle</code> (height-based colour conditions)</td></tr>
-    <tr><td>GeoJSON vector overlays (20 layers)</td><td><code>GeoJsonDataSource.load()</code> with lazy loading on toggle; dynamic legends for street network, remote sensing, and intersection density grid layers</td></tr>
-    <tr><td>Satellite raster overlays (4 layers)</td><td><code>SingleTileImageryProvider</code> with georeferenced PNG bounds</td></tr>
-    <tr><td>Choropleth heatmap (33 metrics)</td><td>Manual polygon entities with <code>PolygonHierarchy</code>, 5-step YlOrRd colour ramp</td></tr>
-    <tr><td>Basemap switching (4 options)</td><td>Dark (CARTO), Light (CARTO), Satellite (Bing via <code>IonImageryProvider</code>), Terrain (OpenTopoMap)</td></tr>
-    <tr><td>Click interaction</td><td><code>ScreenSpaceEventHandler</code> + <code>scene.pick()</code>; click any feature for attribute popup</td></tr>
-    <tr><td>Terrain clamping</td><td><code>sampleTerrainMostDetailed()</code> for auto height offset</td></tr>
-    <tr><td>Ground-clamped lines/labels</td><td><code>clampToGround: true</code>, <code>HeightReference.CLAMP_TO_GROUND</code></td></tr>
   </table>
 
   <hr>
@@ -286,12 +214,6 @@ All GeoJSON + PNG ────────────────────�
       <td>Street network graph download via bounding box.</td>
       <td><a href="https://github.com/makoto/uob-sg-guide/blob/main/src/fetch_global_layers.py"><code>src/fetch_global_layers.py</code></a></td>
     </tr>
-    <tr>
-      <td><a href="https://ion.cesium.com/">Cesium ion</a></td>
-      <td><span class="badge badge-api">Access token</span></td>
-      <td>World terrain tiles for the 3D viewer.</td>
-      <td><code>viewer.html</code></td>
-    </tr>
   </table>
 
   <hr>
@@ -303,19 +225,13 @@ All GeoJSON + PNG ────────────────────�
       <td><span class="badge badge-format">GeoJSON</span></td>
       <td><code>.geojson</code></td>
       <td>Primary vector format for all spatial layers</td>
-      <td>WGS84 (EPSG:4326). FeatureCollection with typed geometry (Point, LineString, Polygon, MultiPolygon). Used by CesiumJS <code>GeoJsonDataSource</code>.</td>
+      <td>WGS84 (EPSG:4326). FeatureCollection with typed geometry (Point, LineString, Polygon, MultiPolygon).</td>
     </tr>
     <tr>
       <td><span class="badge badge-format">CSV</span></td>
       <td><code>.csv</code></td>
       <td>Tabular data (census, resale prices, subzone summary)</td>
       <td>UTF-8 with header row. Fields match GeoJSON properties for parity.</td>
-    </tr>
-    <tr>
-      <td><span class="badge badge-format">3D Tiles</span></td>
-      <td><code>.json</code> + <code>.b3dm</code></td>
-      <td>3D building visualisation</td>
-      <td><a href="https://www.ogc.org/standard/3dtiles/">OGC 3D Tiles 1.0</a>. tileset.json manifest + B3DM (Batched 3D Model) with glTF 2.0 mesh + batch table (building properties).</td>
     </tr>
     <tr>
       <td><span class="badge badge-format">PNG</span></td>
@@ -339,7 +255,7 @@ All GeoJSON + PNG ────────────────────�
     <tr>
       <td><a href="https://github.com/features/actions">GitHub Actions</a></td>
       <td><code>.github/workflows/deploy.yml</code></td>
-      <td>Build pipeline: installs Python deps, runs 4 scripts (<a href="https://github.com/makoto/uob-sg-guide/blob/main/src/extract_district.py"><code>src/extract_district.py</code></a>, <a href="https://github.com/makoto/uob-sg-guide/blob/main/src/generate_subzone_summary.py"><code>src/generate_subzone_summary.py</code></a>, <a href="https://github.com/makoto/uob-sg-guide/blob/main/src/filter_district_layers.py"><code>src/filter_district_layers.py</code></a>, <a href="https://github.com/makoto/uob-sg-guide/blob/main/src/generate_3dtiles.py"><code>src/generate_3dtiles.py</code></a>) for all 5 districts, uploads <code>docs/</code> as Pages artifact.</td>
+      <td>Build pipeline: installs Python deps, runs 3 scripts (<a href="https://github.com/makoto/uob-sg-guide/blob/main/src/extract_district.py"><code>src/extract_district.py</code></a>, <a href="https://github.com/makoto/uob-sg-guide/blob/main/src/generate_subzone_summary.py"><code>src/generate_subzone_summary.py</code></a>, <a href="https://github.com/makoto/uob-sg-guide/blob/main/src/filter_district_layers.py"><code>src/filter_district_layers.py</code></a>) for all 5 districts, uploads <code>docs/</code> as Pages artifact.</td>
     </tr>
     <tr>
       <td><a href="https://pages.github.com/">GitHub Pages</a></td>
@@ -353,10 +269,6 @@ All GeoJSON + PNG ────────────────────�
   <p class="section-note">Installed in the GitHub Actions workflow via <code>pip install</code>:</p>
   <table>
     <tr><th>Package</th><th>CI Use</th></tr>
-    <tr><td><code>numpy</code></td><td>3D Tiles vertex buffers</td></tr>
-    <tr><td><code>pyproj</code></td><td>WGS84 &rarr; ECEF coordinate transforms</td></tr>
-    <tr><td><code>mapbox_earcut</code></td><td>Polygon triangulation</td></tr>
-    <tr><td><code>py3dtiles</code></td><td>B3DM file generation</td></tr>
     <tr><td><code>shapely</code></td><td>Geometry operations for subzone summary and layer filtering</td></tr>
   </table>
 
@@ -378,13 +290,6 @@ All GeoJSON + PNG ────────────────────�
       <td>Island-wide GeoJSONs (data.gov.sg), boundary polygon</td>
       <td>16 filtered <code>gov-sg/*.geojson</code> files</td>
       <td>Shapely, json</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/makoto/uob-sg-guide/blob/main/src/generate_3dtiles.py"><code>src/generate_3dtiles.py</code></a></td>
-      <td>Python 3.10+</td>
-      <td>Buildings GeoJSON</td>
-      <td><code>tileset.json</code> + <code>buildings.b3dm</code></td>
-      <td>NumPy, pyproj, mapbox_earcut, py3dtiles</td>
     </tr>
     <tr>
       <td><a href="https://github.com/makoto/uob-sg-guide/blob/main/src/fetch_global_layers.py"><code>src/fetch_global_layers.py</code></a></td>

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DISTRICTS=(queenstown bishan outram tampines newton)
+DISTRICTS=(queenstown bishan outram bukit-merah newton)
 
 echo "=== Regenerating processed layers ==="
 
@@ -16,13 +16,6 @@ else
   echo "WARNING: data/data-gov-sg/ not found, skipping data regeneration"
   echo "  Committed files in docs/geo/ will be used as-is"
 fi
-
-echo ""
-echo "=== Generating 3D Tiles ==="
-for d in "${DISTRICTS[@]}"; do
-  echo "--- $d ---"
-  python3 src/generate_3dtiles.py --district "$d"
-done
 
 echo ""
 echo "=== Pushing to main ==="

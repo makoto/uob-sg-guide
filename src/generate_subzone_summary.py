@@ -73,7 +73,7 @@ RESALE_TOWN_MAP = {
     "queenstown": "QUEENSTOWN",
     "bishan": "BISHAN",
     "outram": "CENTRAL AREA",
-    "tampines": "TAMPINES",
+    "bukit-merah": "BUKIT MERAH",
     "newton": None,  # No HDB resale data for Newton
 }
 

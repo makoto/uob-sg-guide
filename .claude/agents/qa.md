@@ -28,17 +28,17 @@ For every `.geojson` file in `docs/geo/` (including subdirectories `gov-sg/` and
 
 ### 3. Viewer layer file references
 
-Read `docs/3dtiles/viewer.html` and extract every `file:` value from the `LAYERS` array. Verify each referenced file exists on disk.
+Read `docs/viewer-deckgl.html` and extract every `file:` value from the `LAYERS` array. Verify each referenced file exists on disk.
 
 ### 4. Choropleth metric consistency
 
-Extract every `value:` from `CHOROPLETH_METRICS` in `viewer.html` (skip empty string = "Off"). For each metric key:
+Extract every `value:` from `CHOROPLETH_CATEGORIES` in `viewer-deckgl.html` (skip empty string = "Off"). For each metric key:
 - If it's `elderly_pct`, skip (derived client-side)
 - Otherwise, confirm the key exists as a property in at least one feature of `docs/geo/queenstown-subzone-summary.geojson`
 
 ### 5. HTML well-formedness
 
-For `docs/3dtiles/viewer.html`, `docs/index.html`, and `docs/data-catalogue.html`:
+For `docs/viewer-deckgl.html`, `docs/index.html`, and `docs/data-catalogue.html`:
 - Check that every `<script>` tag has a matching `</script>`
 - Check that every `<style>` tag has a matching `</style>`
 - Check that `<html>`, `<head>`, `<body>` tags are properly opened and closed
@@ -52,8 +52,8 @@ In `docs/data-catalogue.html`:
 ### 7. Internal link checking
 
 Verify that relative links between HTML pages resolve to existing files:
-- `docs/index.html` links to `data-catalogue.html`, `3dtiles/viewer.html`, etc.
-- `docs/data-catalogue.html` links back to `index.html` and to `3dtiles/viewer.html`
+- `docs/index.html` links to `data-catalogue.html`, `viewer-deckgl.html`, etc.
+- `docs/data-catalogue.html` links back to `index.html`
 - Check `href` attributes that point to local files (skip external URLs)
 
 ### 8. CSV/GeoJSON field parity

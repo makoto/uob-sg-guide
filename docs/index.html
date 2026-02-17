@@ -19,7 +19,7 @@
 </head>
 <body>
   <h1>Singapore District Liveability Study Data Guide</h1>
-  <p>Geospatial analysis of perceived liveability across five Singapore planning districts: Queenstown, Marymount (Bishan), Outram, Tampines, and Newton.</p>
+  <p>Geospatial analysis of perceived liveability across five Singapore planning districts: Queenstown, Marymount (Bishan), Outram, Bukit Merah, and Newton.</p>
 
   <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:12px 16px; margin:16px 0; font-size:13px; color:#664d03;">
     <strong>Disclaimer:</strong> This is an AI-assisted project. The data and analysis have not been independently verified &mdash; please cross-check with original sources before relying on them.
@@ -27,17 +27,12 @@
 
   <div class="card">
     <h3><a href="viewer-deckgl.html">Map Viewer</a></h3>
-    <p>Multi-district viewer with district selector (Queenstown, Marymount (Bishan), Outram, Tampines, Newton). Extruded 3D buildings for all 5 districts with height-based colour coding, 29 toggleable overlays in 10 collapsible groups with feature counts per layer, provenance filter (Gov.sg / Global), and a categorized choropleth accordion with 33 subzone-level metrics across 5 sub-categories (with type badges: CNT/RATE/IDX/SAT). Shareable URL state &mdash; use the &ldquo;Copy link&rdquo; button to share your exact view (district, layers, subzone filter, choropleth, basemap, RS grid mode). Built with deck.gl + MapLibre GL JS. GPU-accelerated rendering, ~700 KB bundle, free CARTO basemaps (Dark, Light, Voyager). No API token needed.</p>
+    <p>Multi-district viewer with district selector (Queenstown, Marymount (Bishan), Outram, Bukit Merah, Newton). Extruded 3D buildings for all 5 districts with height-based colour coding, 29 toggleable overlays in 10 collapsible groups with feature counts per layer, provenance filter (Gov.sg / Global), and a categorized choropleth accordion with 33 subzone-level metrics across 5 sub-categories (with type badges: CNT/RATE/IDX/SAT). Shareable URL state &mdash; use the &ldquo;Copy link&rdquo; button to share your exact view (district, layers, subzone filter, choropleth, basemap, RS grid mode). Built with deck.gl + MapLibre GL JS. GPU-accelerated rendering, ~700 KB bundle, free CARTO basemaps (Dark, Light, Voyager). No API token needed.</p>
   </div>
 
   <div class="card">
     <h3><a href="user-manual.html">Map Viewer User Manual</a></h3>
     <p>Guide to the deck.gl viewer: map navigation, district selector, 29 toggleable layers across 10 groups, 33 choropleth metrics, RS grid colour modes, shareable URL state with Copy link button, click popups, and troubleshooting tips. Includes 9 annotated screenshots showing each major UI component.</p>
-  </div>
-
-  <div class="card">
-    <h3><a href="3dtiles/viewer.html">3D Buildings Viewer (legacy)</a></h3>
-    <p>Original CesiumJS-based viewer with 3D Tiles. 27 toggleable overlays, 33 choropleth metrics, satellite basemap via Cesium Ion. Heavier (~3 MB bundle) but supports satellite imagery and 3D terrain. Built with CesiumJS and 3D Tiles.</p>
   </div>
 
   <div class="card">
@@ -47,7 +42,7 @@
 
   <div class="card">
     <h3><a href="tech-catalogue.html">Tech Catalogue</a></h3>
-    <p>Technologies, libraries, and frameworks: Python geospatial stack (Shapely, OSMnx, GeoPandas, GEE), CesiumJS 3D viewer, 3D Tiles pipeline (py3dtiles, mapbox_earcut), and GitHub Actions CI/CD.</p>
+    <p>Technologies, libraries, and frameworks: Python geospatial stack (Shapely, OSMnx, GeoPandas, GEE), deck.gl + MapLibre GL JS viewer, and GitHub Actions CI/CD.</p>
   </div>
 
   <div class="card">
@@ -63,7 +58,7 @@
     <li><strong>Queenstown:</strong> <a href="geo/queenstown-boundary.geojson">Boundary</a> | <a href="geo/queenstown-subzones.geojson">Subzones</a> (15) | <a href="geo/queenstown-subzone-summary.geojson">Summary GeoJSON</a> | <a href="geo/queenstown-subzone-summary.csv">CSV</a></li>
     <li><strong>Marymount (Bishan):</strong> <a href="geo/bishan-boundary.geojson">Boundary</a> | <a href="geo/bishan-subzones.geojson">Subzones</a> (3) | <a href="geo/bishan-subzone-summary.geojson">Summary GeoJSON</a> | <a href="geo/bishan-subzone-summary.csv">CSV</a></li>
     <li><strong>Outram:</strong> <a href="geo/outram-boundary.geojson">Boundary</a> | <a href="geo/outram-subzones.geojson">Subzones</a> (4) | <a href="geo/outram-subzone-summary.geojson">Summary GeoJSON</a> | <a href="geo/outram-subzone-summary.csv">CSV</a></li>
-    <li><strong>Tampines:</strong> <a href="geo/tampines-boundary.geojson">Boundary</a> | <a href="geo/tampines-subzones.geojson">Subzones</a> (5) | <a href="geo/tampines-subzone-summary.geojson">Summary GeoJSON</a> | <a href="geo/tampines-subzone-summary.csv">CSV</a></li>
+    <li><strong>Bukit Merah:</strong> <a href="geo/bukit-merah-boundary.geojson">Boundary</a> | <a href="geo/bukit-merah-subzones.geojson">Subzones</a> (17) | <a href="geo/bukit-merah-subzone-summary.geojson">Summary GeoJSON</a> | <a href="geo/bukit-merah-subzone-summary.csv">CSV</a></li>
     <li><strong>Newton:</strong> <a href="geo/newton-boundary.geojson">Boundary</a> | <a href="geo/newton-subzones.geojson">Subzones</a> (6) | <a href="geo/newton-subzone-summary.geojson">Summary GeoJSON</a> | <a href="geo/newton-subzone-summary.csv">CSV</a></li>
   </ul>
 
@@ -73,7 +68,7 @@
     <li><strong>Queenstown:</strong> <a href="geo/global/queenstown-buildings.geojson">All</a> (8,671) | <a href="geo/global/queenstown-buildings-hdb-enriched.geojson">HDB</a> (308) | <a href="geo/global/queenstown-buildings-osm-only.geojson">OSM-Only</a> (8,363)</li>
     <li><strong>Marymount (Bishan):</strong> <a href="geo/global/bishan-buildings.geojson">All</a> (3,766) | <a href="geo/global/bishan-buildings-hdb-enriched.geojson">HDB</a> (1) | <a href="geo/global/bishan-buildings-osm-only.geojson">OSM-Only</a> (3,765)</li>
     <li><strong>Outram:</strong> <a href="geo/global/outram-buildings.geojson">All</a> (1,589) | <a href="geo/global/outram-buildings-hdb-enriched.geojson">HDB</a> (1) | <a href="geo/global/outram-buildings-osm-only.geojson">OSM-Only</a> (1,588)</li>
-    <li><strong>Tampines:</strong> <a href="geo/global/tampines-buildings.geojson">All</a> (2,910) | <a href="geo/global/tampines-buildings-hdb-enriched.geojson">HDB</a> (19) | <a href="geo/global/tampines-buildings-osm-only.geojson">OSM-Only</a> (2,891)</li>
+    <li><strong>Bukit Merah:</strong> <a href="geo/global/bukit-merah-buildings.geojson">All</a> (1,874) | <a href="geo/global/bukit-merah-buildings-hdb-enriched.geojson">HDB</a> (46) | <a href="geo/global/bukit-merah-buildings-osm-only.geojson">OSM-Only</a> (1,828)</li>
     <li><strong>Newton:</strong> <a href="geo/global/newton-buildings.geojson">All</a> (759) | <a href="geo/global/newton-buildings-hdb-enriched.geojson">HDB</a> (0) | <a href="geo/global/newton-buildings-osm-only.geojson">OSM-Only</a> (759)</li>
   </ul>
 
@@ -83,7 +78,7 @@
     <li><strong>Queenstown:</strong> <a href="geo/global/queenstown-street-network.geojson">Street Network</a> (3,788 edges)</li>
     <li><strong>Marymount (Bishan):</strong> <a href="geo/global/bishan-street-network.geojson">Street Network</a> (1,363 edges)</li>
     <li><strong>Outram:</strong> <a href="geo/global/outram-street-network.geojson">Street Network</a> (711 edges)</li>
-    <li><strong>Tampines:</strong> <a href="geo/global/tampines-street-network.geojson">Street Network</a> (4,144 edges)</li>
+    <li><strong>Bukit Merah:</strong> <a href="geo/global/bukit-merah-street-network.geojson">Street Network</a> (2,447 edges)</li>
     <li><strong>Newton:</strong> <a href="geo/global/newton-street-network.geojson">Street Network</a> (838 edges)</li>
   </ul>
 
@@ -93,7 +88,7 @@
     <li><strong>Queenstown:</strong> <a href="geo/global/queenstown-remote-sensing.geojson">Remote Sensing</a> (15 subzones)</li>
     <li><strong>Marymount (Bishan):</strong> <a href="geo/global/bishan-remote-sensing.geojson">Remote Sensing</a> (3 subzones)</li>
     <li><strong>Outram:</strong> <a href="geo/global/outram-remote-sensing.geojson">Remote Sensing</a> (4 subzones)</li>
-    <li><strong>Tampines:</strong> <a href="geo/global/tampines-remote-sensing.geojson">Remote Sensing</a> (5 subzones)</li>
+    <li><strong>Bukit Merah:</strong> <a href="geo/global/bukit-merah-remote-sensing.geojson">Remote Sensing</a> (17 subzones)</li>
     <li><strong>Newton:</strong> <a href="geo/global/newton-remote-sensing.geojson">Remote Sensing</a> (6 subzones)</li>
   </ul>
 
@@ -103,13 +98,13 @@
     <li><strong>Queenstown:</strong> <a href="geo/global/queenstown-walkability.json">Scores</a> (15 subzones) | <a href="geo/global/queenstown-walkability-grid.geojson">Grid</a> (2,178 cells)</li>
     <li><strong>Marymount (Bishan):</strong> <a href="geo/global/bishan-walkability.json">Scores</a> (3 subzones) | <a href="geo/global/bishan-walkability-grid.geojson">Grid</a> (769 cells)</li>
     <li><strong>Outram:</strong> <a href="geo/global/outram-walkability.json">Scores</a> (4 subzones) | <a href="geo/global/outram-walkability-grid.geojson">Grid</a> (135 cells)</li>
-    <li><strong>Tampines:</strong> <a href="geo/global/tampines-walkability.json">Scores</a> (5 subzones) | <a href="geo/global/tampines-walkability-grid.geojson">Grid</a> (2,085 cells)</li>
+    <li><strong>Bukit Merah:</strong> <a href="geo/global/bukit-merah-walkability.json">Scores</a> (17 subzones) | <a href="geo/global/bukit-merah-walkability-grid.geojson">Grid</a> (1,460 cells)</li>
     <li><strong>Newton:</strong> <a href="geo/global/newton-walkability.json">Scores</a> (6 subzones) | <a href="geo/global/newton-walkability-grid.geojson">Grid</a> (210 cells)</li>
   </ul>
 
   <!-- Mapillary section removed from viewer
   <h3>Mapillary (Queenstown, Marymount (Bishan), Outram)</h3>
-  <p style="font-size:13px; color:#666;">Sampled street-level image locations from Mapillary/ZenSVI. Not yet available for Tampines or Newton.</p>
+  <p style="font-size:13px; color:#666;">Sampled street-level image locations from Mapillary/ZenSVI. Not yet available for Bukit Merah or Newton.</p>
   <ul>
     <li><strong>Queenstown:</strong> <a href="geo/global/queenstown-mapillary-gvi.geojson">Mapillary Images</a> (5,000 points)</li>
     <li><strong>Marymount (Bishan):</strong> <a href="geo/global/bishan-mapillary-gvi.geojson">Mapillary Images</a> (5,000 points)</li>
@@ -123,14 +118,13 @@
     <li><strong>Queenstown:</strong> <a href="geo/global/queenstown-rs-grid.geojson">RS Grid</a> (2,394 cells, 680 KB) | Rasters: <a href="geo/global/rasters/queenstown-ndvi.png">NDVI</a>, <a href="geo/global/rasters/queenstown-lst.png">LST</a>, <a href="geo/global/rasters/queenstown-ndbi.png">NDBI</a>, <a href="geo/global/rasters/queenstown-canopy.png">Canopy</a> (2.2 MB)</li>
     <li><strong>Marymount (Bishan):</strong> <a href="geo/global/bishan-rs-grid.geojson">RS Grid</a> (840 cells, 235 KB) | Rasters: <a href="geo/global/rasters/bishan-ndvi.png">NDVI</a>, <a href="geo/global/rasters/bishan-lst.png">LST</a>, <a href="geo/global/rasters/bishan-ndbi.png">NDBI</a>, <a href="geo/global/rasters/bishan-canopy.png">Canopy</a> (650 KB)</li>
     <li><strong>Outram:</strong> <a href="geo/global/outram-rs-grid.geojson">RS Grid</a> (175 cells, 55 KB) | Rasters: <a href="geo/global/rasters/outram-ndvi.png">NDVI</a>, <a href="geo/global/rasters/outram-lst.png">LST</a>, <a href="geo/global/rasters/outram-ndbi.png">NDBI</a>, <a href="geo/global/rasters/outram-canopy.png">Canopy</a> (306 KB)</li>
-    <li><strong>Tampines:</strong> <a href="geo/global/tampines-rs-grid.geojson">RS Grid</a> (2,230 cells, 627 KB) | Rasters: <a href="geo/global/rasters/tampines-ndvi.png">NDVI</a>, <a href="geo/global/rasters/tampines-lst.png">LST</a>, <a href="geo/global/rasters/tampines-ndbi.png">NDBI</a>, <a href="geo/global/rasters/tampines-canopy.png">Canopy</a> (2.0 MB)</li>
+    <li><strong>Bukit Merah:</strong> <a href="geo/global/bukit-merah-rs-grid.geojson">RS Grid</a> (1,616 cells) | Rasters: <a href="geo/global/rasters/bukit-merah-ndvi.png">NDVI</a>, <a href="geo/global/rasters/bukit-merah-lst.png">LST</a>, <a href="geo/global/rasters/bukit-merah-ndbi.png">NDBI</a>, <a href="geo/global/rasters/bukit-merah-canopy.png">Canopy</a></li>
     <li><strong>Newton:</strong> <a href="geo/global/newton-rs-grid.geojson">RS Grid</a> (265 cells, 85 KB) | Rasters: <a href="geo/global/rasters/newton-ndvi.png">NDVI</a>, <a href="geo/global/rasters/newton-lst.png">LST</a>, <a href="geo/global/rasters/newton-ndbi.png">NDBI</a>, <a href="geo/global/rasters/newton-canopy.png">Canopy</a> (428 KB)</li>
   </ul>
 
   <h3>Queenstown-Only Layers</h3>
   <ul>
     <li><a href="geo/gov-sg/queenstown-ura-height-control.geojson">URA Height Control Zones</a> (7 features)</li>
-    <li><a href="https://drive.google.com/file/d/1CEFWx4flMDvdmLRSiMyWuDD1IK75X9jQ/view?usp=sharing">3dtiles(zipped)</a></li>
   </ul>
 </body>
 </html>

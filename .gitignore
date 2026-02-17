@@ -7,10 +7,6 @@ data/
 # Raw Overpass API download
 data/osm/queenstown-buildings.json
 
-# Generated 3D Tiles (built by GitHub Actions from generate_3dtiles.py)
-docs/3dtiles/buildings.b3dm
-docs/3dtiles/tileset.json
-
 # Temporary Mapillary downloads
 tmp_mapillary/
 tmp_mapillary_*/
