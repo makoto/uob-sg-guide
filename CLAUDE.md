@@ -12,9 +12,9 @@ This is an academic research project investigating **perceived liveability in Si
 
 ## Study Focus
 
-- **Study area:** Queenstown (primary), with multi-district support for Bishan, Outram, Tampines, Newton
+- **Study area:** Queenstown (primary), with multi-district support for Marymount (Bishan), Outram, Tampines, Newton
 - **Spatial boundary:** Defined from the URA Master Plan via `src/extract_district.py`
-- **Supported districts:** Queenstown (15 subzones), Bishan (3), Outram (4), Tampines (5), Newton (6)
+- **Supported districts:** Queenstown (15 subzones), Marymount/Bishan (3), Outram (4), Tampines (5), Newton (6)
 
 ## Research Framework
 
@@ -107,12 +107,12 @@ Definitions of acronyms and technical terms used across the project, organised i
 
 ### User Manual (`docs/user-manual.html`)
 
-End-user guide for the deck.gl map viewer. Covers map navigation (pan, zoom, rotate, tilt), the district selector (5 districts), basemap styles (3 CARTO options), the layer panel structure (10 collapsible groups, provenance filter, feature counts, lazy loading), a full reference table of all 29 toggleable layers across 10 groups (34 with `?experimental=true`), click-popup content by layer type, the 33 choropleth metrics across 5 sub-categories (39 metrics across 6 sub-categories with `?experimental=true`; type badge definitions: CNT, RATE, IDX, SAT), the 5 RS grid colour modes (NDVI, DEM, Slope, LST, NDBI), the 5 UNA gravity accessibility layers (Queenstown only, hidden behind `?experimental=true`), legend descriptions, and a tips/troubleshooting table. Includes 9 annotated screenshots in `docs/images/` (viewer overview, info panel, layer panel, expanded group, choropleth panel, choropleth map, RS grid modes, click popup, district switch). Styled to match `glossary.html` and `tech-catalogue.html`.
+End-user guide for the deck.gl map viewer. Covers map navigation (pan, zoom, rotate, tilt), the district selector (5 districts), basemap styles (3 CARTO options), the layer panel structure (10 collapsible groups, provenance filter, subzone filter, feature counts, lazy loading), a full reference table of all 29 toggleable layers across 10 groups (34 with `?experimental=true`), the subzone filter (per-subzone checkboxes, All/None toggles, X/Y selected badge, spatial filtering of layers by containment), click-popup content by layer type, the 33 choropleth metrics across 5 sub-categories (39 metrics across 6 sub-categories with `?experimental=true`; type badge definitions: CNT, RATE, IDX, SAT), the 5 RS grid colour modes (NDVI, DEM, Slope, LST, NDBI), the 5 UNA gravity accessibility layers (Queenstown only, hidden behind `?experimental=true`), legend descriptions, and a tips/troubleshooting table. Includes 9 annotated screenshots in `docs/images/` (viewer overview, info panel, layer panel, expanded group, choropleth panel, choropleth map, RS grid modes, click popup, district switch). Styled to match `glossary.html` and `tech-catalogue.html`.
 
 ### 3D Viewer (`docs/3dtiles/viewer.html`)
 
 CesiumJS-based viewer with multi-district support:
-- **District selector** dropdown (Queenstown, Bishan, Outram, Tampines, Newton) with `switchDistrict()` function that reloads all layers, camera position, and raster bounds per district. `layerFile()` helper dynamically swaps district name in file paths. Missing data handled gracefully (console warnings, no errors).
+- **District selector** dropdown (Queenstown, Marymount (Bishan), Outram, Tampines, Newton) with `switchDistrict()` function that reloads all layers, camera position, and raster bounds per district. `layerFile()` helper dynamically swaps district name in file paths. Missing data handled gracefully (console warnings, no errors).
 - 3D building tileset per district (`docs/3dtiles/{district}/`), toggleable via "3D Buildings" checkbox in the District group
 - Boundary + subzone overlays (on by default)
 - **Layer panel** (top-right, max-width 280px): 27 toggleable overlays grouped by 10 collapsible categories (District, Food & Daily Needs, Transit, Green & Recreation, Active Mobility, Community, Housing, Planning, Street Network, Remote Sensing). The District group (formerly Boundaries) contains 3 items: District boundary, Subzones, and 3D Buildings (all on by default). Each group header is clickable with a chevron indicator (▶/▼) and smooth CSS max-height animation. District group is expanded by default; all others are collapsed.
@@ -138,9 +138,10 @@ Lightweight alternative viewer using deck.gl + MapLibre GL JS. Located at `docs/
 
 - **Stack**: deck.gl v9 CDN bundle (~700 KB) + MapLibre GL JS v4 for basemaps. No build tools, no Cesium Ion token required.
 - **Buildings**: Extruded natively from GeoJSON via `GeoJsonLayer` with `extruded: true` (no 3D Tiles/B3DM needed). Height-based colour coding matching the CesiumJS viewer.
-- **District selector** dropdown (Queenstown, Bishan, Outram, Tampines, Newton) with `switchDistrict()` function and `FlyToInterpolator` camera animation.
+- **District selector** dropdown (Queenstown, Marymount (Bishan), Outram, Tampines, Newton) with `switchDistrict()` function and `FlyToInterpolator` camera animation.
 - **29 toggleable layers** by default, grouped by 10 collapsible categories (same as CesiumJS viewer): District, Food & Daily Needs, Transit, Green & Recreation, Active Mobility, Community, Housing, Planning, Street Network, Remote Sensing. The District group contains 4 items: District boundary, Subzones, Buildings (extruded), and Other districts (gray outlines + name labels for the 4 non-selected districts, on by default, re-fetched on district switch; click shows district name with prompt to use district selector). Additionally includes a Walkability grid layer. The 5 UNA gravity accessibility layers are hidden by default and available via `?experimental=true` URL parameter (34 layers total when enabled).
 - **Layer panel** (top-right): same UI structure as CesiumJS viewer -- collapsible groups with chevron indicators, feature counts per layer, zero-count dimming, provenance filter bar (Gov.sg / Global), source badges (SG / globe icon), RS grid colour mode selector (NDVI, DEM, Slope, LST, NDBI), and Data Catalogue footer link.
+- **Subzone filter**: collapsible "Subzone Filter" section in the layer panel (after provenance bar). Users can check/uncheck individual subzones to spatially filter all point, line, polygon, grid, building, HDB, and gravity layers by subzone containment (point-in-polygon). "All" / "None" quick-toggle buttons and an "X/Y selected" count badge. Unselected subzones are visually dimmed on the map (dark overlay + faded labels). Boundary, subzones outline, other districts, and raster overlays are not filtered. Choropleth only colours selected subzones. Filter resets to "all" on district switch.
 - **33 choropleth metrics** by default in 5 sub-categories: Demographics & Housing (8), Amenities & Infrastructure (9), Buildings (3), Remote Sensing (6), Walkability (7). Same YlOrRd 5-step ramp with type badges (CNT/RATE/IDX/SAT). With `?experimental=true`, the UNA Gravity sub-category (6 metrics) is also shown, totalling 39 metrics across 6 sub-categories.
 - **3 CARTO basemaps**: Dark (dark-matter, default), Light (positron), Voyager. No satellite option (no free token-less provider available).
 - **Data paths**: Relative to `docs/` -- e.g., `geo/queenstown-boundary.geojson`, `geo/global/queenstown-buildings.geojson`. The `layerFile()` helper swaps district names in paths.

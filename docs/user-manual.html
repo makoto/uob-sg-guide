@@ -54,6 +54,7 @@
       <li><a href="#basemap">Basemap Styles</a></li>
       <li><a href="#layer-panel">Layer Panel</a></li>
       <li><a href="#layer-groups">Layer Groups Reference</a></li>
+      <li><a href="#subzone-filter">Subzone Filter</a></li>
       <li><a href="#clicking">Clicking Features</a></li>
       <li><a href="#choropleth">Choropleth Heatmap</a></li>
       <li><a href="#rs-grid">Remote Sensing Grid Modes</a></li>
@@ -97,7 +98,7 @@
   <table>
     <tr><th>District</th><th>Subzones</th><th>Buildings</th></tr>
     <tr><td>Queenstown</td><td>15</td><td>8,671</td></tr>
-    <tr><td>Bishan</td><td>3</td><td>3,766</td></tr>
+    <tr><td>Marymount (Bishan)</td><td>3</td><td>3,766</td></tr>
     <tr><td>Outram</td><td>4</td><td>1,589</td></tr>
     <tr><td>Tampines</td><td>5</td><td>2,910</td></tr>
     <tr><td>Newton</td><td>6</td><td>759</td></tr>
@@ -110,8 +111,8 @@
     <li>Resets any active choropleth to &ldquo;Off&rdquo;</li>
   </ul>
   <div class="note">Some layers may have zero features for certain districts (e.g., Newton has 0 cycling paths). These appear dimmed in the layer panel.</div>
-  <img src="images/district-bishan.png" alt="Viewer after switching to Bishan district" class="screenshot">
-  <p class="screenshot-caption">After switching to Bishan: the camera flies to the new district and reloads default layers.</p>
+  <img src="images/district-bishan.png" alt="Viewer after switching to Marymount (Bishan) district" class="screenshot">
+  <p class="screenshot-caption">After switching to Marymount (Bishan): the camera flies to the new district and reloads default layers.</p>
 
   <!-- ===== BASEMAP ===== -->
   <h2 id="basemap">Basemap Styles</h2>
@@ -136,6 +137,7 @@
       <span class="badge badge-sg">SG</span> Gov.sg and
       <span class="badge badge-global">Global</span> Global.
       Deactivating a filter disables and unchecks all layers from that source.</li>
+    <li><strong>Subzone filter</strong> &mdash; collapsible section with per-subzone checkboxes, &ldquo;All&rdquo; / &ldquo;None&rdquo; quick toggles, and an &ldquo;X/Y selected&rdquo; badge. See <a href="#subzone-filter">Subzone Filter</a>.</li>
     <li><strong>10 collapsible groups</strong> &mdash; click any group header to expand/collapse. The District group is expanded by default; all others are collapsed.</li>
     <li><strong>Feature counts</strong> &mdash; each layer shows its count in parentheses, e.g. &ldquo;Hawker centres (9)&rdquo;. Group headers show the group total.</li>
     <li><strong>Colour swatches</strong> &mdash; circles for points, thin bars for lines, semi-transparent squares for polygons</li>
@@ -230,6 +232,25 @@
     <tr><td>Tree canopy cover</td><td>Raster</td><td><span class="badge badge-global">Global</span></td><td>Canopy cover percentage overlay</td></tr>
     <tr><td>100m grid (clickable)</td><td>Grid (100m)</td><td><span class="badge badge-global">Global</span></td><td>Clickable grid with 5 colour modes (see <a href="#rs-grid">RS Grid Modes</a>)</td></tr>
   </table>
+
+  <!-- ===== SUBZONE FILTER ===== -->
+  <h2 id="subzone-filter">Subzone Filter</h2>
+  <p>A collapsible &ldquo;Subzone Filter&rdquo; section appears in the layer panel after the provenance filter bar. It lets you spatially filter layers to specific subzones within the current district.</p>
+  <h3>How to use</h3>
+  <ol>
+    <li>Expand the <strong>Subzone Filter</strong> section (click the header)</li>
+    <li>Uncheck subzones you want to hide &mdash; all point, line, polygon, grid, building, HDB, and gravity layers are filtered by subzone containment</li>
+    <li>Use <strong>All</strong> / <strong>None</strong> quick-toggle buttons to select or deselect all subzones at once</li>
+    <li>A count badge (e.g. &ldquo;10/15 selected&rdquo;) shows how many subzones are active</li>
+  </ol>
+  <h3>What gets filtered</h3>
+  <ul>
+    <li><strong>Filtered:</strong> All point, line, polygon, grid, building, HDB, and gravity layers (using point-in-polygon containment)</li>
+    <li><strong>Not filtered:</strong> District boundary, subzone outlines, other districts, and raster overlays (PNG images cannot be clipped)</li>
+    <li><strong>Choropleth:</strong> Only selected subzones are coloured; deselected subzones appear unshaded</li>
+    <li><strong>Visual dimming:</strong> Unselected subzones show a dark overlay with faded labels</li>
+  </ul>
+  <div class="note">The subzone filter resets to &ldquo;all selected&rdquo; whenever you switch districts.</div>
 
   <!-- ===== CLICKING FEATURES ===== -->
   <h2 id="clicking">Clicking Features</h2>

@@ -57,6 +57,21 @@
     .rs-grid-mode-btn { padding: 2px 6px; font-size: 9px; border: 1px solid rgba(255,255,255,0.25); border-radius: 2px; background: rgba(255,255,255,0.08); color: #aaa; cursor: pointer; user-select: none; }
     .rs-grid-mode-btn.active { background: rgba(255,255,255,0.2); color: #fff; border-color: rgba(255,255,255,0.5); }
     .rs-grid-mode-btn:hover { background: rgba(255,255,255,0.15); }
+    .subzone-filter { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
+    .subzone-filter-header { color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 12px; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 6px; }
+    .subzone-filter-header:hover { background: rgba(255,255,255,0.06); }
+    .subzone-filter-header .chevron { transition: transform 0.2s; display: inline-block; font-size: 8px; width: 8px; }
+    .subzone-filter-header .chevron.open { transform: rotate(90deg); }
+    .subzone-filter-header .filter-label { flex: 1; }
+    .subzone-filter-header .filter-badge { color: #4fc3f7; font-size: 9px; }
+    .subzone-filter-body { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
+    .subzone-filter-body.open { max-height: 600px; }
+    .subzone-filter-buttons { display: flex; gap: 4px; padding: 2px 12px 4px; }
+    .subzone-filter-btn { padding: 2px 8px; font-size: 9px; border: 1px solid rgba(255,255,255,0.25); border-radius: 2px; background: rgba(255,255,255,0.08); color: #aaa; cursor: pointer; }
+    .subzone-filter-btn:hover { background: rgba(255,255,255,0.15); }
+    .subzone-filter-row { display: flex; align-items: center; gap: 6px; padding: 2px 12px; cursor: pointer; font-size: 11px; }
+    .subzone-filter-row:hover { background: rgba(255,255,255,0.08); }
+    .subzone-filter-row input[type="checkbox"] { margin: 0; cursor: pointer; }
     .catalogue-link { display: block; padding: 8px 12px; border-top: 1px solid rgba(255,255,255,0.1); color: #4fc3f7; text-decoration: none; font-size: 11px; text-align: center; }
     .catalogue-link:hover { background: rgba(255,255,255,0.06); color: #81d4fa; }
     .district-select { width: calc(100% - 24px); padding: 5px 6px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.35); border-radius: 3px; font-family: sans-serif; font-size: 12px; font-weight: bold; margin: 6px 12px 2px; box-sizing: border-box; cursor: pointer; }
@@ -139,6 +154,43 @@
     }
 
     // ---------------------------------------------------------------
+    // Subzone filter state & utilities
+    // ---------------------------------------------------------------
+    var selectedSubzones = null;  // null = all selected (no filter)
+    var subzonePolygons = null;   // cached subzone features for spatial filtering
+
+    function pointInPolygon(point, polygon) {
+      var coords = polygon.type === 'MultiPolygon' ? polygon.coordinates[0][0] : polygon.coordinates[0];
+      var x = point[0], y = point[1];
+      var inside = false;
+      for (var i = 0, j = coords.length - 1; i < coords.length; j = i++) {
+        var xi = coords[i][0], yi = coords[i][1];
+        var xj = coords[j][0], yj = coords[j][1];
+        if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+          inside = !inside;
+        }
+      }
+      return inside;
+    }
+
+    function featureInSelectedSubzones(feature) {
+      if (!selectedSubzones || !subzonePolygons) return true;
+      var centroid = computeCentroid(feature);
+      return subzonePolygons.some(function(sz) {
+        return selectedSubzones.indexOf(sz.properties.SUBZONE_N) >= 0
+          && pointInPolygon(centroid, sz.geometry);
+      });
+    }
+
+    function filterBySubzone(geojson) {
+      if (!selectedSubzones || !subzonePolygons) return geojson;
+      return {
+        type: 'FeatureCollection',
+        features: geojson.features.filter(featureInSelectedSubzones)
+      };
+    }
+
+    // ---------------------------------------------------------------
     // Experimental mode (append ?experimental=true to URL to enable)
     // ---------------------------------------------------------------
     var EXPERIMENTAL = new URLSearchParams(window.location.search).get('experimental') === 'true';
@@ -153,7 +205,7 @@
         layerCounts: { hawker: 9, supermarket: 19, mrt: 26, parks: 9, parkfac: 370, parkconn: 36, nature: 12, abcwaters: 5, nptracks: 1559, cycling: 110, cc: 4, gym: 4, preschool: 81, chas: 43, sportfac: 1, hdb: 308, heightctl: 7, streetnet: 3788, walk_intdens: 2178, walk_grid: 2178, rs_grid: 2394, buildings: 8671, other_districts: 4, grav_food: 2507, grav_transit: 2507, grav_green: 2507, grav_health: 2507, grav_education: 2507 },
       },
       bishan: {
-        label: 'Bishan', center: [103.8395, 1.3550], zoom: 14.5, buildingCount: 3766,
+        label: 'Marymount (Bishan)', center: [103.8395, 1.3550], zoom: 14.5, buildingCount: 3766,
         rasterBounds: [103.8185, 1.3420, 103.8604, 1.3680],
         layerCounts: { hawker: 1, supermarket: 8, mrt: 16, parks: 18, parkfac: 173, parkconn: 10, nature: 20, abcwaters: 3, nptracks: 481, cycling: 160, cc: 4, gym: 5, preschool: 50, chas: 20, sportfac: 2, hdb: 1, heightctl: 0, streetnet: 1363, walk_intdens: 769, walk_grid: 769, rs_grid: 840, buildings: 3766, other_districts: 4, grav_food: 0, grav_transit: 0, grav_green: 0, grav_health: 0, grav_education: 0 },
       },
@@ -581,18 +633,33 @@
     }
 
     function createSubzoneLayers(data) {
+      var filterActive = selectedSubzones && subzonePolygons;
       var outlines = new deck.GeoJsonLayer({
         id: 'subzones',
         data: data,
         pickable: false,
-        filled: false,
+        filled: filterActive,
         stroked: true,
-        getLineColor: [0, 255, 255, 150],
+        getLineColor: function(d) {
+          if (!filterActive) return [0, 255, 255, 150];
+          var name = d.properties.SUBZONE_N;
+          return selectedSubzones.indexOf(name) >= 0 ? [0, 255, 255, 200] : [0, 255, 255, 60];
+        },
+        getFillColor: function(d) {
+          if (!filterActive) return [0, 0, 0, 0];
+          var name = d.properties.SUBZONE_N;
+          return selectedSubzones.indexOf(name) >= 0 ? [0, 0, 0, 0] : [0, 0, 0, 120];
+        },
         getLineWidth: 2,
         lineWidthMinPixels: 1,
+        updateTriggers: {
+          getLineColor: [selectedSubzones],
+          getFillColor: [selectedSubzones],
+        },
       });
       var labelData = data.features.map(function(f) {
-        return { position: computeCentroid(f), text: f.properties.SUBZONE_N || '' };
+        var isSelected = !filterActive || selectedSubzones.indexOf(f.properties.SUBZONE_N) >= 0;
+        return { position: computeCentroid(f), text: f.properties.SUBZONE_N || '', selected: isSelected };
       });
       var labels = new deck.TextLayer({
         id: 'subzone-labels',
@@ -600,7 +667,7 @@
         getPosition: function(d) { return d.position; },
         getText: function(d) { return d.text; },
         getSize: 13,
-        getColor: [0, 255, 255],
+        getColor: function(d) { return d.selected ? [0, 255, 255] : [0, 255, 255, 60]; },
         fontFamily: 'sans-serif',
         fontWeight: 'bold',
         outlineWidth: 3,
@@ -893,7 +960,18 @@
 
     function createChoroplethLayer() {
       if (!choroplethData || !activeChoropleth) return null;
-      var values = choroplethData.features.map(function(f) { return getMetricValue(f.properties, activeChoropleth); });
+      // Filter choropleth data by selected subzones
+      var filteredData = choroplethData;
+      if (selectedSubzones) {
+        filteredData = {
+          type: 'FeatureCollection',
+          features: choroplethData.features.filter(function(f) {
+            var name = f.properties.subzone_name || f.properties.SUBZONE_N || '';
+            return selectedSubzones.indexOf(name) >= 0;
+          })
+        };
+      }
+      var values = filteredData.features.map(function(f) { return getMetricValue(f.properties, activeChoropleth); });
       var valid = values.filter(function(v) { return v !== null && v !== undefined; });
       if (valid.length === 0) return null;
       var min = Math.min.apply(null, valid);
@@ -902,7 +980,7 @@
 
       return new deck.GeoJsonLayer({
         id: 'choropleth',
-        data: choroplethData,
+        data: filteredData,
         pickable: true,
         filled: true,
         stroked: false,
@@ -911,7 +989,7 @@
           return rampColor(v, min, max, RAMP_COLORS, 140);
         },
         updateTriggers: {
-          getFillColor: [activeChoropleth],
+          getFillColor: [activeChoropleth, selectedSubzones],
         },
       });
     }
@@ -943,7 +1021,10 @@
         }
 
         if (!state.data) return;
-        var result = createDeckLayer(layerDef, state.data);
+        // Apply subzone filter (skip for boundary, subzones, other_districts)
+        var skipFilter = ['boundary', 'subzones', 'other_districts'];
+        var data = skipFilter.indexOf(id) >= 0 ? state.data : filterBySubzone(state.data);
+        var result = createDeckLayer(layerDef, data);
         if (result) {
           if (Array.isArray(result)) {
             result.forEach(function(l) { layers.push(l); });
@@ -1052,6 +1133,7 @@
           layerState[id].data = data;
           rebuildDeckLayers();
           updateLayerLegend();
+          updateFilteredCounts();
         }).catch(function(err) {
           console.warn('Layer ' + layerDef.label + ' not available for ' + currentDistrict + ':', err.message);
           layerState[id].loaded = false;
@@ -1248,6 +1330,9 @@
       provBar.appendChild(btnGlobal);
       body.appendChild(provBar);
 
+      // Subzone filter section
+      buildSubzoneFilter(body);
+
       // Collapsible layer groups
       var groups = [];
       var groupMap = {};
@@ -1326,6 +1411,8 @@
 
           var label = document.createElement('span');
           label.className = 'layer-label';
+          label.id = 'layer-label-' + layer.id;
+          label.dataset.baseLabel = layer.label;
           var labelText = layer.label;
           if (count !== undefined) labelText += ' (' + count.toLocaleString() + ')';
           label.textContent = labelText;
@@ -1468,6 +1555,220 @@
       body.appendChild(catLink);
     }
 
+    function buildSubzoneFilter(body) {
+      var container = document.createElement('div');
+      container.className = 'subzone-filter';
+      container.id = 'subzone-filter';
+
+      // Header
+      var header = document.createElement('div');
+      header.className = 'subzone-filter-header';
+      var chevron = document.createElement('span');
+      chevron.className = 'chevron';
+      chevron.textContent = '\u25B6';
+      var label = document.createElement('span');
+      label.className = 'filter-label';
+      label.textContent = 'Subzone Filter';
+      var badge = document.createElement('span');
+      badge.className = 'filter-badge';
+      badge.id = 'subzone-filter-badge';
+      header.appendChild(chevron);
+      header.appendChild(label);
+      header.appendChild(badge);
+
+      var filterBody = document.createElement('div');
+      filterBody.className = 'subzone-filter-body';
+      filterBody.id = 'subzone-filter-body';
+
+      header.addEventListener('click', function() {
+        var open = filterBody.classList.toggle('open');
+        chevron.classList.toggle('open', open);
+      });
+
+      container.appendChild(header);
+      container.appendChild(filterBody);
+      body.appendChild(container);
+
+      // Populate once subzones data is available
+      populateSubzoneFilter();
+    }
+
+    function populateSubzoneFilter() {
+      var filterBody = document.getElementById('subzone-filter-body');
+      if (!filterBody) return;
+      filterBody.innerHTML = '';
+
+      var subData = layerState['subzones'] && layerState['subzones'].data;
+      if (!subData || !subData.features) {
+        // Data not loaded yet, try again after a short delay
+        setTimeout(populateSubzoneFilter, 500);
+        return;
+      }
+
+      // Cache subzone polygons
+      subzonePolygons = subData.features;
+      var names = subData.features.map(function(f) { return f.properties.SUBZONE_N || ''; }).sort();
+
+      // All / None buttons
+      var btnRow = document.createElement('div');
+      btnRow.className = 'subzone-filter-buttons';
+      var btnAll = document.createElement('button');
+      btnAll.className = 'subzone-filter-btn';
+      btnAll.textContent = 'All';
+      btnAll.addEventListener('click', function() {
+        selectedSubzones = null;
+        filterBody.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = true; });
+        updateSubzoneFilterBadge(names.length, names.length);
+        rebuildDeckLayers();
+        updateLayerLegend();
+        updateFilteredCounts();
+      });
+      var btnNone = document.createElement('button');
+      btnNone.className = 'subzone-filter-btn';
+      btnNone.textContent = 'None';
+      btnNone.addEventListener('click', function() {
+        selectedSubzones = [];
+        filterBody.querySelectorAll('input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+        updateSubzoneFilterBadge(0, names.length);
+        rebuildDeckLayers();
+        updateLayerLegend();
+        updateFilteredCounts();
+      });
+      btnRow.appendChild(btnAll);
+      btnRow.appendChild(btnNone);
+      filterBody.appendChild(btnRow);
+
+      // Subzone checkboxes
+      names.forEach(function(name) {
+        var row = document.createElement('label');
+        row.className = 'subzone-filter-row';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = true;
+        cb.dataset.subzone = name;
+        cb.addEventListener('change', function() {
+          onSubzoneFilterChange(names);
+        });
+        var span = document.createElement('span');
+        span.textContent = name;
+        row.appendChild(cb);
+        row.appendChild(span);
+        filterBody.appendChild(row);
+      });
+
+      updateSubzoneFilterBadge(names.length, names.length);
+    }
+
+    function onSubzoneFilterChange(allNames) {
+      var filterBody = document.getElementById('subzone-filter-body');
+      if (!filterBody) return;
+      var checked = [];
+      filterBody.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+        if (cb.checked) checked.push(cb.dataset.subzone);
+      });
+      if (checked.length === allNames.length) {
+        selectedSubzones = null; // all selected = no filter
+      } else {
+        selectedSubzones = checked;
+      }
+      updateSubzoneFilterBadge(checked.length, allNames.length);
+      rebuildDeckLayers();
+      updateLayerLegend();
+      updateFilteredCounts();
+    }
+
+    function updateSubzoneFilterBadge(selected, total) {
+      var badge = document.getElementById('subzone-filter-badge');
+      if (!badge) return;
+      if (selected === total) {
+        badge.textContent = '';
+      } else {
+        badge.textContent = selected + '/' + total;
+      }
+    }
+
+    function updateFilteredCounts() {
+      var counts = DISTRICTS[currentDistrict].layerCounts || {};
+      var skipFilter = ['boundary', 'subzones', 'other_districts'];
+      var filterActive = selectedSubzones && subzonePolygons;
+
+      // When filter is active, eagerly load data for layers that have a file
+      // so we can compute accurate filtered counts even for untoggled layers
+      if (filterActive) {
+        var toLoad = [];
+        LAYERS.forEach(function(layer) {
+          if (skipFilter.indexOf(layer.id) >= 0) return;
+          if (!layer.file) return;  // rasters, other_districts
+          if (layer.deckType === 'raster') return;
+          var state = layerState[layer.id];
+          if (state && !state.data) {
+            toLoad.push(layer);
+          }
+        });
+        if (toLoad.length > 0) {
+          Promise.all(toLoad.map(function(layer) {
+            var url = layerFile(layer.file);
+            return fetchGeoJSON(url).then(function(data) {
+              layerState[layer.id].data = data;
+            }).catch(function() {});
+          })).then(function() {
+            applyFilteredCounts(counts, skipFilter, filterActive);
+          });
+          // Apply what we can now, will update again when loads finish
+          applyFilteredCounts(counts, skipFilter, filterActive);
+          return;
+        }
+      }
+
+      applyFilteredCounts(counts, skipFilter, filterActive);
+    }
+
+    function applyFilteredCounts(counts, skipFilter, filterActive) {
+      var groupTotals = {};
+
+      LAYERS.forEach(function(layer) {
+        var label = document.getElementById('layer-label-' + layer.id);
+        if (!label) return;
+        var baseLabel = label.dataset.baseLabel || layer.label;
+        var staticCount = counts[layer.id];
+        var displayCount = staticCount;
+
+        // If subzone filter active, compute filtered count from data
+        if (filterActive && skipFilter.indexOf(layer.id) < 0) {
+          var state = layerState[layer.id];
+          if (state && state.data && state.data.features) {
+            displayCount = filterBySubzone(state.data).features.length;
+          }
+        }
+
+        // Update label text
+        if (displayCount !== undefined) {
+          label.textContent = baseLabel + ' (' + displayCount.toLocaleString() + ')';
+        } else {
+          label.textContent = baseLabel;
+        }
+
+        // Update zero-count styling
+        var row = label.closest('.layer-row');
+        if (row) {
+          if (displayCount === 0) row.classList.add('zero-count');
+          else row.classList.remove('zero-count');
+        }
+
+        // Accumulate group totals
+        if (!groupTotals[layer.group]) groupTotals[layer.group] = 0;
+        if (displayCount !== undefined) groupTotals[layer.group] += displayCount;
+      });
+
+      // Update group count headers
+      for (var groupName in groupTotals) {
+        var el = document.querySelector('[data-group-count="' + groupName + '"]');
+        if (el) {
+          el.textContent = groupTotals[groupName] > 0 ? groupTotals[groupName].toLocaleString() : '';
+        }
+      }
+    }
+
     function onProvenanceToggle(source, enabled) {
       LAYERS.forEach(function(layer) {
         if (layer.source !== source) return;
@@ -1497,6 +1798,8 @@
       }
       choroplethData = null;
       activeChoropleth = '';
+      selectedSubzones = null;
+      subzonePolygons = null;
       for (var key in dataCache) delete dataCache[key];
 
       currentDistrict = districtKey;

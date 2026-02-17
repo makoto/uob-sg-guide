@@ -1,6 +1,6 @@
 # Singapore District Liveability Study Data Guide
 
-Geospatial analysis of perceived liveability across five Singapore planning districts: Queenstown, Bishan, Outram, Tampines, and Newton.
+Geospatial analysis of perceived liveability across five Singapore planning districts: Queenstown, Marymount (Bishan), Outram, Tampines, and Newton.
 
 > **Disclaimer:** This is an AI-assisted project. The data and analysis have not been independently verified — please cross-check with original sources before relying on them.
 
