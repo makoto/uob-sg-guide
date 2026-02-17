@@ -1658,8 +1658,9 @@
       header.appendChild(badge);
 
       var filterBody = document.createElement('div');
-      filterBody.className = 'subzone-filter-body';
+      filterBody.className = 'subzone-filter-body' + (selectedSubzones ? ' open' : '');
       filterBody.id = 'subzone-filter-body';
+      if (selectedSubzones) chevron.classList.add('open');
 
       header.addEventListener('click', function() {
         var open = filterBody.classList.toggle('open');
